@@ -7,28 +7,33 @@ public class LittleR {
         printWelcome();
         printLineBreak();
 
-        handleInput();
+        converse();
 
         printGoodbye();
         printLineBreak();
     }
 
-    public static void handleInput() {
+    public static void converse() {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            String input = scanner.nextLine();
+            String input = input(scanner);
             printLineBreak();
 
             if (input.equals("bye")) {
                 scanner.close();
                 break;
             }
-            
+
             String response = input; // Just echo the input for now
             System.out.println(response);
             printLineBreak();
         }
+    }
+
+    public static String input(Scanner scanner) {
+        System.out.print(">> "); 
+        return scanner.nextLine();
     }
 
     public static void printBanner() {

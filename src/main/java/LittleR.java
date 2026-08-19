@@ -1,11 +1,34 @@
+import java.util.Scanner;
+
 public class LittleR {
     public static void main(String[] args) {
         printLineBreak();
         printBanner();
         printWelcome();
         printLineBreak();
+
+        handleInput();
+
         printGoodbye();
         printLineBreak();
+    }
+
+    public static void handleInput() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            String input = scanner.nextLine();
+            printLineBreak();
+
+            if (input.equals("bye")) {
+                scanner.close();
+                break;
+            }
+            
+            String response = input; // Just echo the input for now
+            System.out.println(response);
+            printLineBreak();
+        }
     }
 
     public static void printBanner() {

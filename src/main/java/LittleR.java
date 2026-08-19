@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class LittleR {
 
-    // Enums
+    // Command keywords
     private static final String EXIT_COMMAND = "bye";
     private static final String LIST_COMMAND = "list";
 
@@ -42,12 +42,20 @@ public class LittleR {
             } else if (input.equals(LIST_COMMAND)) {
                 printList();
             } else {
-                list[size] = input;
-                size++;
+                addItem(input);
                 printAddResponse(input);
             }
             printLineBreak();
         }
+    }
+
+    /**
+     * Add an item to the list
+     * @param input the item to be added to the list
+     */
+    private static void addItem(String input) {
+        list[size] = input;
+        size++;
     }
 
     /**
@@ -65,14 +73,6 @@ public class LittleR {
      */
     private static void printAddResponse(String input) {
         System.out.println("Added: " + input);
-    }
-
-    /**
-     * Print the response to the user
-     * @param input the input to be echoed back to the user
-     */
-    private static void printEcho(String input) {
-        System.out.println(input);
     }
 
     /** Prompt user for an input

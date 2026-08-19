@@ -2,8 +2,14 @@ import java.util.Scanner;
 
 public class LittleR {
 
+    // Enums
     private static final String EXIT_COMMAND = "bye";
-    
+    private static final String LIST_COMMAND = "list";
+
+    // Variables
+    private static String[] list = new String[100];
+    private static int size = 0;
+
     public static void main(String[] args) {
 
         // Start of the program
@@ -33,11 +39,40 @@ public class LittleR {
             if (input.equals(EXIT_COMMAND)) {
                 scanner.close();
                 break;
+            } else if (input.equals(LIST_COMMAND)) {
+                printList();
+            } else {
+                list[size] = input;
+                size++;
+                printAddResponse(input);
             }
-
-            printResponse(input); // Just echo the input for now
             printLineBreak();
         }
+    }
+
+    /**
+     * Print the list of items added by the user so far
+     */
+    private static void printList() {
+        for (int i = 0; i < size; i++) {
+            System.out.println((i + 1) + ". " + list[i]);
+        }
+    }
+    
+    /**
+     * Print the item added to the list
+     * @param input the item added to the list
+     */
+    private static void printAddResponse(String input) {
+        System.out.println("Added: " + input);
+    }
+
+    /**
+     * Print the response to the user
+     * @param input the input to be echoed back to the user
+     */
+    private static void printEcho(String input) {
+        System.out.println(input);
     }
 
     /** Prompt user for an input
@@ -47,14 +82,6 @@ public class LittleR {
     private static String readInput(Scanner scanner) {
         System.out.print(">> "); 
         return scanner.nextLine();
-    }
-
-    /**
-     * Print the response to the user
-     * @param response the response to be printed
-     */
-    private static void printResponse(String response) {
-        System.out.println(response);
     }
 
     /**

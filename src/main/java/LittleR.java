@@ -1,42 +1,66 @@
 import java.util.Scanner;
 
 public class LittleR {
+
+    private static final String EXIT_COMMAND = "bye";
+    
     public static void main(String[] args) {
+
+        // Start of the program
         printLineBreak();
         printBanner();
         printWelcome();
         printLineBreak();
 
+        // Conversation loop
         converse();
 
+        // End of the program
         printGoodbye();
         printLineBreak();
     }
 
-    public static void converse() {
+    /**
+     * Handle the conversation loop
+     */
+    private static void converse() {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            String input = input(scanner);
+            String input = readInput(scanner);
             printLineBreak();
 
-            if (input.equals("bye")) {
+            if (input.equals(EXIT_COMMAND)) {
                 scanner.close();
                 break;
             }
 
-            String response = input; // Just echo the input for now
-            System.out.println(response);
+            printResponse(input); // Just echo the input for now
             printLineBreak();
         }
     }
 
-    public static String input(Scanner scanner) {
+    /** Prompt user for an input
+     * @param scanner Scanner object to read user input
+     * @return the user input as a String
+     */
+    private static String readInput(Scanner scanner) {
         System.out.print(">> "); 
         return scanner.nextLine();
     }
 
-    public static void printBanner() {
+    /**
+     * Print the response to the user
+     * @param response the response to be printed
+     */
+    private static void printResponse(String response) {
+        System.out.println(response);
+    }
+
+    /**
+     * Print the banner at the start of the program
+     */
+    private static void printBanner() {
         String banner = "  _         _      _       _        _              ___ \n"
                 + " │ │       (_)    │ │_    │ │_     │ │     ___    │ _ \\\n"
                 + " │ │__     │ │    │  _│   │  _│    │ │    / ─_)   │   /\n"
@@ -46,18 +70,27 @@ public class LittleR {
         System.out.println(banner);
     }
 
-    public static void printWelcome() {
+    /**
+     * Print the welcome message
+     */
+    private static void printWelcome() {
         String welcomeMessage = "Hello! I'm LittleR\n"
                 + "What can I do for you?\n";
         System.out.println(welcomeMessage);
     }
 
-    public static void printGoodbye() {
+    /**
+     * Print the goodbye message
+     */
+    private static void printGoodbye() {
         String goodbyeMessage = "Bye. Hope to see you again soon!\n";
         System.out.println(goodbyeMessage);
     }
 
-    public static void printLineBreak() {
+    /**
+     * Print a line break for better readability
+     */
+    private static void printLineBreak() {
         String lineBreak = "____________________________________________________________\n";
         System.out.println(lineBreak);
     }

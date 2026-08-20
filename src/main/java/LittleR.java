@@ -5,6 +5,8 @@ public class LittleR {
   // Command keywords
   private static final String EXIT_COMMAND = "bye";
   private static final String LIST_COMMAND = "list";
+  private static final String MARK_COMMAND = "mark";
+  private static final String UNMARK_COMMAND = "unmark";
   
   // Variables
   private static Task[] list = new Task[100];
@@ -41,12 +43,59 @@ public class LittleR {
         break;
       } else if (input.equals(LIST_COMMAND)) {
         printList();
+      } else if (input.startsWith(MARK_COMMAND)) {
+        String taskName = input.substring(MARK_COMMAND.length()).trim();
+        markTask(taskName);
+      } else if (input.startsWith(UNMARK_COMMAND)) {
+        String taskName = input.substring(UNMARK_COMMAND.length()).trim();
+        unmarkTask(taskName);
       } else {
         addItem(input);
-        printAddResponse(input);
       }
       printLineBreak();
     }
+  }
+
+  /**
+  * Mark a task as completed
+  * @param taskName the name of the task to be marked
+  */
+  private static void markTask(String taskName) {
+    Task task = findTaskByName(taskName);
+    if (task != null) {
+      task.mark();
+      System.out.println("Marked: " + task);
+    } else {
+      System.out.println("Task not found: " + taskName);
+    }
+  }
+
+  /**
+  * Unmark a task as not completed
+  * @param taskName the name of the task to be unmarked
+  */
+  private static void unmarkTask(String taskName) {
+    Task task = findTaskByName(taskName);
+    if (task != null) {
+      task.unmark();
+      System.out.println("Unmarked: " + task);
+    } else {
+      System.out.println("Task not found: " + taskName);
+    }
+  }
+
+  /**
+  * Find a task by its name
+  * @param name the name of the task to be found
+  * @return the Task object if found, null otherwise
+  */
+  private static Task findTaskByName(String name) {
+    for (int i = 0; i < size; i++) {
+      if (list[i].compareName(name)) {
+        return list[i];
+      }
+    }
+    return null;
   }
   
   /**
@@ -56,6 +105,7 @@ public class LittleR {
   private static void addItem(String input) {
     list[size] = new Task(input);
     size++;
+    System.out.println("Added: " + input);
   }
   
   /**
@@ -65,14 +115,6 @@ public class LittleR {
     for (int i = 0; i < size; i++) {
       System.out.println((i + 1) + ". " + list[i]);
     }
-  }
-  
-  /**
-  * Print the item added to the list
-  * @param input the item added to the list
-  */
-  private static void printAddResponse(String input) {
-    System.out.println("Added: " + input);
   }
   
   /** Prompt user for an input

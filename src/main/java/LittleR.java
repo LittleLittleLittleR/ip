@@ -1,12 +1,18 @@
 import java.util.Scanner;
+import task.*;
 
 public class LittleR {
   
   // Command keywords
   private static final String EXIT_COMMAND = "bye";
   private static final String LIST_COMMAND = "list";
-  private static final String MARK_COMMAND = "mark";
-  private static final String UNMARK_COMMAND = "unmark";
+  private static final String MARK_COMMAND = "mark ";
+  private static final String UNMARK_COMMAND = "unmark ";
+
+  // Task type keywords
+  private static final String TODO_COMMAND = "todo ";
+  private static final String DEADLINE_COMMAND = "deadline ";
+  private static final String EVENT_COMMAND = "event ";
   
   // Variables
   private static Task[] list = new Task[100];
@@ -38,19 +44,32 @@ public class LittleR {
       String input = readInput(scanner).strip();
       printLineBreak();
       
+      // Exit
       if (input.equals(EXIT_COMMAND)) {
         scanner.close();
         break;
+
+      // List tasks
       } else if (input.equals(LIST_COMMAND)) {
         printList();
+
+      // Mark or unmark tasks
       } else if (input.startsWith(MARK_COMMAND)) {
         int index = parseIndex(input, MARK_COMMAND);
         markTask(index);
       } else if (input.startsWith(UNMARK_COMMAND)) {
         int index = parseIndex(input, UNMARK_COMMAND);
         unmarkTask(index);
+
+      // Add a new specified task (Todo, Deadline, or Event)
+      } else if (input.startsWith(TODO_COMMAND)) {
+        addItem(input, TODO_COMMAND);
+      } else if (input.startsWith(DEADLINE_COMMAND)) {
+        addItem(input, DEADLINE_COMMAND);
+      } else if (input.startsWith(EVENT_COMMAND)) {
+        addItem(input, EVENT_COMMAND);
       } else {
-        addItem(input);
+        System.out.println("Invalid command. Please try again.");
       }
       printLineBreak();
     }
@@ -82,6 +101,12 @@ public class LittleR {
     }
   }
 
+  /**
+  * Parse the index from the user input
+  * @param input the user input containing the index
+  * @param command the command keyword to be removed from the input
+  * @return the parsed index as an integer
+  */
   private static int parseIndex(String input, String command) {
     return Integer.parseInt(input.substring(command.length()).trim()) - 1;
   }
@@ -89,11 +114,29 @@ public class LittleR {
   /**
   * Add an item to the list
   * @param input the item to be added to the list
+  * @param type the type of the item to be added
   */
-  private static void addItem(String input) {
-    list[size] = new Task(input);
+  private static void addItem(String input, String type) {
+    String taskText = input.substring(type.length()).strip();
+
+    switch (type) {
+      case DEADLINE_COMMAND:
+        // Parse deadline details and create Deadline task
+        String[] parts = taskText.split("/by");
+        list[size] = new Deadline(parts[0].trim(), parts[1].trim());
+        break;
+      case EVENT_COMMAND:
+        // Parse event details and create Event task
+        String[] eventParts = taskText.split("/from|/to");
+        list[size] = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
+        break;
+      case TODO_COMMAND:
+        list[size] = new Todo(taskText);
+        break;
+    }
     size++;
-    System.out.println("Added: " + input);
+    System.out.println("Added: " + list[size - 1]
+        + "\nNow you have " + size + " tasks in the list.");
   }
   
   /**

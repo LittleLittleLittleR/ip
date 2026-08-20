@@ -35,7 +35,7 @@ public class LittleR {
     Scanner scanner = new Scanner(System.in);
     
     while (true) {
-      String input = readInput(scanner);
+      String input = readInput(scanner).strip();
       printLineBreak();
       
       if (input.equals(EXIT_COMMAND)) {
@@ -44,11 +44,11 @@ public class LittleR {
       } else if (input.equals(LIST_COMMAND)) {
         printList();
       } else if (input.startsWith(MARK_COMMAND)) {
-        String taskName = input.substring(MARK_COMMAND.length()).trim();
-        markTask(taskName);
+        int index = parseIndex(input, MARK_COMMAND);
+        markTask(index);
       } else if (input.startsWith(UNMARK_COMMAND)) {
-        String taskName = input.substring(UNMARK_COMMAND.length()).trim();
-        unmarkTask(taskName);
+        int index = parseIndex(input, UNMARK_COMMAND);
+        unmarkTask(index);
       } else {
         addItem(input);
       }
@@ -58,44 +58,32 @@ public class LittleR {
 
   /**
   * Mark a task as completed
-  * @param taskName the name of the task to be marked
+  * @param index the index of the task to be marked
   */
-  private static void markTask(String taskName) {
-    Task task = findTaskByName(taskName);
-    if (task != null) {
-      task.mark();
-      System.out.println("Marked: " + task);
+  private static void markTask(int index) {
+    if (index >= 0 && index < size) {
+      list[index].mark();
+      System.out.println("Marked: " + list[index]);
     } else {
-      System.out.println("Task not found: " + taskName);
+      System.out.println("Task not found.");
     }
   }
 
   /**
   * Unmark a task as not completed
-  * @param taskName the name of the task to be unmarked
+  * @param index the index of the task to be unmarked
   */
-  private static void unmarkTask(String taskName) {
-    Task task = findTaskByName(taskName);
-    if (task != null) {
-      task.unmark();
-      System.out.println("Unmarked: " + task);
+  private static void unmarkTask(int index) {
+    if (index >= 0 && index < size) {
+      list[index].unmark();
+      System.out.println("Unmarked: " + list[index]);
     } else {
-      System.out.println("Task not found: " + taskName);
+      System.out.println("Task not found.");
     }
   }
 
-  /**
-  * Find a task by its name
-  * @param name the name of the task to be found
-  * @return the Task object if found, null otherwise
-  */
-  private static Task findTaskByName(String name) {
-    for (int i = 0; i < size; i++) {
-      if (list[i].compareName(name)) {
-        return list[i];
-      }
-    }
-    return null;
+  private static int parseIndex(String input, String command) {
+    return Integer.parseInt(input.substring(command.length()).trim()) - 1;
   }
   
   /**
@@ -112,6 +100,7 @@ public class LittleR {
   * Print the list of items added by the user so far
   */
   private static void printList() {
+    System.out.println("Tasks in your list:");
     for (int i = 0; i < size; i++) {
       System.out.println((i + 1) + ". " + list[i]);
     }

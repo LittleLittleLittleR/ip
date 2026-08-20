@@ -1,4 +1,6 @@
-
+/**
+ * Represents a single task with a name and a completion state.
+ */
 public class Task {
   private String name;
   private boolean marked;
@@ -6,15 +8,6 @@ public class Task {
   public Task(String name) {
     this.name = name;
     this.marked = false;
-  }
-
-  /**
-  * Compare the name of the task with a given name
-  * @param name the name to compare with
-  * @return true if the names are equal, false otherwise
-  */
-  public boolean compareName(String name) {
-    return this.name.equals(name);
   }
 
   /**

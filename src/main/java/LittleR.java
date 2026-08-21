@@ -9,6 +9,7 @@ public class LittleR {
   private static final String LIST_COMMAND = "list";
   private static final String MARK_COMMAND = "mark";
   private static final String UNMARK_COMMAND = "unmark";
+  private static final String DELETE_COMMAND = "delete";
  
   // Task type keywords
   private static final String TODO_COMMAND = "todo";
@@ -61,6 +62,11 @@ public class LittleR {
         } else if (isCommand(input, UNMARK_COMMAND)) {
           int index = parseIndex(input, UNMARK_COMMAND);
           unmarkTask(index);
+ 
+        // Delete a task
+        } else if (isCommand(input, DELETE_COMMAND)) {
+          int index = parseIndex(input, DELETE_COMMAND);
+          deleteTask(index);
  
         // Add a new specified task (Todo, Deadline, or Event)
         } else if (isCommand(input, TODO_COMMAND)) {
@@ -133,7 +139,21 @@ public class LittleR {
       throw new LittleRException("Please provide a valid task number.");
     }
   }
-  
+
+  /**
+   * Delete a task from the list
+   * @param index the index of the task to be deleted
+   * @throws LittleRException if the index is out of bounds
+   */
+  private static void deleteTask(int index) throws LittleRException {
+    if (index < 0 || index >= list.size()) {
+      throw new LittleRException("That task number doesn't exist.");
+    }
+    Task removedTask = list.remove(index);
+    System.out.println("Deleted: " + removedTask);
+    System.out.println("Now you have " + list.size() + " tasks in the list.");
+  }
+
   /**
    * Add an item to the list
    * @param input the item to be added to the list

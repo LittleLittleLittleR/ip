@@ -181,6 +181,9 @@ public class LittleR {
         list.add(new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim()));
         break;
       case TODO_COMMAND:
+        if (taskText.isEmpty()) {
+          throw new LittleRException("The description of a todo cannot be empty.");
+        }
         list.add(new Todo(taskText));
         break;
     }

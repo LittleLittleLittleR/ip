@@ -4,18 +4,6 @@ import task.*;
 
 public class LittleR {
   
-  // Command keywords
-  private static final String EXIT_COMMAND = "bye";
-  private static final String LIST_COMMAND = "list";
-  private static final String MARK_COMMAND = "mark";
-  private static final String UNMARK_COMMAND = "unmark";
-  private static final String DELETE_COMMAND = "delete";
- 
-  // Task type keywords
-  private static final String TODO_COMMAND = "todo";
-  private static final String DEADLINE_COMMAND = "deadline";
-  private static final String EVENT_COMMAND = "event";
-  
   // Variables
   private static ArrayList<Task> list = new ArrayList<>();
   
@@ -46,53 +34,50 @@ public class LittleR {
       printLineBreak();
       
       try {
-        // Exit
-        if (input.equals(EXIT_COMMAND)) {
-          scanner.close();
-          break;
- 
-        // List tasks
-        } else if (input.equals(LIST_COMMAND)) {
-          printList();
- 
-        // Mark or unmark tasks
-        } else if (isCommand(input, MARK_COMMAND)) {
-          int index = parseIndex(input, MARK_COMMAND);
-          markTask(index);
-        } else if (isCommand(input, UNMARK_COMMAND)) {
-          int index = parseIndex(input, UNMARK_COMMAND);
-          unmarkTask(index);
- 
-        // Delete a task
-        } else if (isCommand(input, DELETE_COMMAND)) {
-          int index = parseIndex(input, DELETE_COMMAND);
-          deleteTask(index);
- 
-        // Add a new specified task (Todo, Deadline, or Event)
-        } else if (isCommand(input, TODO_COMMAND)) {
-          addItem(input, TODO_COMMAND);
-        } else if (isCommand(input, DEADLINE_COMMAND)) {
-          addItem(input, DEADLINE_COMMAND);
-        } else if (isCommand(input, EVENT_COMMAND)) {
-          addItem(input, EVENT_COMMAND);
-        } else {
+        Command command = Command.fromInput(input);
+
+        if (command == null) {
           printCommandNotFoundError();
+          printLineBreak();
+          continue;
+        }
+
+        // Exit
+        switch (command) {
+          case EXIT:
+            scanner.close();
+            return;
+ 
+          // List tasks
+          case LIST:
+            printList();
+            break;
+ 
+          // Mark or unmark tasks
+          case MARK:
+            markTask(parseIndex(input, command));
+            break;
+          case UNMARK:
+            unmarkTask(parseIndex(input, command));
+            break;
+  
+          // Delete a task
+          case DELETE:
+            deleteTask(parseIndex(input, command));
+            break;
+ 
+          // Add a new specified task (Todo, Deadline, or Event)
+          case TODO:
+          case DEADLINE:
+          case EVENT:
+            addItem(input, command);
+            break;
         }
       } catch (LittleRException e) {
         System.out.println("Error: " + e.getMessage());
       }
       printLineBreak();
     }
-  }
-
-  /**
-   * Check if the input matches the command or starts with the command followed by a space
-   * @param input the user input
-   * @param command the command keyword to check against
-   * @return true if the input matches the command, false otherwise
-   */
-  private static boolean isCommand(String input, String command) {
-    return input.equals(command) || input.startsWith(command + " ");
   }
 
   /**
@@ -128,11 +113,11 @@ public class LittleR {
    * @throws LittleRException if the index is not a valid integer or out of bounds
    * @return the parsed index as an integer
    */
-  private static int parseIndex(String input, String command) throws LittleRException {
+  private static int parseIndex(String input, Command command) throws LittleRException {
     if (list.size() == 0) {
       throw new LittleRException("There are no tasks to mark/unmark yet.");
     }
-    String indexString = input.substring(command.length()).trim();
+    String indexString = input.substring(command.getKeyword().length()).trim();
     try {
       return Integer.parseInt(indexString) - 1;
     } catch (NumberFormatException e) {
@@ -160,11 +145,11 @@ public class LittleR {
    * @param type the type of the item to be added
    * @throws LittleRException if the item format is invalid
    */
-  private static void addItem(String input, String type) throws LittleRException {
-    String taskText = input.substring(type.length()).strip();
+  private static void addItem(String input, Command type) throws LittleRException {
+    String taskText = input.substring(type.getKeyword().length()).strip();
 
     switch (type) {
-      case DEADLINE_COMMAND:
+      case DEADLINE:
         // Parse deadline details and create Deadline task
         String[] parts = taskText.split("/by");
         if (parts.length < 2) {
@@ -172,7 +157,7 @@ public class LittleR {
         }
         list.add(new Deadline(parts[0].trim(), parts[1].trim()));
         break;
-      case EVENT_COMMAND:
+      case EVENT:
         // Parse event details and create Event task
         String[] eventParts = taskText.split("/from|/to");
         if (eventParts.length < 3) {
@@ -180,7 +165,7 @@ public class LittleR {
         }
         list.add(new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim()));
         break;
-      case TODO_COMMAND:
+      case TODO:
         if (taskText.isEmpty()) {
           throw new LittleRException("The description of a todo cannot be empty.");
         }

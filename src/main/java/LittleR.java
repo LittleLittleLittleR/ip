@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 import task.*;
 
 public class LittleR {
@@ -8,6 +9,7 @@ public class LittleR {
   private static final String LIST_COMMAND = "list";
   private static final String MARK_COMMAND = "mark";
   private static final String UNMARK_COMMAND = "unmark";
+  private static final String DELETE_COMMAND = "delete";
  
   // Task type keywords
   private static final String TODO_COMMAND = "todo";
@@ -15,8 +17,7 @@ public class LittleR {
   private static final String EVENT_COMMAND = "event";
   
   // Variables
-  private static Task[] list = new Task[100];
-  private static int size = 0;
+  private static ArrayList<Task> list = new ArrayList<>();
   
   public static void main(String[] args) {
     
@@ -62,6 +63,11 @@ public class LittleR {
           int index = parseIndex(input, UNMARK_COMMAND);
           unmarkTask(index);
  
+        // Delete a task
+        } else if (isCommand(input, DELETE_COMMAND)) {
+          int index = parseIndex(input, DELETE_COMMAND);
+          deleteTask(index);
+ 
         // Add a new specified task (Todo, Deadline, or Event)
         } else if (isCommand(input, TODO_COMMAND)) {
           addItem(input, TODO_COMMAND);
@@ -95,11 +101,11 @@ public class LittleR {
    * @throws LittleRException if the index is out of bounds
    */
   private static void markTask(int index) throws LittleRException {
-    if (index < 0 || index >= size) {
+    if (index < 0 || index >= list.size()) {
       throw new LittleRException("That task number doesn't exist.");
     }
-    list[index].mark();
-    System.out.println("Marked: " + list[index]);
+    list.get(index).mark();
+    System.out.println("Marked: " + list.get(index));
   }
 
   /**
@@ -108,11 +114,11 @@ public class LittleR {
    * @throws LittleRException if the index is out of bounds
    */
   private static void unmarkTask(int index) throws LittleRException {
-    if (index < 0 || index >= size) {
+    if (index < 0 || index >= list.size()) {
       throw new LittleRException("That task number doesn't exist.");
     }
-    list[index].unmark();
-    System.out.println("Unmarked: " + list[index]);
+    list.get(index).unmark();
+    System.out.println("Unmarked: " + list.get(index));
   }
 
   /**
@@ -123,7 +129,7 @@ public class LittleR {
    * @return the parsed index as an integer
    */
   private static int parseIndex(String input, String command) throws LittleRException {
-    if (size == 0) {
+    if (list.size() == 0) {
       throw new LittleRException("There are no tasks to mark/unmark yet.");
     }
     String indexString = input.substring(command.length()).trim();
@@ -133,7 +139,21 @@ public class LittleR {
       throw new LittleRException("Please provide a valid task number.");
     }
   }
-  
+
+  /**
+   * Delete a task from the list
+   * @param index the index of the task to be deleted
+   * @throws LittleRException if the index is out of bounds
+   */
+  private static void deleteTask(int index) throws LittleRException {
+    if (index < 0 || index >= list.size()) {
+      throw new LittleRException("That task number doesn't exist.");
+    }
+    Task removedTask = list.remove(index);
+    System.out.println("Deleted: " + removedTask);
+    System.out.println("Now you have " + list.size() + " tasks in the list.");
+  }
+
   /**
    * Add an item to the list
    * @param input the item to be added to the list
@@ -150,7 +170,7 @@ public class LittleR {
         if (parts.length < 2) {
           throw new LittleRException("Invalid deadline format. \nUse: deadline <task description> /by <due date>");
         }
-        list[size] = new Deadline(parts[0].trim(), parts[1].trim());
+        list.add(new Deadline(parts[0].trim(), parts[1].trim()));
         break;
       case EVENT_COMMAND:
         // Parse event details and create Event task
@@ -158,16 +178,17 @@ public class LittleR {
         if (eventParts.length < 3) {
           throw new LittleRException("Invalid event format. \nUse: event <task description> /from <start time> /to <end time>");
         }
-        list[size] = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
+        list.add(new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim()));
         break;
       case TODO_COMMAND:
-        list[size] = new Todo(taskText);
+        if (taskText.isEmpty()) {
+          throw new LittleRException("The description of a todo cannot be empty.");
+        }
+        list.add(new Todo(taskText));
         break;
     }
-    size++;
-    System.out.println("Added: " + list[size - 1]
-      + "\nNow you have " + size + " tasks in the list.");
-
+    System.out.println("Added: " + list.get(list.size() - 1)
+      + "\nNow you have " + list.size() + " tasks in the list.");
   }
   
   // GENERAL PRINTING METHODS
@@ -193,8 +214,8 @@ public class LittleR {
    */
   private static void printList() {
     System.out.println("Tasks in your list:");
-    for (int i = 0; i < size; i++) {
-      System.out.println((i + 1) + ". " + list[i]);
+    for (int i = 0; i < list.size(); i++) {
+      System.out.println((i + 1) + ". " + list.get(i));
     }
   }
   

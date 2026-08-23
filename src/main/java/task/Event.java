@@ -14,6 +14,14 @@ public class Event extends Task {
     this.to = to;
   }
 
+  /**
+   * Encodes this event as a single line string for saving to a file.
+   */
+  @Override
+  public String toFileString() {
+    return "E | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | " + from + " | " + to;
+  }
+
   @Override
   public String toString() {
     return "[E]" + super.toString() + " (" + from + " to " + to + ")";

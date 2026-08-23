@@ -5,9 +5,12 @@ import task.*;
 public class LittleR {
   
   // Variables
+  private static final String SAVE_FILE_PATH = "./data/littler.txt";
   private static ArrayList<Task> list = new ArrayList<>();
+  private static Storage storage = new Storage(SAVE_FILE_PATH);
   
   public static void main(String[] args) {
+    list = storage.load();
     
     // Start of the program
     printLineBreak();
@@ -45,6 +48,7 @@ public class LittleR {
         // Exit
         switch (command) {
           case EXIT:
+            storage.save(list);
             scanner.close();
             return;
  
@@ -76,6 +80,7 @@ public class LittleR {
       } catch (LittleRException e) {
         System.out.println("Error: " + e.getMessage());
       }
+      storage.save(list);
       printLineBreak();
     }
   }

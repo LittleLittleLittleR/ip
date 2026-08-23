@@ -9,6 +9,14 @@ public class Todo extends Task {
     super(name);
   }
 
+  /**
+   * Encodes this todo as a single line string for saving to a file.
+   */
+  @Override
+  public String toFileString() {
+    return "T | " + (super.isMarked() ? "1" : "0") + " | " + super.getName();
+  }
+
   @Override
   public String toString() {
     return "[T]" + super.toString();

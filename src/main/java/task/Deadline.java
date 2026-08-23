@@ -12,6 +12,14 @@ public class Deadline extends Task {
     this.due = due;
   }
 
+  /**
+   * Encodes this deadline as a single line string for saving to a file.
+   */
+  @Override
+  public String toFileString() {
+    return "D | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | " + due;
+  }
+
   @Override
   public String toString() {
     return "[D]" + super.toString() + " (due: " + due + ")";

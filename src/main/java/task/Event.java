@@ -1,5 +1,6 @@
 package task;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -8,7 +9,7 @@ import datetime.DateFormats;
 /**
  * Represents a task that occurs within a specific time frame.
  */
-public class Event extends Task {
+public class Event extends Task implements Schedulable {
 
   private LocalDateTime from;
   private LocalDateTime to;
@@ -17,6 +18,16 @@ public class Event extends Task {
     super(name);
     this.from = from;
     this.to = to;
+  }
+
+  /**
+   * Returns true if this event occurs on the given date.
+   */
+  @Override
+  public boolean occursOn(LocalDate date) {
+    LocalDate fromDate = from.toLocalDate();
+    LocalDate toDate = to.toLocalDate();
+    return !date.isBefore(fromDate) && !date.isAfter(toDate);
   }
 
   /**

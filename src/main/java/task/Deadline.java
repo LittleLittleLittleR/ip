@@ -1,19 +1,16 @@
 package task;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import datetime.StringDateTimeConverter.ParsedDateTime;
 
-import datetime.DateFormats;
 
 /**
  * Represents a task with a deadline.
  */
 public class Deadline extends Task implements Schedulable {
 
-  private LocalDateTime due;
+  private ParsedDateTime due;
 
-  public Deadline(String name, LocalDateTime due) {
+  public Deadline(String name, ParsedDateTime due) {
     super(name);
     this.due = due;
   }
@@ -22,8 +19,13 @@ public class Deadline extends Task implements Schedulable {
    * Returns true if this deadline is due on the given date.
    */
   @Override
-  public boolean occursOn(LocalDate date) {
-    return due.toLocalDate().equals(date);
+  public boolean occursOn(ParsedDateTime date) {
+    if (date.hasTime()) {
+      // If the user provided a time, we only consider it a match if both date and time match
+      return date.compareDate(due) == 0 && date.compareTime(due) == 0;
+    } else {
+      return date.compareDate(due) == 0;
+    }
   }
 
   /**
@@ -32,12 +34,12 @@ public class Deadline extends Task implements Schedulable {
   @Override
   public String toFileString() {
     return "D | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | " 
-      + due.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+      + due;
   }
 
   @Override
   public String toString() {
     return "[D]" + super.toString() 
-      + " (due: " + due.format(DateFormats.DISPLAY_FORMAT) + ")";
+      + " (due: " + due + ")";
   }
 }

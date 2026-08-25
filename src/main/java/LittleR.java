@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
-import datetime.DateFormats;
-import datetime.DateTimeParser;
+import datetime.StringDateTimeConverter;
+import datetime.StringDateTimeConverter.ParsedDateTime;
 import exception.LittleRException;
 
 import java.time.LocalDate;
@@ -103,9 +103,9 @@ public class LittleR {
    * @throws LittleRException if the date string doesn't match any accepted format
    * @return the parsed date as a LocalDate
    */
-  private static LocalDate parseDate(String input, Command command) throws LittleRException {
+  private static ParsedDateTime parseDate(String input, Command command) throws LittleRException {
     String dateString = input.substring(command.getKeyword().length()).trim();
-    return DateTimeParser.parse(dateString).toLocalDate();
+    return StringDateTimeConverter.parse(dateString);
   }
 
   /**
@@ -113,8 +113,8 @@ public class LittleR {
    * @param dateInput the raw date string from user input
    * @throws LittleRException if the date can't be parsed
    */
-  private static void printTasksOnDate(LocalDate dateInput) throws LittleRException {
-    System.out.println("Tasks on " + dateInput.atStartOfDay().format(DateFormats.DISPLAY_FORMAT) + ":");
+  private static void printTasksOnDate(ParsedDateTime dateInput) throws LittleRException {
+    System.out.println("Tasks on " + dateInput + ":");
     int count = 0;
     for (Task task : list) {
       if (task instanceof Schedulable schedulable && schedulable.occursOn(dateInput)) {
@@ -202,15 +202,15 @@ public class LittleR {
         if (parts.length < 2) {
           throw new LittleRException("Invalid deadline format. \nUse: deadline <task description> /by <due date>");
         }
-        list.add(new Deadline(parts[0].trim(), DateTimeParser.parse(parts[1])));
+        list.add(new Deadline(parts[0].trim(), StringDateTimeConverter.parse(parts[1])));
         break;
       case EVENT:
         // Parse event details and create Event task
         String[] eventParts = taskText.split("/from|/to");
         if (eventParts.length < 3) {
-          throw new LittleRException("Invalid event format. \nUse: event <task description> /from <start time> /to <end time>");
+          throw new LittleRException("Invalid event format. \nUse: event <task description> /from <start datetime> /to <end datetime>");
         }
-        list.add(new Event(eventParts[0].trim(), DateTimeParser.parse(eventParts[1]), DateTimeParser.parse(eventParts[2])));
+        list.add(new Event(eventParts[0].trim(), StringDateTimeConverter.parse(eventParts[1]), StringDateTimeConverter.parse(eventParts[2])));
         break;
       case TODO:
         if (taskText.isEmpty()) {
@@ -234,13 +234,12 @@ public class LittleR {
     + "2. mark <task number> - Mark a task as completed\n"
     + "3. unmark <task number> - Unmark a task as not completed\n"
     + "4. todo <task description> - Add a Todo task\n"
-    + "5. deadline <task description> /by <due date> - Add a Deadline task\n"
-    + "6. event <task description> /from <start time> /to <end time> - Add an Event task\n"
+    + "5. deadline <task description> /by <due datetime> - Add a Deadline task\n"
+    + "6. event <task description> /from <start datetime> /to <end datetime> - Add an Event task\n"
     + "7. on <date> - List tasks due or occurring on a given date\n"
     + "8. bye - Exit the program\n\n"
-    + "Accepted date formats: d-M-yyyy, or yyyy-M-d,\n"
-    + "each optionally followed by a time as HHmm (e.g. 2-12-2019 1800).\n"
-    + "Time defaults to 0000 if omitted.";
+    + "Date is in the format of d-M-yyyy or yyyy-M-d\n"
+    + "Datetime is similar to date, with an optional time in the format of HHmm\n";
 
     System.out.println(helpMessage);
   }

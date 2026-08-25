@@ -1,4 +1,10 @@
 import java.util.Scanner;
+
+import datetime.StringDateTimeConverter;
+import datetime.StringDateTimeConverter.ParsedDateTime;
+import exception.LittleRException;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import task.*;
 
@@ -76,12 +82,48 @@ public class LittleR {
           case EVENT:
             addItem(input, command);
             break;
+          
+          // Query tasks on a specific date
+          case ON:
+            printTasksOnDate(parseDate(input, command));
+            break;
         }
       } catch (LittleRException e) {
         System.out.println("Error: " + e.getMessage());
       }
       storage.save(list);
       printLineBreak();
+    }
+  }
+
+  /**
+   * Parse the date argument from the user input
+   * @param input the user input containing the date
+   * @param command the command keyword to be removed from the input
+   * @throws LittleRException if the date string doesn't match any accepted format
+   * @return the parsed date as a LocalDate
+   */
+  private static ParsedDateTime parseDate(String input, Command command) throws LittleRException {
+    String dateString = input.substring(command.getKeyword().length()).trim();
+    return StringDateTimeConverter.parse(dateString);
+  }
+
+  /**
+   * Print all tasks that are due or occurring on the given date.
+   * @param dateInput the raw date string from user input
+   * @throws LittleRException if the date can't be parsed
+   */
+  private static void printTasksOnDate(ParsedDateTime dateInput) throws LittleRException {
+    System.out.println("Tasks on " + dateInput + ":");
+    int count = 0;
+    for (Task task : list) {
+      if (task instanceof Schedulable schedulable && schedulable.occursOn(dateInput)) {
+        count++;
+        System.out.println(count + ". " + task);
+      }
+    }
+    if (count == 0) {
+      System.out.println("No tasks found on this date.");
     }
   }
 
@@ -160,15 +202,15 @@ public class LittleR {
         if (parts.length < 2) {
           throw new LittleRException("Invalid deadline format. \nUse: deadline <task description> /by <due date>");
         }
-        list.add(new Deadline(parts[0].trim(), parts[1].trim()));
+        list.add(new Deadline(parts[0].trim(), StringDateTimeConverter.parse(parts[1])));
         break;
       case EVENT:
         // Parse event details and create Event task
         String[] eventParts = taskText.split("/from|/to");
         if (eventParts.length < 3) {
-          throw new LittleRException("Invalid event format. \nUse: event <task description> /from <start time> /to <end time>");
+          throw new LittleRException("Invalid event format. \nUse: event <task description> /from <start datetime> /to <end datetime>");
         }
-        list.add(new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim()));
+        list.add(new Event(eventParts[0].trim(), StringDateTimeConverter.parse(eventParts[1]), StringDateTimeConverter.parse(eventParts[2])));
         break;
       case TODO:
         if (taskText.isEmpty()) {
@@ -192,9 +234,12 @@ public class LittleR {
     + "2. mark <task number> - Mark a task as completed\n"
     + "3. unmark <task number> - Unmark a task as not completed\n"
     + "4. todo <task description> - Add a Todo task\n"
-    + "5. deadline <task description> /by <due date> - Add a Deadline task\n"
-    + "6. event <task description> /from <start time> /to <end time> - Add an Event task\n"
-    + "7. bye - Exit the program";
+    + "5. deadline <task description> /by <due datetime> - Add a Deadline task\n"
+    + "6. event <task description> /from <start datetime> /to <end datetime> - Add an Event task\n"
+    + "7. on <date> - List tasks due or occurring on a given date\n"
+    + "8. bye - Exit the program\n\n"
+    + "Date is in the format of d-M-yyyy or yyyy-M-d\n"
+    + "Datetime is similar to date, with an optional time in the format of HHmm\n";
 
     System.out.println(helpMessage);
   }

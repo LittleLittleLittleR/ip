@@ -1,3 +1,4 @@
+package exception;
 
 /**
  * LittleRException is a custom exception class for the LittleR application.

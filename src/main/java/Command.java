@@ -12,7 +12,10 @@ public enum Command {
     // Task type commands
     TODO("todo"),
     DEADLINE("deadline"),
-    EVENT("event");
+    EVENT("event"),
+
+    // Date query commands
+    ON("on");
 
     private final String keyword;
 

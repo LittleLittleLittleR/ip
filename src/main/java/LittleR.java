@@ -1,8 +1,10 @@
 import java.util.Scanner;
 
+import datetime.DateFormats;
 import datetime.DateTimeParser;
 import exception.LittleRException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import task.*;
 
@@ -80,12 +82,48 @@ public class LittleR {
           case EVENT:
             addItem(input, command);
             break;
+          
+          // Query tasks on a specific date
+          case ON:
+            printTasksOnDate(parseDate(input, command));
+            break;
         }
       } catch (LittleRException e) {
         System.out.println("Error: " + e.getMessage());
       }
       storage.save(list);
       printLineBreak();
+    }
+  }
+
+  /**
+   * Parse the date argument from the user input
+   * @param input the user input containing the date
+   * @param command the command keyword to be removed from the input
+   * @throws LittleRException if the date string doesn't match any accepted format
+   * @return the parsed date as a LocalDate
+   */
+  private static LocalDate parseDate(String input, Command command) throws LittleRException {
+    String dateString = input.substring(command.getKeyword().length()).trim();
+    return DateTimeParser.parse(dateString).toLocalDate();
+  }
+
+  /**
+   * Print all tasks that are due or occurring on the given date.
+   * @param dateInput the raw date string from user input
+   * @throws LittleRException if the date can't be parsed
+   */
+  private static void printTasksOnDate(LocalDate dateInput) throws LittleRException {
+    System.out.println("Tasks on " + dateInput.atStartOfDay().format(DateFormats.DISPLAY_FORMAT) + ":");
+    int count = 0;
+    for (Task task : list) {
+      if (task instanceof Schedulable schedulable && schedulable.occursOn(dateInput)) {
+        count++;
+        System.out.println(count + ". " + task);
+      }
+    }
+    if (count == 0) {
+      System.out.println("No tasks found on this date.");
     }
   }
 
@@ -198,7 +236,11 @@ public class LittleR {
     + "4. todo <task description> - Add a Todo task\n"
     + "5. deadline <task description> /by <due date> - Add a Deadline task\n"
     + "6. event <task description> /from <start time> /to <end time> - Add an Event task\n"
-    + "7. bye - Exit the program";
+    + "7. on <date> - List tasks due or occurring on a given date\n"
+    + "8. bye - Exit the program\n\n"
+    + "Accepted date formats: d-M-yyyy, or yyyy-M-d,\n"
+    + "each optionally followed by a time as HHmm (e.g. 2-12-2019 1800).\n"
+    + "Time defaults to 0000 if omitted.";
 
     System.out.println(helpMessage);
   }

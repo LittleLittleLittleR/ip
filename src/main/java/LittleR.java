@@ -1,4 +1,8 @@
 import java.util.Scanner;
+
+import datetime.DateTimeParser;
+import exception.LittleRException;
+
 import java.util.ArrayList;
 import task.*;
 
@@ -160,7 +164,7 @@ public class LittleR {
         if (parts.length < 2) {
           throw new LittleRException("Invalid deadline format. \nUse: deadline <task description> /by <due date>");
         }
-        list.add(new Deadline(parts[0].trim(), parts[1].trim()));
+        list.add(new Deadline(parts[0].trim(), DateTimeParser.parse(parts[1])));
         break;
       case EVENT:
         // Parse event details and create Event task
@@ -168,7 +172,7 @@ public class LittleR {
         if (eventParts.length < 3) {
           throw new LittleRException("Invalid event format. \nUse: event <task description> /from <start time> /to <end time>");
         }
-        list.add(new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim()));
+        list.add(new Event(eventParts[0].trim(), DateTimeParser.parse(eventParts[1]), DateTimeParser.parse(eventParts[2])));
         break;
       case TODO:
         if (taskText.isEmpty()) {

@@ -3,6 +3,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+
+import java.time.format.DateTimeParseException;
+
+import exception.LittleRException;
 import task.*;
 
 /**
@@ -85,16 +90,16 @@ public class Storage {
           task = new Todo(name);
           break;
         case "D":
-          task = new Deadline(name, parts[3]);
+          task = new Deadline(name, LocalDateTime.parse(parts[3]));
           break;
         case "E":
-          task = new Event(name, parts[3], parts[4]);
+          task = new Event(name, LocalDateTime.parse(parts[3]), LocalDateTime.parse(parts[4]));
           break;
         default:
           throw new LittleRException("Unknown task type: " + type);
       }
-    } catch (ArrayIndexOutOfBoundsException e) {
-      throw new LittleRException("Missing fields in line: " + line);
+    } catch (ArrayIndexOutOfBoundsException | DateTimeParseException e) {
+      throw new LittleRException("Missing or invalid fields in line: " + line);
     }
 
     if (marked) {

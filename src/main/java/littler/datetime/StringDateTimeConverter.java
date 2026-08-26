@@ -34,6 +34,38 @@ public final class StringDateTimeConverter {
   private StringDateTimeConverter() {}
 
   /**
+   * Encodes a ParsedDateTime for storage, 
+   * e.g. "2019-12-02|18:00" or "2019-12-02|NONE" if no time was specified. 
+   * Independent of the user-facing parse()/format() formats, 
+   * so a change to accepted input formats can never silently break saved data.
+   */
+  public static String toStorageString(ParsedDateTime dateTime) {
+    String dateStr = dateTime.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+    String timeStr = dateTime.hasTime()
+        ? dateTime.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+        : "NONE";
+    return dateStr + "|" + timeStr;
+  }
+
+  /**
+   * Decodes a ParsedDateTime previously written by toStorageString().
+   * @throws LittleRException if the stored string is malformed
+   */
+  public static ParsedDateTime fromStorageString(String stored) throws LittleRException {
+    String[] parts = stored.split("\\|");
+    if (parts.length != 2) {
+      throw new LittleRException("Corrupted stored date: " + stored);
+    }
+    try {
+      LocalDate date = LocalDate.parse(parts[0]);
+      LocalTime time = parts[1].equals("NONE") ? null : LocalTime.parse(parts[1]);
+      return new ParsedDateTime(date, time);
+    } catch (DateTimeParseException e) {
+      throw new LittleRException("Corrupted stored date: " + stored);
+    }
+  }
+
+  /**
    * Parses a date/time string against each accepted format
    * in turn, returning the first successful match.
    * @throws LittleRException if the string matches none of the accepted formats

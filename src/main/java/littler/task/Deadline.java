@@ -1,5 +1,6 @@
 package littler.task;
 
+import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
 
@@ -34,7 +35,7 @@ public class Deadline extends Task implements Schedulable {
   @Override
   public String toFileString() {
     return "D | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | " 
-      + due;
+      + StringDateTimeConverter.toStorageString(due);
   }
 
   @Override

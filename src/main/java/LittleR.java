@@ -14,22 +14,23 @@ public class LittleR {
   private static final String SAVE_FILE_PATH = "./data/littler.txt";
   private static ArrayList<Task> list = new ArrayList<>();
   private static Storage storage = new Storage(SAVE_FILE_PATH);
+  private static final UI ui = new UI();
   
   public static void main(String[] args) {
     list = storage.load();
     
     // Start of the program
-    printLineBreak();
-    printBanner();
-    printWelcome();
-    printLineBreak();
+    ui.lineBreak();
+    ui.banner();
+    ui.welcome();
+    ui.lineBreak();
     
     // Conversation loop
     converse();
     
     // End of the program
-    printGoodbye();
-    printLineBreak();
+    ui.goodbye();
+    ui.lineBreak();
   }
   
   /**
@@ -39,15 +40,15 @@ public class LittleR {
     Scanner scanner = new Scanner(System.in);
     
     while (true) {
-      String input = readInput(scanner).strip();
-      printLineBreak();
+      String input = ui.readInput();
+      ui.lineBreak();
       
       try {
         Command command = Command.fromInput(input);
 
         if (command == null) {
-          printCommandNotFoundError();
-          printLineBreak();
+          ui.commandNotFoundError();
+          ui.lineBreak();
           continue;
         }
 
@@ -60,7 +61,7 @@ public class LittleR {
  
           // List tasks
           case LIST:
-            printList();
+            ui.taskList(list);
             break;
  
           // Mark or unmark tasks
@@ -92,7 +93,7 @@ public class LittleR {
         System.out.println("Error: " + e.getMessage());
       }
       storage.save(list);
-      printLineBreak();
+      ui.lineBreak();
     }
   }
 
@@ -114,16 +115,16 @@ public class LittleR {
    * @throws LittleRException if the date can't be parsed
    */
   private static void printTasksOnDate(ParsedDateTime dateInput) throws LittleRException {
-    System.out.println("Tasks on " + dateInput + ":");
+    ui.tasksOnDateHeader(dateInput);
     int count = 0;
     for (Task task : list) {
       if (task instanceof Schedulable schedulable && schedulable.occursOn(dateInput)) {
         count++;
-        System.out.println(count + ". " + task);
+        ui.taskWithIndex(count, task);
       }
     }
     if (count == 0) {
-      System.out.println("No tasks found on this date.");
+      ui.noTasksFound();
     }
   }
 
@@ -137,7 +138,7 @@ public class LittleR {
       throw new LittleRException("That task number doesn't exist.");
     }
     list.get(index).mark();
-    System.out.println("Marked: " + list.get(index));
+    ui.taskMarked(list.get(index));
   }
 
   /**
@@ -150,7 +151,7 @@ public class LittleR {
       throw new LittleRException("That task number doesn't exist.");
     }
     list.get(index).unmark();
-    System.out.println("Unmarked: " + list.get(index));
+    ui.taskUnmarked(list.get(index));
   }
 
   /**
@@ -182,8 +183,7 @@ public class LittleR {
       throw new LittleRException("That task number doesn't exist.");
     }
     Task removedTask = list.remove(index);
-    System.out.println("Deleted: " + removedTask);
-    System.out.println("Now you have " + list.size() + " tasks in the list.");
+    ui.taskDeleted(removedTask, list.size());
   }
 
   /**
@@ -219,96 +219,8 @@ public class LittleR {
         list.add(new Todo(taskText));
         break;
     }
-    System.out.println("Added: " + list.get(list.size() - 1)
-      + "\nNow you have " + list.size() + " tasks in the list.");
-  }
-  
-  // GENERAL PRINTING METHODS
-
-  /**
-   * Print the help message with available commands
-   */
-  private static void printHelp() {
-    String helpMessage = "Available commands:\n"
-    + "1. list - List all tasks\n"
-    + "2. mark <task number> - Mark a task as completed\n"
-    + "3. unmark <task number> - Unmark a task as not completed\n"
-    + "4. todo <task description> - Add a Todo task\n"
-    + "5. deadline <task description> /by <due datetime> - Add a Deadline task\n"
-    + "6. event <task description> /from <start datetime> /to <end datetime> - Add an Event task\n"
-    + "7. on <date> - List tasks due or occurring on a given date\n"
-    + "8. bye - Exit the program\n\n"
-    + "Date is in the format of d-M-yyyy or yyyy-M-d\n"
-    + "Datetime is similar to date, with an optional time in the format of HHmm\n";
-
-    System.out.println(helpMessage);
+    ui.taskAdded(list.get(list.size() - 1), list.size());
   }
 
-  /**
-   * Print the list of items added by the user so far
-   */
-  private static void printList() {
-    System.out.println("Tasks in your list:");
-    for (int i = 0; i < list.size(); i++) {
-      System.out.println((i + 1) + ". " + list.get(i));
-    }
-  }
   
-  /**
-   * Prompt user for an input
-   * @param scanner Scanner object to read user input
-   * @return the user input as a String
-   */
-  private static String readInput(Scanner scanner) {
-    System.out.print(">> "); 
-    return scanner.nextLine();
-  }
-  
-  /**
-   * Print the banner at the start of the program
-   */
-  private static void printBanner() {
-    String banner = "  _         _      _       _        _              ___ \n"
-    + " │ │       (_)    │ │_    │ │_     │ │     ___    │ _ \\\n"
-    + " │ │__     │ │    │  _│   │  _│    │ │    / ─_)   │   /\n"
-    + " │____│   _│_│_   _\\__│   _\\__│   _│_│_   \\___│   │_│_\\\n"
-    + "_│\"\"\"\"\"│_│\"\"\"\"\"│_│\"\"\"\"\"│_│\"\"\"\"\"│_│\"\"\"\"\"│_│\"\"\"\"\"│_│\"\"\"\"\"│\n"
-    + "\"`─0─0─'\"`─0─0─'\"`─0─0─'\"`─0─0─'\"`─0─0─'\"`─0─0─'\"`─0─0─'\n";
-    System.out.println(banner);
-  }
-  
-  /**
-   * Print the welcome message
-   */
-  private static void printWelcome() {
-    String welcomeMessage = "Hello! I'm LittleR\n"
-    + "What can I do for you?\n";
-    System.out.println(welcomeMessage);
-  }
-  
-  /**
-   * Print the goodbye message
-   */
-  private static void printGoodbye() {
-    String goodbyeMessage = "Bye. Hope to see you again soon!\n";
-    System.out.println(goodbyeMessage);
-  }
-  
-  /**
-   * Print a line break for better readability
-   */
-  private static void printLineBreak() {
-    String lineBreak = "____________________________________________________________\n";
-    System.out.println(lineBreak);
-  }
-
-  // ERROR PRINTING METHODS
-
-  /**
-   * Print an error message for commands not found
-   */
-  private static void printCommandNotFoundError() {
-    System.out.println("Invalid command. Please use one of the commands shown below.");
-    printHelp();
-  }
 }

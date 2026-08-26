@@ -10,19 +10,23 @@ import littler.exception.LittleRException;
 import littler.task.*;
 
 /**
- * Handles reading and writing tasks from and to a file on disk.
+ * Handles reading tasks from disk and persisting tasks back to disk storage.
  */
 public class Storage {
   private final Path filePath;
 
+  /**
+   * Constructs a new Storage instance initialized with the target file path.
+   * @param filePath the string path pointing to the data storage file
+   */
   public Storage(String filePath) {
     this.filePath = Paths.get(filePath);
   }
 
   /**
-   * Loads tasks from disk.
-   * @return an ArrayList of tasks loaded from the file, or an empty list if the file doesn't exist yet
-   * @throws LittleRException if the file exists but couldn't be read
+   * Loads saved tasks from disk storage into an ArrayList.
+   * @return an ArrayList of tasks loaded from the file, or an empty list if the file does not exist yet
+   * @throws LittleRException if the target file exists but cannot be read due to an I/O error
    */
   public ArrayList<Task> load() throws LittleRException {
     ArrayList<Task> tasks = new ArrayList<>();
@@ -48,10 +52,9 @@ public class Storage {
   }
 
   /**
-   * Writes the given task list to disk.
-   * Creates the parent folder first if it doesn't exist.
-   * @param tasks the list of tasks to be saved
-   * @throws LittleRException if the file couldn't be written
+   * Writes the provided task list to disk, creating missing parent directories if necessary.
+   * @param tasks the list of tasks to be saved to file storage
+   * @throws LittleRException if parent directories cannot be created or file writing fails
    */
   public void save(ArrayList<Task> tasks) throws LittleRException {
     try {
@@ -69,8 +72,10 @@ public class Storage {
   }
 
   /**
-   * Reconstructs a Task from one line of the save file.
-   * @throws LittleRException if the line is malformed or has an unknown type
+   * Reconstructs a concrete Task instance from a single formatted line of the save file.
+   * @param line a single formatted line read from storage
+   * @return the reconstructed Task object (Todo, Deadline, or Event)
+   * @throws LittleRException if the line is malformed, missing required fields, or has an unknown task type
    */
   private Task parseLine(String line) throws LittleRException {
     String[] parts = line.split(" \\| ");

@@ -8,17 +8,21 @@ import littler.task.Task;
 import littler.task.Todo;
 
 /**
- * Parses raw user input into usable values.
+ * Utility class that parses raw user input strings into usable application values and tasks.
  */
 public final class Parser {
 
+  /**
+   * Private constructor to prevent instantiation of utility class.
+   */
   private Parser() {}
 
   /**
-   * Parses the task index argument from user input 
-   * @param input the user input containing the index
-   * @param command the command keyword to be removed from the input
-   * @throws LittleRException if the index is not a valid integer
+   * Parses the task index argument from user input string and converts it to a 0-based index.
+   * @param input the raw user input containing the task index argument
+   * @param command the command keyword to be stripped from the front of the input
+   * @return the zero-based task index integer
+   * @throws LittleRException if the index argument is missing or not a valid integer
    */
   public static int parseIndex(String input, Command command) throws LittleRException {
     String indexString = input.substring(command.getKeyword().length()).trim();
@@ -30,10 +34,11 @@ public final class Parser {
   }
 
   /**
-   * Parses the date argument from user input.
-   * @param input the user input containing the date
-   * @param command the command keyword to be removed from the input
-   * @throws LittleRException if the date string doesn't match any accepted format
+   * Parses a date argument from user input string into a {@link ParsedDateTime} instance.
+   * @param input the raw user input containing the date string
+   * @param command the command keyword to be stripped from the front of the input
+   * @return the parsed date/time object
+   * @throws LittleRException if the date string is empty or does not match any accepted format
    */
   public static ParsedDateTime parseDate(String input, Command command) throws LittleRException {
     String dateString = input.substring(command.getKeyword().length()).trim();
@@ -41,10 +46,11 @@ public final class Parser {
   }
 
   /**
-   * Parses a todo/deadline/event command into the corresponding Task.
-   * @param input the user input containing the task details
-   * @param type the type of task to be created
-   * @throws LittleRException if the command's arguments are malformed
+   * Parses task details from user input and constructs the corresponding concrete Task object.
+   * @param input the raw user input containing the task description and optional date parameters
+   * @param type the type of task command being processed (TODO, DEADLINE, or EVENT)
+   * @return the constructed concrete {@link Task} instance (Todo, Deadline, or Event)
+   * @throws LittleRException if the task arguments are empty, missing required delimiters, or malformed
    */
   public static Task parseTask(String input, Command type) throws LittleRException {
     String taskText = input.substring(type.getKeyword().length()).strip();

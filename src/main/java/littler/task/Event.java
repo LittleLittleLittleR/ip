@@ -1,5 +1,6 @@
 package littler.task;
 
+import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
 /**
@@ -36,7 +37,8 @@ public class Event extends Task implements Schedulable {
   @Override
   public String toFileString() {
     return "E | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | " 
-      + from + " | " + to;
+      + StringDateTimeConverter.toStorageString(from) + " | " 
+      + StringDateTimeConverter.toStorageString(to);
   }
 
   @Override

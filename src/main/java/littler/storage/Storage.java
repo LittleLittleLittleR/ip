@@ -89,10 +89,12 @@ public class Storage {
           task = new Todo(name);
           break;
         case "D":
-          task = new Deadline(name, StringDateTimeConverter.parse(parts[3]));
+          task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
           break;
         case "E":
-          task = new Event(name, StringDateTimeConverter.parse(parts[3]), StringDateTimeConverter.parse(parts[4]));
+          task = new Event(name,
+            StringDateTimeConverter.fromStorageString(parts[3]),
+            StringDateTimeConverter.fromStorageString(parts[4]));
           break;
         default:
           throw new LittleRException("Unknown task type: " + type);

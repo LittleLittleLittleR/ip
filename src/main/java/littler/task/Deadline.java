@@ -5,19 +5,26 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
 
 /**
- * Represents a task with a deadline.
+ * Represents a task with a specific deadline date and optional time.
  */
 public class Deadline extends Task implements Schedulable {
 
   private ParsedDateTime due;
 
+  /**
+   * Constructs a new Deadline task with the specified description and due date/time.
+   * @param name the description of the task
+   * @param due the target date and optional time by which the task is due
+   */
   public Deadline(String name, ParsedDateTime due) {
     super(name);
     this.due = due;
   }
 
   /**
-   * Returns true if this deadline is due on the given date.
+   * Checks whether this deadline matches or falls on the specified date and time.
+   * @param date the target parsed date/time to check against
+   * @return true if the deadline occurs on the specified date (and time, if specified); false otherwise
    */
   @Override
   public boolean occursOn(ParsedDateTime date) {
@@ -30,7 +37,8 @@ public class Deadline extends Task implements Schedulable {
   }
 
   /**
-   * Encodes this deadline as a single line string for saving to a file.
+   * Encodes this deadline as a single-line string for saving to file storage.
+   * @return the formatted data string representing this deadline task
    */
   @Override
   public String toFileString() {
@@ -38,6 +46,10 @@ public class Deadline extends Task implements Schedulable {
       + StringDateTimeConverter.toStorageString(due);
   }
 
+  /**
+   * Returns a user-friendly string representation of this deadline task, including its type icon and due date/time.
+   * @return the formatted string representation of the deadline task
+   */
   @Override
   public String toString() {
     return "[D]" + super.toString() 

@@ -5,22 +5,29 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
 
 /**
- * Wraps the list of tasks and owns all operations on it, including
- * bounds-checking, so callers never touch the raw list directly.
+ * Manages an encapsulated list of tasks and handles internal task operations,
+ * including bounds checking and querying tasks by date.
  */
 public class TaskList {
   private final ArrayList<Task> tasks;
 
+  /**
+   * Constructs an empty TaskList.
+   */
   public TaskList() {
     this.tasks = new ArrayList<>();
   }
 
+  /**
+   * Constructs a TaskList initialized with an existing list of tasks.
+   * @param tasks the initial list of tasks to manage
+   */
   public TaskList(ArrayList<Task> tasks) {
     this.tasks = tasks;
   }
 
   /**
-   * Adds a task to the list.
+   * Adds a task to the task list.
    * @param task the task to be added
    */
   public void add(Task task) {
@@ -28,7 +35,7 @@ public class TaskList {
   }
 
   /**
-   * Removes and returns the task at the given index.
+   * Removes and returns the task at the specified 0-based index.
    * @param index the index of the task to be removed
    * @return the removed task
    * @throws LittleRException if the index is out of bounds
@@ -39,7 +46,7 @@ public class TaskList {
   }
 
   /**
-   * Marks the task at the given index as completed, returning it.
+   * Marks the task at the specified 0-based index as completed.
    * @param index the index of the task to be marked
    * @return the marked task
    * @throws LittleRException if the index is out of bounds
@@ -52,7 +59,7 @@ public class TaskList {
   }
 
   /**
-   * Unmarks the task at the given index, returning it.
+   * Unmarks the task at the specified 0-based index, setting it to incomplete.
    * @param index the index of the task to be unmarked
    * @return the unmarked task
    * @throws LittleRException if the index is out of bounds
@@ -65,9 +72,9 @@ public class TaskList {
   }
 
   /**
-   * Returns the task at the given index.
-   * @param index the index of the task to be returned
-   * @return the task at the given index
+   * Retrieves the task at the specified 0-based index.
+   * @param index the index of the task to retrieve
+   * @return the task at the specified index
    * @throws LittleRException if the index is out of bounds
    */
   public Task get(int index) throws LittleRException {
@@ -76,25 +83,33 @@ public class TaskList {
   }
 
   /**
-   * Returns the most recently added task.
-   * @return the most recently added task
+   * Returns the most recently added task in the list.
+   * @return the last task in the task list
    */
   public Task getLast() {
     return tasks.get(tasks.size() - 1);
   }
 
+  /**
+   * Returns the total number of tasks currently in the list.
+   * @return the number of tasks
+   */
   public int size() {
     return tasks.size();
   }
 
+  /**
+   * Checks whether the task list is completely empty.
+   * @return true if there are no tasks in the list; false otherwise
+   */
   public boolean isEmpty() {
     return tasks.isEmpty();
   }
 
   /**
-   * Returns all Schedulable tasks that occur on the given date.
-   * @param date the date to check for task occurrences
-   * @return a list of tasks that occur on the given date
+   * Filters and returns all schedulable tasks that occur on or match the given date.
+   * @param date the parsed date to check against task occurrences
+   * @return an ArrayList containing all matching Schedulable tasks
    */
   public ArrayList<Task> getTasksOn(ParsedDateTime date) {
     ArrayList<Task> matches = new ArrayList<>();
@@ -107,17 +122,17 @@ public class TaskList {
   }
 
   /**
-   * Returns the underlying task list for Storage to save or Ui to display.
-   * @return the ArrayList of tasks
+   * Returns the underlying list of tasks for storage or UI display operations.
+   * @return the internal ArrayList of tasks
    */
   public ArrayList<Task> getTasks() {
     return tasks;
   }
 
   /**
-   * Checks if the given index is valid for the task list.
-   * @param index the index to check
-   * @throws LittleRException if the index is out of bounds
+   * Validates whether the given index falls within the valid bounds of the task list.
+   * @param index the 0-based index to validate
+   * @throws LittleRException if the index is negative or greater than or equal to the list size
    */
   private void checkIndex(int index) throws LittleRException {
     if (index < 0 || index >= tasks.size()) {

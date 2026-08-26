@@ -20,13 +20,14 @@ public class Storage {
   }
 
   /**
-   * Loads tasks from disk. 
-   * @return an ArrayList of tasks loaded from the file, or an empty list if the file doesn't exist
+   * Loads tasks from disk.
+   * @return an ArrayList of tasks loaded from the file, or an empty list if the file doesn't exist yet
+   * @throws LittleRException if the file exists but couldn't be read
    */
-  public ArrayList<Task> load() {
+  public ArrayList<Task> load() throws LittleRException {
     ArrayList<Task> tasks = new ArrayList<>();
     if (!Files.exists(filePath)) {
-      // Returns an empty list if the save file doesn't exist yet. 
+      // Not an error: this is a normal first run on a new machine.
       return tasks;
     }
     try {
@@ -37,13 +38,11 @@ public class Storage {
         try {
           tasks.add(parseLine(line));
         } catch (LittleRException e) {
-          // Skips any corrupted lines instead of failing the whole load.
-          System.out.println("Skipping corrupted line in save file: " + line);
+          // Skips corrupted lines instead of failing the whole load.
         }
       }
     } catch (IOException e) {
-      // File exists but couldn't be read.
-      System.out.println("Warning: could not read save file. Starting with an empty list."); 
+      throw new LittleRException("Could not read save file: " + e.getMessage());
     }
     return tasks;
   }
@@ -52,8 +51,9 @@ public class Storage {
    * Writes the given task list to disk.
    * Creates the parent folder first if it doesn't exist.
    * @param tasks the list of tasks to be saved
+   * @throws LittleRException if the file couldn't be written
    */
-  public void save(ArrayList<Task> tasks) {
+  public void save(ArrayList<Task> tasks) throws LittleRException {
     try {
       if (filePath.getParent() != null) {
         Files.createDirectories(filePath.getParent());
@@ -64,7 +64,7 @@ public class Storage {
       }
       Files.write(filePath, lines);
     } catch (IOException e) {
-      System.out.println("Warning: could not save tasks to disk.");
+      throw new LittleRException("Could not save tasks to disk: " + e.getMessage());
     }
   }
 

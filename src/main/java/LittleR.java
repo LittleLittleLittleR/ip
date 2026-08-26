@@ -13,7 +13,15 @@ public class LittleR {
   public LittleR(String filePath) {
     ui = new UI();
     storage = new Storage(filePath);
-    tasks = new TaskList(storage.load());
+
+    ArrayList<Task> loadedTasks;
+    try {
+      loadedTasks = storage.load();
+    } catch (LittleRException e) {
+      ui.error("Could not load tasks: " + e.getMessage());
+      loadedTasks = new ArrayList<>();
+    }
+    tasks = new TaskList(loadedTasks);
   }
 
   /**
@@ -32,7 +40,7 @@ public class LittleR {
     ui.goodbye();
     ui.lineBreak();
   }
-  
+
   /**
   * Handle the conversation loop
   */
@@ -53,7 +61,7 @@ public class LittleR {
         // Exit
         switch (command) {
           case EXIT:
-            storage.save(tasks.getTasks());
+            saveQuietly();
             ui.closeScanner();
             return;
  
@@ -89,8 +97,19 @@ public class LittleR {
       } catch (LittleRException e) {
         ui.error(e.getMessage());
       }
-      storage.save(tasks.getTasks());
+      saveQuietly();
       ui.lineBreak();
+    }
+  }
+
+  /**
+   * Saves the current task list to disk, but does not throw an exception if it fails.
+   */
+  private void saveQuietly() {
+    try {
+      storage.save(tasks.getTasks());
+    } catch (LittleRException e) {
+      ui.error("Could not save: " + e.getMessage());
     }
   }
 

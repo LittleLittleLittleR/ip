@@ -5,15 +5,21 @@ import exception.LittleRException;
 import task.Task;
 
 public class LittleR {
-  
-  // Variables
-  private static final String SAVE_FILE_PATH = "./data/littler.txt";
-  private static Storage storage = new Storage(SAVE_FILE_PATH);
-  private static TaskList tasks = new TaskList(storage.load());
-  private static final UI ui = new UI();
-  
-  public static void main(String[] args) {
-    // Start of the program
+
+  private final Storage storage;
+  private final TaskList tasks;
+  private final UI ui;
+
+  public LittleR(String filePath) {
+    ui = new UI();
+    storage = new Storage(filePath);
+    tasks = new TaskList(storage.load());
+  }
+
+  /**
+   * Runs the conversation loop until the user exits.
+   */
+  public void run() {
     ui.lineBreak();
     ui.banner();
     ui.welcome();
@@ -30,7 +36,7 @@ public class LittleR {
   /**
   * Handle the conversation loop
   */
-  private static void converse() {
+  private void converse() {
     while (true) {
       String input = ui.readInput().strip();
       ui.lineBreak();
@@ -93,7 +99,7 @@ public class LittleR {
    * Print all tasks that are due or occurring on the given date.
    * @param dateInput the parsed date to check tasks against
    */
-  private static void printTasksOnDate(ParsedDateTime dateInput) {
+  private void printTasksOnDate(ParsedDateTime dateInput) {
     ui.tasksOnDateHeader(dateInput);
     ArrayList<Task> matches = tasks.getTasksOn(dateInput);
     if (matches.isEmpty()) {
@@ -112,7 +118,7 @@ public class LittleR {
    * @throws LittleRException if the index is not a valid integer or is out of bounds
    * @return the parsed index as an integer
    */
-  private static int getIndex(String input, Command command) throws LittleRException {
+  private int getIndex(String input, Command command) throws LittleRException {
     if (tasks.isEmpty()) {
       throw new LittleRException("There are no tasks yet.");
     }
@@ -125,9 +131,13 @@ public class LittleR {
    * @param type the type of the item to be added
    * @throws LittleRException if the item format is invalid
    */
-  private static void addItem(String input, Command type) throws LittleRException {
+  private void addItem(String input, Command type) throws LittleRException {
     Task task = Parser.parseTask(input, type);
     tasks.add(task);
     ui.taskAdded(tasks.getLast(), tasks.size());
+  }
+
+  public static void main(String[] args) {
+    new LittleR("./data/littler.txt").run();
   }
 }

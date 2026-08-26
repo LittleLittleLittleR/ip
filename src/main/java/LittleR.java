@@ -1,24 +1,20 @@
-import java.util.Scanner;
+import java.util.ArrayList;
 
 import datetime.StringDateTimeConverter;
 import datetime.StringDateTimeConverter.ParsedDateTime;
 import exception.LittleRException;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import task.*;
 
 public class LittleR {
   
   // Variables
   private static final String SAVE_FILE_PATH = "./data/littler.txt";
-  private static ArrayList<Task> list = new ArrayList<>();
   private static Storage storage = new Storage(SAVE_FILE_PATH);
+  private static TaskList tasks = new TaskList(storage.load());
   private static final UI ui = new UI();
   
   public static void main(String[] args) {
-    list = storage.load();
-    
     // Start of the program
     ui.lineBreak();
     ui.banner();
@@ -37,12 +33,10 @@ public class LittleR {
   * Handle the conversation loop
   */
   private static void converse() {
-    Scanner scanner = new Scanner(System.in);
-    
     while (true) {
-      String input = ui.readInput();
+      String input = ui.readInput().strip();
       ui.lineBreak();
-      
+
       try {
         Command command = Command.fromInput(input);
 
@@ -55,26 +49,26 @@ public class LittleR {
         // Exit
         switch (command) {
           case EXIT:
-            storage.save(list);
-            scanner.close();
+            storage.save(tasks.getTasks());
+            ui.closeScanner();
             return;
  
           // List tasks
           case LIST:
-            ui.taskList(list);
+            ui.taskList(tasks.getTasks());
             break;
- 
-          // Mark or unmark tasks
+
           case MARK:
-            markTask(parseIndex(input, command));
+            ui.taskMarked(tasks.mark(parseIndex(input, command)));
             break;
           case UNMARK:
-            unmarkTask(parseIndex(input, command));
+            ui.taskUnmarked(tasks.unmark(parseIndex(input, command)));
             break;
   
           // Delete a task
           case DELETE:
-            deleteTask(parseIndex(input, command));
+            Task removed = tasks.delete(parseIndex(input, command));
+            ui.taskDeleted(removed, tasks.size());
             break;
  
           // Add a new specified task (Todo, Deadline, or Event)
@@ -83,16 +77,15 @@ public class LittleR {
           case EVENT:
             addItem(input, command);
             break;
-          
-          // Query tasks on a specific date
+
           case ON:
             printTasksOnDate(parseDate(input, command));
             break;
         }
       } catch (LittleRException e) {
-        System.out.println("Error: " + e.getMessage());
+        ui.error(e.getMessage());
       }
-      storage.save(list);
+      storage.save(tasks.getTasks());
       ui.lineBreak();
     }
   }
@@ -102,7 +95,7 @@ public class LittleR {
    * @param input the user input containing the date
    * @param command the command keyword to be removed from the input
    * @throws LittleRException if the date string doesn't match any accepted format
-   * @return the parsed date as a LocalDate
+   * @return the parsed date as a ParsedDateTime
    */
   private static ParsedDateTime parseDate(String input, Command command) throws LittleRException {
     String dateString = input.substring(command.getKeyword().length()).trim();
@@ -111,59 +104,30 @@ public class LittleR {
 
   /**
    * Print all tasks that are due or occurring on the given date.
-   * @param dateInput the raw date string from user input
-   * @throws LittleRException if the date can't be parsed
+   * @param dateInput the parsed date to check tasks against
    */
-  private static void printTasksOnDate(ParsedDateTime dateInput) throws LittleRException {
+  private static void printTasksOnDate(ParsedDateTime dateInput) {
     ui.tasksOnDateHeader(dateInput);
-    int count = 0;
-    for (Task task : list) {
-      if (task instanceof Schedulable schedulable && schedulable.occursOn(dateInput)) {
-        count++;
-        ui.taskWithIndex(count, task);
-      }
-    }
-    if (count == 0) {
+    ArrayList<Task> matches = tasks.getTasksOn(dateInput);
+    if (matches.isEmpty()) {
       ui.noTasksFound();
+      return;
     }
-  }
-
-  /**
-   * Mark a task as completed
-   * @param index the index of the task to be marked
-   * @throws LittleRException if the index is out of bounds
-   */
-  private static void markTask(int index) throws LittleRException {
-    if (index < 0 || index >= list.size()) {
-      throw new LittleRException("That task number doesn't exist.");
+    for (int i = 0; i < matches.size(); i++) {
+      ui.taskWithIndex(i + 1, matches.get(i));
     }
-    list.get(index).mark();
-    ui.taskMarked(list.get(index));
-  }
-
-  /**
-   * Unmark a task as not completed
-   * @param index the index of the task to be unmarked
-   * @throws LittleRException if the index is out of bounds
-   */
-  private static void unmarkTask(int index) throws LittleRException {
-    if (index < 0 || index >= list.size()) {
-      throw new LittleRException("That task number doesn't exist.");
-    }
-    list.get(index).unmark();
-    ui.taskUnmarked(list.get(index));
   }
 
   /**
    * Parse the index from the user input
    * @param input the user input containing the index
    * @param command the command keyword to be removed from the input
-   * @throws LittleRException if the index is not a valid integer or out of bounds
+   * @throws LittleRException if the index is not a valid integer or is out of bounds
    * @return the parsed index as an integer
    */
   private static int parseIndex(String input, Command command) throws LittleRException {
-    if (list.size() == 0) {
-      throw new LittleRException("There are no tasks to mark/unmark yet.");
+    if (tasks.isEmpty()) {
+      throw new LittleRException("There are no tasks yet.");
     }
     String indexString = input.substring(command.getKeyword().length()).trim();
     try {
@@ -171,19 +135,6 @@ public class LittleR {
     } catch (NumberFormatException e) {
       throw new LittleRException("Please provide a valid task number.");
     }
-  }
-
-  /**
-   * Delete a task from the list
-   * @param index the index of the task to be deleted
-   * @throws LittleRException if the index is out of bounds
-   */
-  private static void deleteTask(int index) throws LittleRException {
-    if (index < 0 || index >= list.size()) {
-      throw new LittleRException("That task number doesn't exist.");
-    }
-    Task removedTask = list.remove(index);
-    ui.taskDeleted(removedTask, list.size());
   }
 
   /**
@@ -202,7 +153,7 @@ public class LittleR {
         if (parts.length < 2) {
           throw new LittleRException("Invalid deadline format. \nUse: deadline <task description> /by <due date>");
         }
-        list.add(new Deadline(parts[0].trim(), StringDateTimeConverter.parse(parts[1])));
+        tasks.add(new Deadline(parts[0].trim(), StringDateTimeConverter.parse(parts[1])));
         break;
       case EVENT:
         // Parse event details and create Event task
@@ -210,17 +161,15 @@ public class LittleR {
         if (eventParts.length < 3) {
           throw new LittleRException("Invalid event format. \nUse: event <task description> /from <start datetime> /to <end datetime>");
         }
-        list.add(new Event(eventParts[0].trim(), StringDateTimeConverter.parse(eventParts[1]), StringDateTimeConverter.parse(eventParts[2])));
+        tasks.add(new Event(eventParts[0].trim(), StringDateTimeConverter.parse(eventParts[1]), StringDateTimeConverter.parse(eventParts[2])));
         break;
       case TODO:
         if (taskText.isEmpty()) {
           throw new LittleRException("The description of a todo cannot be empty.");
         }
-        list.add(new Todo(taskText));
+        tasks.add(new Todo(taskText));
         break;
     }
-    ui.taskAdded(list.get(list.size() - 1), list.size());
+    ui.taskAdded(tasks.getLast(), tasks.size());
   }
-
-  
 }

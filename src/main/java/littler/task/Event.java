@@ -1,6 +1,6 @@
-package task;
+package littler.task;
 
-import datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
 /**
  * Represents a task that occurs within a specific time frame.

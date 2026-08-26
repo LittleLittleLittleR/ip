@@ -1,4 +1,4 @@
-package task;
+package littler.task;
 
 /**
  * Represents a single task with a name and a completion state.

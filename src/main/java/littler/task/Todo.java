@@ -1,4 +1,4 @@
-package task;
+package littler.task;
 
 /**
  * Represents a simple task without any additional attributes.

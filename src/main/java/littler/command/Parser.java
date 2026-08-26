@@ -1,10 +1,11 @@
-import datetime.StringDateTimeConverter;
-import datetime.StringDateTimeConverter.ParsedDateTime;
-import exception.LittleRException;
-import task.Deadline;
-import task.Event;
-import task.Task;
-import task.Todo;
+package littler.command;
+import littler.datetime.StringDateTimeConverter;
+import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.exception.LittleRException;
+import littler.task.Deadline;
+import littler.task.Event;
+import littler.task.Task;
+import littler.task.Todo;
 
 /**
  * Parses raw user input into usable values.

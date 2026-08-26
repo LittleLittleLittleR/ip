@@ -1,8 +1,9 @@
+package littler.ui;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import datetime.StringDateTimeConverter.ParsedDateTime;
-import task.Task;
+import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.task.Task;
 
 public class UI {
   private final Scanner scanner;

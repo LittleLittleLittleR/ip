@@ -1,6 +1,6 @@
-package task;
+package littler.task;
 
-import datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
 /**
  * An interface for tasks that can be scheduled on a specific date.

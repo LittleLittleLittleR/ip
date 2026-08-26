@@ -1,9 +1,8 @@
+package littler.task;
 import java.util.ArrayList;
 
-import datetime.StringDateTimeConverter.ParsedDateTime;
-import exception.LittleRException;
-import task.Schedulable;
-import task.Task;
+import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.exception.LittleRException;
 
 /**
  * Wraps the list of tasks and owns all operations on it, including

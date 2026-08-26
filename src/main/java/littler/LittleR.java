@@ -1,8 +1,14 @@
+package littler;
 import java.util.ArrayList;
-import datetime.StringDateTimeConverter.ParsedDateTime;
-import exception.LittleRException;
 
-import task.Task;
+import littler.command.Command;
+import littler.command.Parser;
+import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.exception.LittleRException;
+import littler.storage.Storage;
+import littler.task.Task;
+import littler.task.TaskList;
+import littler.ui.UI;
 
 public class LittleR {
 

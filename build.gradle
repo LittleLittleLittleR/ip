@@ -37,7 +37,7 @@ test {
 }
 
 application {
-    mainClass = 'seedu.duke.Duke'
+    mainClass = 'littler.LittleR'
 }
 
 jar {
@@ -53,4 +53,13 @@ shadowJar {
 
 run {
     standardInput = System.in
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('run') {
+    systemProperty 'stdout.encoding', 'UTF-8'
+    systemProperty 'stderr.encoding', 'UTF-8'
 }

@@ -37,6 +37,11 @@ public class Deadline extends Task implements Schedulable {
         + StringDateTimeConverter.toStorageString(due);
     }
     
+    /**
+     * Returns a user-friendly string representation of this deadline task, 
+     * including its type icon and due date/time.
+     * @return the formatted string representation of the deadline task
+     */
     @Override
     public String toString() {
         return "[D]" + super.toString() 

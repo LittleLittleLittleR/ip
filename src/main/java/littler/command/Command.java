@@ -30,7 +30,12 @@ public enum Command {
 	// DATE QUERY COMMANDS
 
 	/** Command to query tasks occurring on a specific date. */
-    ON("on");
+    ON("on"),
+
+    // SEARCH COMMANDS
+
+    /** Command to search for tasks containing a specific keyword. */
+    FIND("find");
 	
 	private final String keyword;
 	

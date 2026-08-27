@@ -45,6 +45,20 @@ public final class Parser {
         String dateString = input.substring(command.getKeyword().length()).trim();
         return StringDateTimeConverter.parse(dateString);
     }
+
+    /**
+     * Parses the search keyword argument from user input.
+     * @param input the user input containing the keyword
+     * @param command the command keyword to be removed from the input
+     * @throws LittleRException if no keyword was provided
+     */
+    public static String parseKeyword(String input, Command command) throws LittleRException {
+        String keyword = input.substring(command.getKeyword().length()).trim();
+        if (keyword.isEmpty()) {
+            throw new LittleRException("Please provide a keyword to search for.");
+        }
+        return keyword;
+    }
     
     /**
      * Parses task details from user input and constructs the corresponding concrete Task object.

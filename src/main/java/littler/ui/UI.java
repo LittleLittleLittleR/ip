@@ -76,6 +76,13 @@ public class UI {
     public void tasksOnDateHeader(ParsedDateTime date) {
         System.out.println("Tasks on " + date + ":");
     }
+
+    /**
+     * Displays a header message preceding a list of tasks that match a search keyword.
+     */
+    public void findResultsHeader() {
+        System.out.println("Here are the matching tasks in your list:");
+    }
     
     /**
      * Displays a single task formatted with its specific index number.
@@ -91,6 +98,13 @@ public class UI {
      */
     public void noTasksFound() {
         System.out.println("No tasks found on this date.");
+    }
+
+    /**
+     * Displays a notification message when no tasks match a given search keyword.
+     */
+    public void noMatchingTasksFound() {
+        System.out.println("No matching tasks found.");
     }
     
     // ERROR PRINTING METHODS

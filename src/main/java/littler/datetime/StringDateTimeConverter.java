@@ -16,8 +16,10 @@ import littler.exception.LittleRException;
  */
 public final class StringDateTimeConverter {
     
-    private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter DISPLAY_TIME = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DISPLAY_DATE = 
+        DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DISPLAY_TIME = 
+        DateTimeFormatter.ofPattern("HH:mm");
     
     // Formats that include a time component (HHmm, 24-hour)
     private static final List<DateTimeFormatter> DATE_TIME_FORMATS = List.of(

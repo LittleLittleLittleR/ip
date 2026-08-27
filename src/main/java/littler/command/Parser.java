@@ -63,8 +63,9 @@ public final class Parser {
             case EVENT:
             String[] eventParts = taskText.split("/from|/to");
             if (eventParts.length < 3) {
-                throw new LittleRException(
-                    "Invalid event format. \nUse: event <task description> /from <start datetime> /to <end datetime>");
+                String message = "Invalid event format. \n"
+                    + "Use: event <task description> /from <start datetime> /to <end datetime>";
+                throw new LittleRException(message);
             }
             return new Event(
                 eventParts[0].trim(), 

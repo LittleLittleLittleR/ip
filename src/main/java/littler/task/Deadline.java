@@ -3,7 +3,6 @@ package littler.task;
 import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
-
 /**
  * Represents a task with a deadline.
  */

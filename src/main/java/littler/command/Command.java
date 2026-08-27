@@ -1,4 +1,5 @@
 package littler.command;
+
 /**
  * Represents the set of commands LittleR recognizes. 
  */

@@ -9,21 +9,21 @@ public enum Command {
     MARK("mark"),
     UNMARK("unmark"),
     DELETE("delete"),
-
+    
     // Task type commands
     TODO("todo"),
     DEADLINE("deadline"),
     EVENT("event"),
-
+    
     // Date query commands
     ON("on");
-
+    
     private final String keyword;
-
+    
     Command(String keyword) {
         this.keyword = keyword;
     }
-
+    
     /**
      * Returns the keyword typed by the user to invoke this command.
      * @return the command's keyword
@@ -31,7 +31,7 @@ public enum Command {
     public String getKeyword() {
         return keyword;
     }
-
+    
     /**
      * Returns the Command corresponding to the given user input.
      * @param input the full user input

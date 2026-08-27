@@ -16,7 +16,10 @@ public enum Command {
     EVENT("event"),
 
     // Date query commands
-    ON("on");
+    ON("on"),
+
+    // Search commands
+    FIND("find");
 
     private final String keyword;
 

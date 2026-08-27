@@ -42,12 +42,20 @@ public class UI {
     System.out.println("Tasks on " + date + ":");
   }
 
+  public void findResultsHeader() {
+    System.out.println("Here are the matching tasks in your list:");
+  }
+
   public void taskWithIndex(int index, Task task) {
     System.out.println(index + ". " + task);
   }
 
   public void noTasksFound() {
     System.out.println("No tasks found on this date.");
+  }
+
+  public void noMatchingTasksFound() {
+    System.out.println("No matching tasks found.");
   }
 
   // ERROR PRINTING METHODS

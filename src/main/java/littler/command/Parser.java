@@ -41,6 +41,20 @@ public final class Parser {
   }
 
   /**
+   * Parses the search keyword argument from user input.
+   * @param input the user input containing the keyword
+   * @param command the command keyword to be removed from the input
+   * @throws LittleRException if no keyword was provided
+   */
+  public static String parseKeyword(String input, Command command) throws LittleRException {
+    String keyword = input.substring(command.getKeyword().length()).trim();
+    if (keyword.isEmpty()) {
+      throw new LittleRException("Please provide a keyword to search for.");
+    }
+    return keyword;
+  }
+
+  /**
    * Parses a todo/deadline/event command into the corresponding Task.
    * @param input the user input containing the task details
    * @param type the type of task to be created

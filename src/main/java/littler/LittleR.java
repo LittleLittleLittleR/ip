@@ -99,6 +99,10 @@ public class LittleR {
           case ON:
             printTasksOnDate(Parser.parseDate(input, command));
             break;
+
+          case FIND:
+            printMatchingTasks(Parser.parseKeyword(input, command));
+            break;
         }
       } catch (LittleRException e) {
         ui.error(e.getMessage());
@@ -119,6 +123,21 @@ public class LittleR {
     }
   }
 
+  /**
+   * Print all tasks whose description contains the given keyword.
+   * @param keyword the search term to match against task descriptions
+   */
+  private void printMatchingTasks(String keyword) {
+    ArrayList<Task> matches = tasks.findByKeyword(keyword);
+    if (matches.isEmpty()) {
+      ui.noMatchingTasksFound();
+      return;
+    }
+    ui.findResultsHeader();
+    for (int i = 0; i < matches.size(); i++) {
+      ui.taskWithIndex(i + 1, matches.get(i));
+    }
+  }
 
   /**
    * Print all tasks that are due or occurring on the given date.

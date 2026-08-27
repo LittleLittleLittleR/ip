@@ -4,7 +4,8 @@ import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
 /**
- * Represents a task that occurs within a specific time frame, defined by a start date/time and an end date/time.
+ * Represents a task that occurs within a specific time frame, 
+ * defined by a start date/time and an end date/time.
  */
 public class Event extends Task implements Schedulable {
 
@@ -31,7 +32,8 @@ public class Event extends Task implements Schedulable {
   @Override
   public boolean occursOn(ParsedDateTime date) {
     if (date.hasTime()) {
-      // If the user provided a time, we only consider it a match if both the date and time are within the range
+      // If the user provided a time, we only consider it a match,
+      // if both the date and time are within the range
       return date.compareDate(from) >= 0 && date.compareDate(to) <= 0
           && date.compareTime(from) >= 0 && date.compareTime(to) <= 0;
     } else {

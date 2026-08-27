@@ -47,7 +47,8 @@ public class Deadline extends Task implements Schedulable {
   }
 
   /**
-   * Returns a user-friendly string representation of this deadline task, including its type icon and due date/time.
+   * Returns a user-friendly string representation of this deadline task, 
+   * including its type icon and due date/time.
    * @return the formatted string representation of the deadline task
    */
   @Override

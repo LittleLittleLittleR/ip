@@ -9,17 +9,21 @@ import littler.task.Task;
 import littler.task.Todo;
 
 /**
- * Parses raw user input into usable values.
+ * Utility class that parses raw user input strings into usable application values and tasks.
  */
 public final class Parser {
     
+    /**
+     * Private constructor to prevent instantiation of utility class.
+     */
     private Parser() {}
     
     /**
-     * Parses the task index argument from user input.
-     * @param input the user input containing the index
-     * @param command the command keyword to be removed from the input
-     * @throws LittleRException if the index is not a valid integer
+     * Parses the task index argument from user input string and converts it to a 0-based index.
+     * @param input the raw user input containing the task index argument
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the zero-based task index integer
+     * @throws LittleRException if the index argument is missing or not a valid integer
      */
     public static int parseIndex(String input, Command command) throws LittleRException {
         String indexString = input.substring(command.getKeyword().length()).trim();
@@ -57,20 +61,19 @@ public final class Parser {
             String[] parts = taskText.split("/by");
             if (parts.length < 2) {
                 throw new LittleRException(
-                    "Invalid deadline format. \nUse: deadline <task description> /by <due date>");
+                "Invalid deadline format. \nUse: deadline <task description> /by <due date>");
             }
             return new Deadline(parts[0].trim(), StringDateTimeConverter.parse(parts[1]));
             case EVENT:
             String[] eventParts = taskText.split("/from|/to");
             if (eventParts.length < 3) {
-                String message = "Invalid event format. \n"
-                    + "Use: event <task description> /from <start datetime> /to <end datetime>";
-                throw new LittleRException(message);
+                throw new LittleRException(
+                "Invalid event format. \nUse: event <task description> /from <start datetime> /to <end datetime>");
             }
             return new Event(
-                eventParts[0].trim(), 
-                StringDateTimeConverter.parse(eventParts[1]), 
-                StringDateTimeConverter.parse(eventParts[2]));
+            eventParts[0].trim(), 
+            StringDateTimeConverter.parse(eventParts[1]), 
+            StringDateTimeConverter.parse(eventParts[2]));
             case TODO:
             if (taskText.isEmpty()) {
                 throw new LittleRException("The description of a todo cannot be empty.");

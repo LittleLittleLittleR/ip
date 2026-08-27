@@ -6,15 +6,27 @@ import java.util.Scanner;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.task.Task;
 
+/**
+ * Handles all user interface interactions for the application, including formatting
+ * and printing output messages, task lists, banners, and reading user commands.
+ */
 public class UI {
     private final Scanner scanner;
     
+    
+    /**
+     * Constructs a new UI instance and initializes the underlying standard input scanner.
+     */
     public UI() {
         this.scanner = new Scanner(System.in);
     }
     
     // TASK PRINTING METHODS
     
+    /**
+     * Displays all tasks currently stored in the task list along with their 1-based index numbers.
+     * @param tasks the list of tasks to be printed
+     */
     public void taskList(ArrayList<Task> tasks) {
         System.out.println("Tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
@@ -22,31 +34,61 @@ public class UI {
         }
     }
     
+    /**
+     * Displays a confirmation message indicating that a task has been marked.
+     * @param task the task that was marked
+     */
     public void taskMarked(Task task) {
         System.out.println("Marked: " + task);
     }
     
+    /**
+     * Displays a confirmation message indicating that a task has been unmarked.
+     * @param task the task that was unmarked
+     */
     public void taskUnmarked(Task task) {
         System.out.println("Unmarked: " + task);
     }
     
+    /**
+     * Displays a confirmation message indicating that a task was deleted, along with the updated task count.
+     * @param task the task that was deleted
+     * @param remaining the number of remaining tasks in the list
+     */
     public void taskDeleted(Task task, int remaining) {
         System.out.println("Deleted: " + task);
         System.out.println("Now you have " + remaining + " tasks in the list.");
     }
     
+    /**
+     * Displays a confirmation message indicating that a task was added, along with the total task count.
+     * @param task the task that was added
+     * @param total the total number of tasks in the list
+     */
     public void taskAdded(Task task, int total) {
         System.out.println("Added: " + task + "\nNow you have " + total + " tasks in the list.");
     }
     
+    /**
+     * Displays a header message preceding a list of tasks scheduled for a specific date.
+     * @param date the target parsed date
+     */
     public void tasksOnDateHeader(ParsedDateTime date) {
         System.out.println("Tasks on " + date + ":");
     }
     
+    /**
+     * Displays a single task formatted with its specific index number.
+     * @param index the 1-based index of the task
+     * @param task the task to be displayed
+     */
     public void taskWithIndex(int index, Task task) {
         System.out.println(index + ". " + task);
     }
     
+    /**
+     * Displays a notification message when no tasks match a given date filter.
+     */
     public void noTasksFound() {
         System.out.println("No tasks found on this date.");
     }
@@ -54,13 +96,17 @@ public class UI {
     // ERROR PRINTING METHODS
     
     /**
-     * Print an error message for commands not found
+     * Prints an error message when an invalid command is entered and displays available help options.
      */
     public void commandNotFoundError() {
         System.out.println("Invalid command. Please use one of the commands shown below.");
         help();
     }
     
+    /**
+     * Prints a formatted general error message.
+     * @param message the error message details to be displayed
+     */
     public void error(String message) {
         System.out.println("Error: " + message);
     }
@@ -68,7 +114,7 @@ public class UI {
     // GENERAL PRINTING METHODS
     
     /**
-     * Print the help message with available commands
+     * Prints the help menu containing all available commands and accepted date/time formats.
      */
     public void help() {
         String helpMessage = "Available commands:\n"
@@ -87,8 +133,8 @@ public class UI {
     }
     
     /**
-     * Prompt user for an input
-     * @return the user input as a String
+     * Prompts the user for input and captures their response.
+     * @return the user input string read from the console
      */
     public String readInput() {
         System.out.print(">> "); 
@@ -96,7 +142,7 @@ public class UI {
     }
     
     /**
-     * Print a line break for better readability
+     * Prints a visual divider line to separate distinct visual output sections.
      */
     public void lineBreak() {
         String lineBreak = "____________________________________________________________\n";
@@ -104,7 +150,7 @@ public class UI {
     }
     
     /**
-     * Print the banner at the start of the program
+     * Prints the ASCII art application header banner.
      */
     public void banner() {
         String banner =
@@ -123,7 +169,7 @@ public class UI {
     }
     
     /**
-     * Print the welcome message
+     * Prints the greeting welcome message.
      */
     public void welcome() {
         String welcomeMessage = "Hello! I'm LittleR \nWhat can I do for you?\n";
@@ -131,7 +177,7 @@ public class UI {
     }
     
     /**
-     * Print the goodbye message
+     * Prints the exit farewell message.
      */
     public void goodbye() {
         String goodbyeMessage = "Bye. Hope to see you again soon!\n";
@@ -139,7 +185,7 @@ public class UI {
     }
     
     /**
-     * Closes the input scanner. Call once, on program exit.
+     * Closes the standard input scanner. Call once upon program termination.
      */
     public void closeScanner() {
         scanner.close();

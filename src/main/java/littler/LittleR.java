@@ -11,12 +11,21 @@ import littler.task.Task;
 import littler.task.TaskList;
 import littler.ui.UI;
 
+/**
+ * Represents the main entry point for the LittleR task management application.
+ * Manages the interaction loop between user input, task storage, and user interface display.
+ */
 public class LittleR {
     
     private final Storage storage;
     private final TaskList tasks;
     private final UI ui;
     
+    /**
+     * Constructs a new LittleR application instance and initializes the storage,
+     * user interface, and task list from the specified file path.
+     * @param filePath the file path where tasks are saved and loaded from
+     */
     public LittleR(String filePath) {
         ui = new UI();
         storage = new Storage(filePath);
@@ -49,7 +58,8 @@ public class LittleR {
     }
     
     /**
-     * Handle the conversation loop
+     * Handles the interactive conversation loop by reading user input, parsing commands,
+     * executing the corresponding actions, and persisting data changes.
      */
     private void converse() {
         while (true) {
@@ -110,7 +120,8 @@ public class LittleR {
     }
     
     /**
-     * Saves the current task list to disk, but does not throw an exception if it fails.
+     * Saves the current task list to disk, catching and displaying any exceptions
+     * to avoid terminating the application unexpectedly.
      */
     private void saveQuietly() {
         try {
@@ -122,8 +133,8 @@ public class LittleR {
     
     
     /**
-     * Print all tasks that are due or occurring on the given date.
-     * @param dateInput the parsed date to check tasks against
+     * Prints all tasks that are due or occurring on the specified date.
+     * @param dateInput the parsed date object to check tasks against
      */
     private void printTasksOnDate(ParsedDateTime dateInput) {
         ui.tasksOnDateHeader(dateInput);
@@ -138,11 +149,11 @@ public class LittleR {
     }
     
     /**
-     * Parses for the task index
-     * @param input the user input containing the index
-     * @param command the command keyword to be removed from the input
-     * @throws LittleRException if the index is not a valid integer or is out of bounds
-     * @return the parsed index as an integer
+     * Extracts and validates the target task index from the user input string.
+     * @param input the user input string containing the target index
+     * @param command the command keyword to strip from the input
+     * @return the parsed task index
+     * @throws LittleRException if the task list is empty, the index is invalid, or out of bounds
      */
     private int getIndex(String input, Command command) throws LittleRException {
         if (tasks.isEmpty()) {
@@ -152,10 +163,10 @@ public class LittleR {
     }
     
     /**
-     * Add an item to the list
-     * @param input the item to be added to the list
-     * @param type the type of the item to be added
-     * @throws LittleRException if the item format is invalid
+     * Creates and adds a new task to the task list based on the input string and task command type.
+     * @param input the full raw user input string
+     * @param type the type of task to create (TODO, DEADLINE, or EVENT)
+     * @throws LittleRException if the task parameters or formatting are invalid
      */
     private void addItem(String input, Command type) throws LittleRException {
         Task task = Parser.parseTask(input, type);
@@ -163,6 +174,10 @@ public class LittleR {
         ui.taskAdded(tasks.getLast(), tasks.size());
     }
     
+    /**
+     * Starts the LittleR application with the default storage file path.
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         new LittleR("./data/littler.txt").run();
     }

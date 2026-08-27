@@ -32,7 +32,7 @@ public class Event extends Task implements Schedulable {
     @Override
     public boolean occursOn(ParsedDateTime date) {
         if (date.hasTime()) {
-            // If the user provided a time, we only consider it a match 
+            // If the user provided a time, we only consider it a match,
             // if both the date and time are within the range
             return date.compareDate(from) >= 0 && date.compareDate(to) <= 0
             && date.compareTime(from) >= 0 && date.compareTime(to) <= 0;
@@ -42,7 +42,8 @@ public class Event extends Task implements Schedulable {
     }
     
     /**
-     * Encodes this event as a single line string for saving to a file.
+     * Encodes this event as a single-line string for saving to file storage.
+     * @return the formatted data string representing this event
      */
     @Override
     public String toFileString() {
@@ -51,6 +52,10 @@ public class Event extends Task implements Schedulable {
         + StringDateTimeConverter.toStorageString(to);
     }
     
+    /**
+     * Returns a user-friendly string representation of this event task, including its type icon and duration.
+     * @return the formatted string representation of the event
+     */
     @Override
     public String toString() {
         return "[E]" + super.toString() 

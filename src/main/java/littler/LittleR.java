@@ -16,11 +16,11 @@ import littler.ui.UI;
  * Manages the interaction loop between user input, task storage, and user interface display.
  */
 public class LittleR {
-    
+
     private final Storage storage;
     private final TaskList tasks;
     private final UI ui;
-    
+
     /**
      * Constructs a new LittleR application instance and initializes the storage,
      * user interface, and task list from the specified file path.
@@ -29,7 +29,7 @@ public class LittleR {
     public LittleR(String filePath) {
         ui = new UI();
         storage = new Storage(filePath);
-        
+
         ArrayList<Task> loadedTasks;
         try {
             loadedTasks = storage.load();
@@ -39,7 +39,7 @@ public class LittleR {
         }
         tasks = new TaskList(loadedTasks);
     }
-    
+
     /**
      * Runs the conversation loop until the user exits.
      */
@@ -48,15 +48,15 @@ public class LittleR {
         ui.banner();
         ui.welcome();
         ui.lineBreak();
-        
+
         // Conversation loop
         converse();
-        
+
         // End of the program
         ui.goodbye();
         ui.lineBreak();
     }
-    
+
     /**
      * Handles the interactive conversation loop by reading user input, parsing commands,
      * executing the corresponding actions, and persisting data changes.
@@ -65,55 +65,60 @@ public class LittleR {
         while (true) {
             String input = ui.readInput().strip();
             ui.lineBreak();
-            
+
             try {
                 Command command = Command.fromInput(input);
-                
+
                 if (command == null) {
                     ui.commandNotFoundError();
                     ui.lineBreak();
                     continue;
                 }
-                
+
                 // Exit
                 switch (command) {
                     case EXIT:
-                    saveQuietly();
-                    ui.closeScanner();
-                    return;
-                    
+                        saveQuietly();
+                        ui.closeScanner();
+                        return;
+
                     // List tasks
                     case LIST:
-                    ui.taskList(tasks.getTasks());
-                    break;
-                    
+                        ui.taskList(tasks.getTasks());
+                        break;
+
+                    // Mark or unmark a task
                     case MARK:
-                    ui.taskMarked(tasks.mark(getIndex(input, command)));
-                    break;
+                        ui.taskMarked(tasks.mark(getIndex(input, command)));
+                        break;
+
                     case UNMARK:
-                    ui.taskUnmarked(tasks.unmark(getIndex(input, command)));
-                    break;
-                    
+                        ui.taskUnmarked(tasks.unmark(getIndex(input, command)));
+                        break;
+
                     // Delete a task
                     case DELETE:
-                    Task removed = tasks.delete(getIndex(input, command));
-                    ui.taskDeleted(removed, tasks.size());
-                    break;
-                    
+                        Task removed = tasks.delete(getIndex(input, command));
+                        ui.taskDeleted(removed, tasks.size());
+                        break;
+
                     // Add a new specified task (Todo, Deadline, or Event)
                     case TODO:
                     case DEADLINE:
                     case EVENT:
-                    addItem(input, command);
-                    break;
-                    
+                        addItem(input, command);
+                        break;
+
                     case ON:
-                    printTasksOnDate(Parser.parseDate(input, command));
-                    break;
+                        printTasksOnDate(Parser.parseDate(input, command));
+                        break;
 
                     case FIND:
-                    printMatchingTasks(Parser.parseKeyword(input, command));
-                    break;
+                        printMatchingTasks(Parser.parseKeyword(input, command));
+                        break;
+
+                    default:
+                        throw new LittleRException("Unrecognized command: " + command.getKeyword());
                 }
             } catch (LittleRException e) {
                 ui.error(e.getMessage());
@@ -122,7 +127,7 @@ public class LittleR {
             ui.lineBreak();
         }
     }
-    
+
     /**
      * Saves the current task list to disk, catching and displaying any exceptions
      * to avoid terminating the application unexpectedly.
@@ -134,6 +139,7 @@ public class LittleR {
             ui.error("Could not save: " + e.getMessage());
         }
     }
+
     /**
      * Print all tasks whose description contains the given keyword.
      * @param keyword the search term to match against task descriptions
@@ -145,11 +151,11 @@ public class LittleR {
             return;
         }
         ui.findResultsHeader();
-            for (int i = 0; i < matches.size(); i++) {
-                ui.taskWithIndex(i + 1, matches.get(i));
-            }
+        for (int i = 0; i < matches.size(); i++) {
+            ui.taskWithIndex(i + 1, matches.get(i));
+        }
     }
-    
+
     /**
      * Prints all tasks that are due or occurring on the specified date.
      * @param dateInput the parsed date object to check tasks against
@@ -165,7 +171,7 @@ public class LittleR {
             ui.taskWithIndex(i + 1, matches.get(i));
         }
     }
-    
+
     /**
      * Extracts and validates the target task index from the user input string.
      * @param input the user input string containing the target index
@@ -179,7 +185,7 @@ public class LittleR {
         }
         return Parser.parseIndex(input, command);
     }
-    
+
     /**
      * Creates and adds a new task to the task list based on the input string and task command type.
      * @param input the full raw user input string
@@ -191,7 +197,7 @@ public class LittleR {
         tasks.add(task);
         ui.taskAdded(tasks.getLast(), tasks.size());
     }
-    
+
     /**
      * Starts the LittleR application with the default storage file path.
      * @param args command-line arguments (not used)

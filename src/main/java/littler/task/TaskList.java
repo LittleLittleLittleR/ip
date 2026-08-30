@@ -11,14 +11,14 @@ import littler.exception.LittleRException;
  */
 public class TaskList {
     private final ArrayList<Task> tasks;
-    
+
     /**
      * Constructs an empty TaskList.
      */
     public TaskList() {
         this.tasks = new ArrayList<>();
     }
-    
+
     /**
      * Constructs a TaskList initialized with an existing list of tasks.
      * @param tasks the initial list of tasks to manage
@@ -26,7 +26,7 @@ public class TaskList {
     public TaskList(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
-    
+
     /**
      * Adds a task to the task list.
      * @param task the task to be added
@@ -34,7 +34,7 @@ public class TaskList {
     public void add(Task task) {
         tasks.add(task);
     }
-    
+
     /**
      * Removes and returns the task at the specified 0-based index.
      * @param index the index of the task to be removed
@@ -45,7 +45,7 @@ public class TaskList {
         checkIndex(index);
         return tasks.remove(index);
     }
-    
+
     /**
      * Marks the task at the specified 0-based index as completed.
      * @param index the index of the task to be marked
@@ -58,7 +58,7 @@ public class TaskList {
         task.mark();
         return task;
     }
-    
+
     /**
      * Unmarks the task at the specified 0-based index, setting it to incomplete.
      * @param index the index of the task to be unmarked
@@ -71,7 +71,7 @@ public class TaskList {
         task.unmark();
         return task;
     }
-    
+
     /**
      * Retrieves the task at the specified 0-based index.
      * @param index the index of the task to retrieve
@@ -82,7 +82,7 @@ public class TaskList {
         checkIndex(index);
         return tasks.get(index);
     }
-    
+
     /**
      * Returns the most recently added task in the list.
      * @return the last task in the task list
@@ -90,7 +90,7 @@ public class TaskList {
     public Task getLast() {
         return tasks.get(tasks.size() - 1);
     }
-    
+
     /**
      * Returns the total number of tasks currently in the list.
      * @return the number of tasks
@@ -98,7 +98,7 @@ public class TaskList {
     public int size() {
         return tasks.size();
     }
-    
+
     /**
      * Checks whether the task list is completely empty.
      * @return true if there are no tasks in the list; false otherwise
@@ -106,7 +106,7 @@ public class TaskList {
     public boolean isEmpty() {
         return tasks.isEmpty();
     }
-    
+
     /**
      * Filters and returns all schedulable tasks that occur on or match the given date.
      * @param date the parsed date to check against task occurrences
@@ -138,7 +138,7 @@ public class TaskList {
         }
         return matches;
     }
-    
+
     /**
      * Returns the underlying list of tasks for storage or UI display operations.
      * @return the internal ArrayList of tasks
@@ -146,7 +146,7 @@ public class TaskList {
     public ArrayList<Task> getTasks() {
         return tasks;
     }
-    
+
     /**
      * Validates whether the given index falls within the valid bounds of the task list.
      * @param index the 0-based index to validate

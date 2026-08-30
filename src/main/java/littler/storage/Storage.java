@@ -8,18 +8,17 @@ import java.util.ArrayList;
 
 import littler.datetime.StringDateTimeConverter;
 import littler.exception.LittleRException;
-
-import littler.task.Task;
-import littler.task.Todo;
 import littler.task.Deadline;
 import littler.task.Event;
+import littler.task.Task;
+import littler.task.Todo;
 
 /**
  * Handles reading tasks from disk and persisting tasks back to disk storage.
  */
 public class Storage {
     private final Path filePath;
-    
+
     /**
      * Constructs a new Storage instance initialized with the target file path.
      * @param filePath the string path pointing to the data storage file
@@ -27,7 +26,7 @@ public class Storage {
     public Storage(String filePath) {
         this.filePath = Paths.get(filePath);
     }
-    
+
     /**
      * Loads saved tasks from disk storage into an ArrayList.
      * @return an ArrayList of tasks loaded from the file, or an empty list if the file does not exist yet
@@ -55,7 +54,7 @@ public class Storage {
         }
         return tasks;
     }
-    
+
     /**
      * Writes the provided task list to disk, creating missing parent directories if necessary.
      * @param tasks the list of tasks to be saved to file storage
@@ -75,7 +74,7 @@ public class Storage {
             throw new LittleRException("Could not save tasks to disk: " + e.getMessage());
         }
     }
-    
+
     /**
      * Reconstructs a concrete Task instance from a single formatted line of the save file.
      * @param line a single formatted line read from storage
@@ -87,32 +86,32 @@ public class Storage {
         if (parts.length < 3) {
             throw new LittleRException("Malformed line: " + line);
         }
-        
+
         String type = parts[0];
         boolean marked = parts[1].equals("1");
         String name = parts[2];
         Task task;
-        
+
         try {
             switch (type) {
                 case "T":
-                task = new Todo(name);
-                break;
+                    task = new Todo(name);
+                    break;
                 case "D":
-                task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
-                break;
+                    task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
+                    break;
                 case "E":
-                task = new Event(name,
-                StringDateTimeConverter.fromStorageString(parts[3]),
-                StringDateTimeConverter.fromStorageString(parts[4]));
-                break;
+                    task = new Event(name,
+                    StringDateTimeConverter.fromStorageString(parts[3]),
+                    StringDateTimeConverter.fromStorageString(parts[4]));
+                    break;
                 default:
-                throw new LittleRException("Unknown task type: " + type);
+                    throw new LittleRException("Unknown task type: " + type);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new LittleRException("Missing or invalid fields in line: " + line);
         }
-        
+
         if (marked) {
             task.mark();
         }

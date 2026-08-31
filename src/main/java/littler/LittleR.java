@@ -50,7 +50,7 @@ public class LittleR {
 
             if (command == null) {
                 output.append(UI.commandNotFoundError());
-                return output.toString();  
+                return output.toString();
             }
 
             // Exit

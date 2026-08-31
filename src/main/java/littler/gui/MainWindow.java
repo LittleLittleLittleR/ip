@@ -11,7 +11,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import littler.LittleR;
 import littler.command.Command;
 
@@ -44,7 +43,7 @@ public class MainWindow extends AnchorPane {
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other 
+     * Creates two dialog boxes, one echoing user input and the other
      * containing LittleR's reply and then appends them to
      * the dialog container. Clears the user input after processing.
      */

@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
 import littler.LittleR;
 
 /**
@@ -24,7 +23,7 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setLittleR(littleR);  // inject the LittleR instance
+            fxmlLoader.<MainWindow>getController().setLittleR(littleR); // inject the LittleR instance
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

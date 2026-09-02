@@ -41,6 +41,7 @@ public enum Command {
 
     /**
      * Constructs a Command enum constant with its corresponding user input keyword.
+     *
      * @param keyword the command string keyword typed by the user
      */
     Command(String keyword) {
@@ -49,6 +50,7 @@ public enum Command {
 
     /**
      * Returns the keyword typed by the user to invoke this command.
+     *
      * @return the command's string keyword
      */
     public String getKeyword() {
@@ -57,6 +59,7 @@ public enum Command {
 
     /**
      * Matches and returns the Command corresponding to the beginning of a given user input string.
+     *
      * @param input the full raw user input string
      * @return the matching Command enum, or null if no command matches
      */

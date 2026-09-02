@@ -10,6 +10,7 @@ public abstract class Task {
 
     /**
      * Constructs a new Task with the specified name and initializes its completion status to false.
+     *
      * @param name the description or name of the task
      */
     public Task(String name) {
@@ -19,6 +20,7 @@ public abstract class Task {
 
     /**
      * Encodes this task into a formatted single-line string representation for persistent storage.
+     *
      * @return the formatted data string representing this task
      */
     public abstract String toFileString();
@@ -39,6 +41,7 @@ public abstract class Task {
 
     /**
      * Returns the description or name of the task.
+     *
      * @return the task name
      */
     protected String getName() {
@@ -47,6 +50,7 @@ public abstract class Task {
 
     /**
      * Returns the completion state of the task.
+     *
      * @return true if the task is marked as completed; false otherwise
      */
     protected boolean isMarked() {
@@ -55,6 +59,7 @@ public abstract class Task {
 
     /**
      * Returns a string representation of the task including its completion status indicator.
+     *
      * @return the formatted status string of the task
      */
     @Override

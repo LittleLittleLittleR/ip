@@ -14,6 +14,7 @@ public class Event extends Task implements Schedulable {
 
     /**
      * Constructs a new Event task with the specified description, start date/time, and end date/time.
+     *
      * @param name the description of the event
      * @param from the starting date and optional time of the event
      * @param to the ending date and optional time of the event
@@ -26,11 +27,12 @@ public class Event extends Task implements Schedulable {
 
     /**
      * Checks whether this event occurs on or within the specified target date and time range.
+     *
      * @param date the target parsed date/time to check against
      * @return true if the event overlaps with or occurs on the given date/time; false otherwise
      */
     @Override
-    public boolean occursOn(ParsedDateTime date) {
+    public boolean isOccurringOn(ParsedDateTime date) {
         if (date.hasTime()) {
             // If the user provided a time, we only consider it a match,
             // if both the date and time are within the range
@@ -43,6 +45,7 @@ public class Event extends Task implements Schedulable {
 
     /**
      * Encodes this event as a single-line string for saving to file storage.
+     *
      * @return the formatted data string representing this event
      */
     @Override
@@ -54,6 +57,7 @@ public class Event extends Task implements Schedulable {
 
     /**
      * Returns a user-friendly string representation of this event task, including its type icon and duration.
+     *
      * @return the formatted string representation of the event
      */
     @Override

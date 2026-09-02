@@ -15,6 +15,7 @@ public class UI {
 
     /**
      * Displays all tasks currently stored in the task list along with their 1-based index numbers.
+     *
      * @param tasks the list of tasks to be printed
      * @return a formatted string representation of the task list
      */
@@ -28,6 +29,7 @@ public class UI {
 
     /**
      * Displays a confirmation message indicating that a task has been marked.
+     *
      * @param task the task that was marked
      * @return a string on the confirmation of the marked task
      */
@@ -37,6 +39,7 @@ public class UI {
 
     /**
      * Displays a confirmation message indicating that a task has been unmarked.
+     *
      * @param task the task that was unmarked
      * @return a string on the confirmation of the unmarked task
      */
@@ -46,6 +49,7 @@ public class UI {
 
     /**
      * Displays a confirmation message indicating that a task was deleted, along with the updated task count.
+     *
      * @param task the task that was deleted
      * @param remaining the number of remaining tasks in the list
      * @return a string on the confirmation of the deleted task and the updated task count
@@ -56,6 +60,7 @@ public class UI {
 
     /**
      * Displays a confirmation message indicating that a task was added, along with the total task count.
+     *
      * @param task the task that was added
      * @param total the total number of tasks in the list
      * @return a string on the confirmation of the added task and the updated task count
@@ -66,6 +71,7 @@ public class UI {
 
     /**
      * Displays a header message preceding a list of tasks scheduled for a specific date.
+     *
      * @param date the target parsed date
      * @return a header string indicating that tasks on the specified date will be listed
      */
@@ -75,6 +81,7 @@ public class UI {
 
     /**
      * Displays a header message preceding a list of tasks that match a search keyword.
+     *
      * @return a header string indicating that matching tasks will be listed
      */
     public static String findResultsHeader() {
@@ -83,6 +90,7 @@ public class UI {
 
     /**
      * Displays a single task formatted with its specific index number.
+     *
      * @param index the 1-based index of the task
      * @param task the task to be displayed
      * @return a formatted string representation of the task with its index
@@ -93,6 +101,7 @@ public class UI {
 
     /**
      * Displays a notification message when no tasks match a given date filter.
+     *
      * @return a string about no tasks found on the specified date
      */
     public static String noTasksFound() {
@@ -101,6 +110,7 @@ public class UI {
 
     /**
      * Displays a notification message when no tasks match a given search keyword.
+     *
      * @return a string about no matching tasks found
      */
     public static String noMatchingTasksFound() {
@@ -111,6 +121,7 @@ public class UI {
 
     /**
      * Prints an error message when an invalid command is entered and displays available help options.
+     *
      * @return a string of an invalid command error message
      */
     public static String commandNotFoundError() {
@@ -119,6 +130,7 @@ public class UI {
 
     /**
      * Prints a formatted general error message.
+     *
      * @param message the error message details to be displayed
      * @return a string of the formatted error message
      */
@@ -130,6 +142,7 @@ public class UI {
 
     /**
      * Prints the help menu containing all available commands and accepted date/time formats.
+     *
      * @return a string of the help menu with available commands and formats
      */
     public static String help() {
@@ -148,6 +161,7 @@ public class UI {
 
     /**
      * Prints the ASCII art application header banner.
+     *
      * @return a string of the ASCII art banner
      */
     public static String banner() {
@@ -176,6 +190,7 @@ public class UI {
 
     /**
      * Prints the greeting welcome message.
+     *
      * @return a string of the greeting welcome message
      */
     public static String welcome() {
@@ -184,6 +199,7 @@ public class UI {
 
     /**
      * Prints the exit farewell message.
+     *
      * @return a string of the exit farewell message
      */
     public static String goodbye() {

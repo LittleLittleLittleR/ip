@@ -21,6 +21,7 @@ public class Storage {
 
     /**
      * Constructs a new Storage instance initialized with the target file path.
+     *
      * @param filePath the string path pointing to the data storage file
      */
     public Storage(String filePath) {
@@ -29,6 +30,7 @@ public class Storage {
 
     /**
      * Loads saved tasks from disk storage into an ArrayList.
+     *
      * @return an ArrayList of tasks loaded from the file, or an empty list if the file does not exist yet
      * @throws LittleRException if the target file exists but cannot be read due to an I/O error
      */
@@ -57,6 +59,7 @@ public class Storage {
 
     /**
      * Writes the provided task list to disk, creating missing parent directories if necessary.
+     *
      * @param tasks the list of tasks to be saved to file storage
      * @throws LittleRException if parent directories cannot be created or file writing fails
      */
@@ -77,6 +80,7 @@ public class Storage {
 
     /**
      * Reconstructs a concrete Task instance from a single formatted line of the save file.
+     *
      * @param line a single formatted line read from storage
      * @return the reconstructed Task object (Todo, Deadline, or Event)
      * @throws LittleRException if the line is malformed, missing required fields, or has an unknown task type
@@ -88,7 +92,7 @@ public class Storage {
         }
 
         String type = parts[0];
-        boolean marked = parts[1].equals("1");
+        boolean isMarked = parts[1].equals("1");
         String name = parts[2];
         Task task;
 
@@ -102,8 +106,8 @@ public class Storage {
                     break;
                 case "E":
                     task = new Event(name,
-                    StringDateTimeConverter.fromStorageString(parts[3]),
-                    StringDateTimeConverter.fromStorageString(parts[4]));
+                        StringDateTimeConverter.fromStorageString(parts[3]),
+                        StringDateTimeConverter.fromStorageString(parts[4]));
                     break;
                 default:
                     throw new LittleRException("Unknown task type: " + type);
@@ -112,7 +116,7 @@ public class Storage {
             throw new LittleRException("Missing or invalid fields in line: " + line);
         }
 
-        if (marked) {
+        if (isMarked) {
             task.mark();
         }
         return task;

@@ -23,6 +23,7 @@ public class LittleR {
     /**
      * Constructs a new LittleR application instance and initializes the storage,
      * user interface, and task list from the specified file path.
+     *
      * @param filePath the file path where tasks are saved and loaded from
      */
     public LittleR(String filePath) {
@@ -41,6 +42,9 @@ public class LittleR {
     /**
      * Handles the interactive conversation loop by reading user input, parsing commands,
      * executing the corresponding actions, and persisting data changes.
+     *
+     * @param input the raw user input string to process
+     * @return the formatted output string to display to the user
      */
     public String converse(String input) {
         StringBuilder output = new StringBuilder();
@@ -119,7 +123,9 @@ public class LittleR {
 
     /**
      * Print all tasks whose description contains the given keyword.
+     *
      * @param keyword the search term to match against task descriptions
+     * @return a formatted string of matching tasks or a message if none are found
      */
     private String printMatchingTasks(String keyword) {
         ArrayList<Task> matches = tasks.findByKeyword(keyword);
@@ -137,7 +143,9 @@ public class LittleR {
 
     /**
      * Prints all tasks that are due or occurring on the specified date.
+     *
      * @param dateInput the parsed date object to check tasks against
+     * @return a formatted string of tasks or a message if none are found
      */
     private String printTasksOnDate(ParsedDateTime dateInput) {
         StringBuilder output = new StringBuilder();
@@ -155,6 +163,7 @@ public class LittleR {
 
     /**
      * Extracts and validates the target task index from the user input string.
+     *
      * @param input the user input string containing the target index
      * @param command the command keyword to strip from the input
      * @return the parsed task index
@@ -169,8 +178,10 @@ public class LittleR {
 
     /**
      * Creates and adds a new task to the task list based on the input string and task command type.
+     *
      * @param input the full raw user input string
      * @param type the type of task to create (TODO, DEADLINE, or EVENT)
+     * @return a confirmation message indicating the task was added and the updated task count
      * @throws LittleRException if the task parameters or formatting are invalid
      */
     private String addItem(String input, Command type) throws LittleRException {

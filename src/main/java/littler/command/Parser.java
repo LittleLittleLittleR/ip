@@ -20,6 +20,7 @@ public final class Parser {
 
     /**
      * Parses the task index argument from user input string and converts it to a 0-based index.
+     *
      * @param input the raw user input containing the task index argument
      * @param command the command keyword to be stripped from the front of the input
      * @return the zero-based task index integer
@@ -36,6 +37,7 @@ public final class Parser {
 
     /**
      * Parses a date argument from user input string into a {@link ParsedDateTime} instance.
+     *
      * @param input the raw user input containing the date string
      * @param command the command keyword to be stripped from the front of the input
      * @return the parsed date/time object
@@ -48,6 +50,7 @@ public final class Parser {
 
     /**
      * Parses the search keyword argument from user input.
+     *
      * @param input the user input containing the keyword
      * @param command the command keyword to be removed from the input
      * @throws LittleRException if no keyword was provided
@@ -62,6 +65,7 @@ public final class Parser {
 
     /**
      * Parses task details from user input and constructs the corresponding concrete Task object.
+     *
      * @param input the raw user input containing the task description and optional date parameters
      * @param type the type of task command being processed (TODO, DEADLINE, or EVENT)
      * @return the constructed concrete {@link Task} instance (Todo, Deadline, or Event)

@@ -7,6 +7,7 @@ public class Todo extends Task {
 
     /**
      * Constructs a new Todo task with the specified name or description.
+     *
      * @param name the description of the task
      */
     public Todo(String name) {
@@ -15,6 +16,7 @@ public class Todo extends Task {
 
     /**
      * Encodes this todo as a formatted single-line string for file storage.
+     *
      * @return the formatted data string representing this task
      */
     @Override
@@ -24,6 +26,7 @@ public class Todo extends Task {
 
     /**
      * Returns a user-friendly string representation of this todo task, including its type icon.
+     *
      * @return the string representation of the task
      */
     @Override

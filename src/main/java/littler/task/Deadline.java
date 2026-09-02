@@ -12,6 +12,7 @@ public class Deadline extends Task implements Schedulable {
 
     /**
      * Constructs a new Deadline task with the specified description and due date/time.
+     *
      * @param name the description of the task
      * @param due the target date and optional time by which the task is due
      */
@@ -22,11 +23,12 @@ public class Deadline extends Task implements Schedulable {
 
     /**
      * Checks whether this deadline matches or falls on the specified date and time.
+     *
      * @param date the target parsed date/time to check against
      * @return true if the deadline occurs on the specified date (and time, if specified); false otherwise
      */
     @Override
-    public boolean occursOn(ParsedDateTime date) {
+    public boolean isOccurringOn(ParsedDateTime date) {
         if (date.hasTime()) {
             // If the user provided a time, we only consider it a match if both date and time match
             return date.compareDate(due) == 0 && date.compareTime(due) == 0;
@@ -37,6 +39,7 @@ public class Deadline extends Task implements Schedulable {
 
     /**
      * Encodes this deadline as a single-line string for saving to file storage.
+     *
      * @return the formatted data string representing this deadline task
      */
     @Override
@@ -48,6 +51,7 @@ public class Deadline extends Task implements Schedulable {
     /**
      * Returns a user-friendly string representation of this deadline task,
      * including its type icon and due date/time.
+     *
      * @return the formatted string representation of the deadline task
      */
     @Override

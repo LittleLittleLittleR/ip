@@ -21,7 +21,8 @@ public class Event extends Task implements Schedulable {
      */
     public Event(String name, ParsedDateTime from, ParsedDateTime to) {
         super(name);
-        assert from != null && to != null : "from/to dates are required and should already be parsed by the time they reach here";
+        assert from != null && to != null
+            : "from/to dates are required and should already be parsed by the time they reach here";
         this.from = from;
         this.to = to;
     }

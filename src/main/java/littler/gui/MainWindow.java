@@ -51,8 +51,8 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         String input = userInput.getText();
         String response = littleR.converse(input);
-        PauseTransition replyDelay = new PauseTransition(Duration.seconds(1.5));
-        PauseTransition closeDelay = new PauseTransition(Duration.seconds(2.5));
+        PauseTransition replyDelay = new PauseTransition(Duration.seconds(1));
+        PauseTransition closeDelay = new PauseTransition(Duration.seconds(2));
 
         dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
         replyDelay.setOnFinished(event -> {

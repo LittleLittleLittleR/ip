@@ -8,6 +8,7 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
  */
 public class Deadline extends Task implements Schedulable {
     public static final String TYPE_CODE = "D";
+    public static final String INPUT_DELIMITER = "/by";
     private final ParsedDateTime due;
 
     /**

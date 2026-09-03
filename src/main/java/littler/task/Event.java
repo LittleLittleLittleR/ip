@@ -9,6 +9,8 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
  */
 public class Event extends Task implements Schedulable {
     public static final String TYPE_CODE = "E";
+    public static final String FROM_DELIMITER = "/from";
+    public static final String TO_DELIMITER = "/to";
     private final ParsedDateTime startDateTime;
     private final ParsedDateTime endDateTime;
 

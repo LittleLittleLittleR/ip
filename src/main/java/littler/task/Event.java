@@ -8,9 +8,9 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
  * defined by a start date/time and an end date/time.
  */
 public class Event extends Task implements Schedulable {
-
-    private ParsedDateTime from;
-    private ParsedDateTime to;
+    private static final String TYPE_CODE = "E";
+    private final ParsedDateTime startDateTime;
+    private final ParsedDateTime endDateTime;
 
     /**
      * Constructs a new Event task with the specified description, start date/time, and end date/time.
@@ -19,10 +19,10 @@ public class Event extends Task implements Schedulable {
      * @param from the starting date and optional time of the event
      * @param to the ending date and optional time of the event
      */
-    public Event(String name, ParsedDateTime from, ParsedDateTime to) {
+    public Event(String name, ParsedDateTime startDateTime, ParsedDateTime endDateTime) {
         super(name);
-        this.from = from;
-        this.to = to;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 
     /**
@@ -33,14 +33,17 @@ public class Event extends Task implements Schedulable {
      */
     @Override
     public boolean isOccurringOn(ParsedDateTime date) {
-        if (date.hasTime()) {
-            // If the user provided a time, we only consider it a match,
-            // if both the date and time are within the range
-            return date.compareDate(from) >= 0 && date.compareDate(to) <= 0
-                && date.compareTime(from) >= 0 && date.compareTime(to) <= 0;
-        } else {
-            return date.compareDate(from) >= 0 && date.compareDate(to) < 0;
+        boolean isOnOrAfterStartDate = date.compareDate(startDateTime) >= 0;
+
+        if (!date.hasTime()) {
+            boolean isBeforeEndDate = date.compareDate(endDateTime) < 0;
+            return isOnOrAfterStartDate && isBeforeEndDate;
         }
+
+        boolean isOnOrBeforeEndDate = date.compareDate(endDateTime) <= 0;
+        boolean isOnOrAfterStartTime = date.compareTime(startDateTime) >= 0;
+        boolean isOnOrBeforeEndTime = date.compareTime(endDateTime) <= 0;
+        return isOnOrAfterStartDate && isOnOrBeforeEndDate && isOnOrAfterStartTime && isOnOrBeforeEndTime;
     }
 
     /**
@@ -50,9 +53,9 @@ public class Event extends Task implements Schedulable {
      */
     @Override
     public String toFileString() {
-        return "E | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
-            + StringDateTimeConverter.toStorageString(from) + " | "
-            + StringDateTimeConverter.toStorageString(to);
+        return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
+            + StringDateTimeConverter.toStorageString(startDateTime) + " | "
+            + StringDateTimeConverter.toStorageString(endDateTime);
     }
 
     /**
@@ -62,8 +65,8 @@ public class Event extends Task implements Schedulable {
      */
     @Override
     public String toString() {
-        return "[E]" + super.toString()
-            + " (" + from + " to " + to + ")";
+        return "[" + TYPE_CODE + "]" + super.toString()
+            + " (" + startDateTime + " to " + endDateTime + ")";
     }
 
 }

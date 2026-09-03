@@ -4,6 +4,7 @@ package littler.task;
  * Represents a basic task without any specific dates or deadlines.
  */
 public class Todo extends Task {
+    private static final String TYPE_CODE = "T";
 
     /**
      * Constructs a new Todo task with the specified name or description.
@@ -21,7 +22,7 @@ public class Todo extends Task {
      */
     @Override
     public String toFileString() {
-        return "T | " + (super.isMarked() ? "1" : "0") + " | " + super.getName();
+        return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName();
     }
 
     /**
@@ -31,6 +32,6 @@ public class Todo extends Task {
      */
     @Override
     public String toString() {
-        return "[T]" + super.toString();
+        return "[" + TYPE_CODE + "]" + super.toString();
     }
 }

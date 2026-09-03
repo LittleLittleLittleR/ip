@@ -142,6 +142,7 @@ public final class StringDateTimeConverter {
          * @param time the optional time component (may be null)
          */
         public ParsedDateTime(LocalDate date, LocalTime time) {
+            assert date != null : "date is required and cannot be null";
             this.date = date;
             this.time = time;
         }

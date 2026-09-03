@@ -187,6 +187,7 @@ public class LittleR {
     private String addItem(String input, Command type) throws LittleRException {
         Task task = Parser.parseTask(input, type);
         tasks.add(task);
+        assert tasks.getLast() == task : "the just-added task should be the last task in the list";
         return UI.taskAdded(tasks.getLast(), tasks.size());
     }
 }

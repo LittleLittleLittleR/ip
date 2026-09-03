@@ -72,6 +72,9 @@ public final class Parser {
      * @throws LittleRException if the task arguments are empty, missing required delimiters, or malformed
      */
     public static Task parseTask(String input, Command type) throws LittleRException {
+        assert type == Command.DEADLINE || type == Command.EVENT || type == Command.TODO
+            : "parseTask should only be called for task-creation commands";
+
         String taskText = input.substring(type.getKeyword().length()).strip();
 
         switch (type) {

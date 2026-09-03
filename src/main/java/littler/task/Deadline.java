@@ -18,6 +18,7 @@ public class Deadline extends Task implements Schedulable {
      */
     public Deadline(String name, ParsedDateTime due) {
         super(name);
+        assert due != null : "due date is required and should already be parsed by the time it reaches here";
         this.due = due;
     }
 

@@ -8,7 +8,7 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
  * defined by a start date/time and an end date/time.
  */
 public class Event extends Task implements Schedulable {
-    private static final String TYPE_CODE = "E";
+    public static final String TYPE_CODE = "E";
     private final ParsedDateTime startDateTime;
     private final ParsedDateTime endDateTime;
 

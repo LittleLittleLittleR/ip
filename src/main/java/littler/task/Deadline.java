@@ -7,7 +7,7 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
  * Represents a task with a specific deadline date and optional time.
  */
 public class Deadline extends Task implements Schedulable {
-    private static final String TYPE_CODE = "D";
+    public static final String TYPE_CODE = "D";
     private final ParsedDateTime due;
 
     /**

@@ -4,7 +4,7 @@ package littler.task;
  * Represents a basic task without any specific dates or deadlines.
  */
 public class Todo extends Task {
-    private static final String TYPE_CODE = "T";
+    public static final String TYPE_CODE = "T";
 
     /**
      * Constructs a new Todo task with the specified name or description.

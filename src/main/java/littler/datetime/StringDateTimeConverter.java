@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import littler.exception.LittleRException;
 
@@ -19,6 +20,8 @@ public final class StringDateTimeConverter {
         DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DISPLAY_TIME =
         DateTimeFormatter.ofPattern("HH:mm");
+    private static final String STORAGE_DELIMITER = "|";
+    private static final String NO_TIME_MARKER = "NONE";
 
     // Formats that include a time component (HHmm, 24-hour)
     private static final List<DateTimeFormatter> DATE_TIME_FORMATS = List.of(
@@ -45,8 +48,8 @@ public final class StringDateTimeConverter {
         String dateStr = dateTime.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
         String timeStr = dateTime.hasTime()
             ? dateTime.getTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
-            : "NONE";
-        return dateStr + "|" + timeStr;
+            : NO_TIME_MARKER;
+        return dateStr + STORAGE_DELIMITER + timeStr;
     }
 
     /**
@@ -57,13 +60,13 @@ public final class StringDateTimeConverter {
      * @throws LittleRException if the stored string format is invalid or corrupted
      */
     public static ParsedDateTime fromStorageString(String stored) throws LittleRException {
-        String[] parts = stored.split("\\|");
+        String[] parts = stored.split(Pattern.quote(STORAGE_DELIMITER));
         if (parts.length != 2) {
             throw new LittleRException("Corrupted stored date: " + stored);
         }
         try {
             LocalDate date = LocalDate.parse(parts[0]);
-            LocalTime time = parts[1].equals("NONE") ? null : LocalTime.parse(parts[1]);
+            LocalTime time = parts[1].equals(NO_TIME_MARKER) ? null : LocalTime.parse(parts[1]);
             return new ParsedDateTime(date, time);
         } catch (DateTimeParseException e) {
             throw new LittleRException("Corrupted stored date: " + stored);
@@ -153,13 +156,7 @@ public final class StringDateTimeConverter {
          * @return -1 if this date is earlier, 0 if equal, or 1 if later
          */
         public int compareDate(ParsedDateTime other) {
-            if (this.date.isBefore(other.date)) {
-                return -1;
-            } else if (this.date.isAfter(other.date)) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return Integer.signum(this.date.compareTo(other.date));
         }
 
         /**
@@ -173,13 +170,7 @@ public final class StringDateTimeConverter {
             if (this.time == null || other.time == null) {
                 return 0; // Assume equal if either has no time
             }
-            if (this.time.isBefore(other.time)) {
-                return -1;
-            } else if (this.time.isAfter(other.time)) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return Integer.signum(this.time.compareTo(other.time));
         }
 
         /**

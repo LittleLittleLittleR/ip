@@ -1,5 +1,7 @@
 package littler.command;
 
+import java.util.Arrays;
+
 /**
 * Represents the set of commands recognized by the LittleR application along with their keywords.
 */
@@ -64,11 +66,9 @@ public enum Command {
      * @return the matching Command enum, or null if no command matches
      */
     public static Command fromInput(String input) {
-        for (Command command : values()) {
-            if (input.equals(command.keyword) || input.startsWith(command.keyword + " ")) {
-                return command;
-            }
-        }
-        return null;
+        return Arrays.stream(values())
+            .filter(command -> input.equals(command.keyword) || input.startsWith(command.keyword + " "))
+            .findFirst()
+            .orElse(null);
     }
 }

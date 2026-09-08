@@ -1,5 +1,7 @@
 package littler.command;
 
+import java.util.regex.Pattern;
+
 import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
@@ -64,7 +66,8 @@ public final class Parser {
     }
 
     /**
-     * Parses task details from user input and constructs the corresponding concrete Task object.
+     * Parses the task description and optional date parameters
+     * from user input and constructs a concrete {@link Task} instance.
      *
      * @param input the raw user input containing the task description and optional date parameters
      * @param type the type of task command being processed (TODO, DEADLINE, or EVENT)
@@ -79,31 +82,66 @@ public final class Parser {
 
         switch (type) {
             case DEADLINE:
-                String[] parts = taskText.split("/by");
-                if (parts.length < 2) {
-                    throw new LittleRException(
-                        "Invalid deadline format. \nUse: deadline <task description> /by <due date>");
-                }
-                return new Deadline(parts[0].trim(), StringDateTimeConverter.parse(parts[1]));
+                return parseDeadline(taskText);
             case EVENT:
-                String[] eventParts = taskText.split("/from|/to");
-                if (eventParts.length < 3) {
-                    throw new LittleRException(
-                        "Invalid event format."
-                        + "\nUse: event <task description>"
-                        + "/from <start datetime> /to <end datetime>");
-                }
-                return new Event(
-                    eventParts[0].trim(),
-                    StringDateTimeConverter.parse(eventParts[1]),
-                    StringDateTimeConverter.parse(eventParts[2]));
+                return parseEvent(taskText);
             case TODO:
-                if (taskText.isEmpty()) {
-                    throw new LittleRException("The description of a todo cannot be empty.");
-                }
-                return new Todo(taskText);
+                return parseTodo(taskText);
             default:
                 throw new LittleRException("Unrecognized task type.");
         }
+    }
+
+    /**
+     * Parses a deadline task from the provided task text.
+     *
+     * @param taskText the raw user input containing the task description and due date
+     * @return the constructed {@link Deadline} instance
+     * @throws LittleRException if the task text is malformed or missing required delimiters
+     */
+    private static Task parseDeadline(String taskText) throws LittleRException {
+        String[] deadlineParts = taskText.split(Deadline.INPUT_DELIMITER);
+        if (deadlineParts.length < 2) {
+            throw new LittleRException(
+                "Invalid deadline format. \nUse: deadline <task description> "
+                + Deadline.INPUT_DELIMITER + " <due date>");
+        }
+        return new Deadline(deadlineParts[0].trim(), StringDateTimeConverter.parse(deadlineParts[1]));
+    }
+
+    /**
+     * Parses an event task from the provided task text.
+     *
+     * @param taskText the raw user input containing the task description and start/end dates
+     * @return the constructed {@link Event} instance
+     * @throws LittleRException if the task text is malformed or missing required delimiters
+     */
+    private static Task parseEvent(String taskText) throws LittleRException {
+        String[] eventParts = taskText.split(
+            Pattern.quote(Event.FROM_DELIMITER) + "|" + java.util.regex.Pattern.quote(Event.TO_DELIMITER));
+        if (eventParts.length < 3) {
+            throw new LittleRException(
+                "Invalid event format."
+                + "\nUse: event <task description> "
+                + Event.FROM_DELIMITER + " <start datetime> " + Event.TO_DELIMITER + " <end datetime>");
+        }
+        return new Event(
+            eventParts[0].trim(),
+            StringDateTimeConverter.parse(eventParts[1]),
+            StringDateTimeConverter.parse(eventParts[2]));
+    }
+
+    /**
+     * Parses a todo task from the provided task text.
+     *
+     * @param taskText the raw user input containing the task description
+     * @return the constructed {@link Todo} instance
+     * @throws LittleRException if the task text is empty
+     */
+    private static Task parseTodo(String taskText) throws LittleRException {
+        if (taskText.isEmpty()) {
+            throw new LittleRException("The description of a todo cannot be empty.");
+        }
+        return new Todo(taskText);
     }
 }

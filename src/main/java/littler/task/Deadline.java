@@ -7,8 +7,9 @@ import littler.datetime.StringDateTimeConverter.ParsedDateTime;
  * Represents a task with a specific deadline date and optional time.
  */
 public class Deadline extends Task implements Schedulable {
-
-    private ParsedDateTime due;
+    public static final String TYPE_CODE = "D";
+    public static final String INPUT_DELIMITER = "/by";
+    private final ParsedDateTime due;
 
     /**
      * Constructs a new Deadline task with the specified description and due date/time.
@@ -45,7 +46,7 @@ public class Deadline extends Task implements Schedulable {
      */
     @Override
     public String toFileString() {
-        return "D | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
+        return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
             + StringDateTimeConverter.toStorageString(due);
     }
 
@@ -57,7 +58,7 @@ public class Deadline extends Task implements Schedulable {
      */
     @Override
     public String toString() {
-        return "[D]" + super.toString()
+        return "[" + TYPE_CODE + "]" + super.toString()
             + " (due: " + due + ")";
     }
 }

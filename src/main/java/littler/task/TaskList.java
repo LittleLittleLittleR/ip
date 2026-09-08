@@ -1,6 +1,7 @@
 package littler.task;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
@@ -128,13 +129,9 @@ public class TaskList {
      * @return an ArrayList containing all matching Schedulable tasks
      */
     public ArrayList<Task> getTasksOn(ParsedDateTime date) {
-        ArrayList<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task instanceof Schedulable schedulable && schedulable.isOccurringOn(date)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+            .filter(task -> task instanceof Schedulable schedulable && schedulable.isOccurringOn(date))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -145,14 +142,10 @@ public class TaskList {
      * @return a list of tasks whose description contains the keyword
      */
     public ArrayList<Task> findByKeyword(String keyword) {
-        ArrayList<Task> matches = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
-        for (Task task : tasks) {
-            if (task.getName().toLowerCase().contains(lowerKeyword)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+            .filter(task -> task.getName().toLowerCase().contains(lowerKeyword))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**

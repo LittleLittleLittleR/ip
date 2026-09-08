@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import littler.datetime.StringDateTimeConverter;
 import littler.exception.LittleRException;
@@ -68,10 +69,9 @@ public class Storage {
             if (filePath.getParent() != null) {
                 Files.createDirectories(filePath.getParent());
             }
-            ArrayList<String> lines = new ArrayList<>();
-            for (Task task : tasks) {
-                lines.add(task.toFileString());
-            }
+            List<String> lines = tasks.stream()
+                .map(Task::toFileString)
+                .toList();
             Files.write(filePath, lines);
         } catch (IOException e) {
             throw new LittleRException("Could not save tasks to disk: " + e.getMessage());

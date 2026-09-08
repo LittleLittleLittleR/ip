@@ -22,7 +22,7 @@ public class UI {
     public static String taskList(ArrayList<Task> tasks) {
         String output = "Tasks in your list:\n";
         for (int i = 0; i < tasks.size(); i++) {
-            output += (i + 1) + ". " + tasks.get(i) + "\n";
+            output += taskWithIndex(i + 1, tasks.get(i)) + "\n";
         }
         return output;
     }

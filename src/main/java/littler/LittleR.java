@@ -33,7 +33,7 @@ public class LittleR {
         try {
             loadedTasks = storage.load();
         } catch (LittleRException e) {
-            UI.error("Could not load tasks: " + e.getMessage());
+            System.err.println(UI.error("Could not load tasks: " + e.getMessage()));
             loadedTasks = new ArrayList<>();
         }
         tasks = new TaskList(loadedTasks);
@@ -60,7 +60,6 @@ public class LittleR {
             // Exit
             switch (command) {
                 case EXIT:
-                    saveQuietly();
                     output.append(UI.goodbye());
                     break;
 
@@ -105,7 +104,7 @@ public class LittleR {
         } catch (LittleRException e) {
             output.append(UI.error(e.getMessage()));
         }
-        saveQuietly();
+        output.append(saveQuietly());
         return output.toString();
     }
 
@@ -113,11 +112,12 @@ public class LittleR {
      * Saves the current task list to disk, catching and displaying any exceptions
      * to avoid terminating the application unexpectedly.
      */
-    private void saveQuietly() {
+    private String saveQuietly() {
         try {
             storage.save(tasks.getTasks());
+            return "";
         } catch (LittleRException e) {
-            UI.error("Could not save: " + e.getMessage());
+            return UI.error("Could not save: " + e.getMessage());
         }
     }
 
@@ -133,11 +133,8 @@ public class LittleR {
             return UI.noMatchingTasksFound();
         }
         StringBuilder output = new StringBuilder();
-
         output.append(UI.findResultsHeader());
-        for (int i = 0; i < matches.size(); i++) {
-            output.append(UI.taskWithIndex(i + 1, matches.get(i)));
-        }
+        appendTaskLines(output, matches);
         return output.toString();
     }
 
@@ -155,10 +152,20 @@ public class LittleR {
         if (matches.isEmpty()) {
             output.append(UI.noTasksFound());
         }
-        for (int i = 0; i < matches.size(); i++) {
-            output.append(UI.taskWithIndex(i + 1, matches.get(i)));
-        }
+        appendTaskLines(output, matches);
         return output.toString();
+    }
+
+    /**
+     * Appends a formatted list of tasks to the provided StringBuilder, each with its index.
+     *
+     * @param output the StringBuilder to append the task lines to
+     * @param taskList the list of tasks to format and append
+     */
+    private void appendTaskLines(StringBuilder output, ArrayList<Task> taskList) {
+        for (int i = 0; i < taskList.size(); i++) {
+            output.append(UI.taskWithIndex(i + 1, taskList.get(i)));
+        }
     }
 
     /**
@@ -187,6 +194,7 @@ public class LittleR {
     private String addItem(String input, Command type) throws LittleRException {
         Task task = Parser.parseTask(input, type);
         tasks.add(task);
+        assert tasks.getLast() == task : "the just-added task should be the last task in the list";
         return UI.taskAdded(tasks.getLast(), tasks.size());
     }
 }

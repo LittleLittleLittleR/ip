@@ -85,6 +85,7 @@ public class Storage {
      * @return the reconstructed Task object (Todo, Deadline, or Event)
      * @throws LittleRException if the line is malformed, missing required fields, or has an unknown task type
      */
+    // Storage.java
     private Task parseLine(String line) throws LittleRException {
         String[] parts = line.split(" \\| ");
         if (parts.length < 3) {
@@ -96,24 +97,26 @@ public class Storage {
         String name = parts[2];
         Task task;
 
-        try {
-            switch (type) {
-                case "T":
-                    task = new Todo(name);
-                    break;
-                case "D":
-                    task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
-                    break;
-                case "E":
-                    task = new Event(name,
-                        StringDateTimeConverter.fromStorageString(parts[3]),
-                        StringDateTimeConverter.fromStorageString(parts[4]));
-                    break;
-                default:
-                    throw new LittleRException("Unknown task type: " + type);
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new LittleRException("Missing or invalid fields in line: " + line);
+        switch (type) {
+            case Todo.TYPE_CODE:
+                task = new Todo(name);
+                break;
+            case Deadline.TYPE_CODE:
+                if (parts.length < 4) {
+                    throw new LittleRException("Missing due date in line: " + line);
+                }
+                task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
+                break;
+            case Event.TYPE_CODE:
+                if (parts.length < 5) {
+                    throw new LittleRException("Missing from/to date in line: " + line);
+                }
+                task = new Event(name,
+                    StringDateTimeConverter.fromStorageString(parts[3]),
+                    StringDateTimeConverter.fromStorageString(parts[4]));
+                break;
+            default:
+                throw new LittleRException("Unknown task type: " + type);
         }
 
         if (isMarked) {

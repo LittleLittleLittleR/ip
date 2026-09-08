@@ -14,5 +14,4 @@ public class LittleRException extends Exception {
     public LittleRException(String message) {
         super(message);
     }
-
 }

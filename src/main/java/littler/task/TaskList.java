@@ -47,6 +47,7 @@ public class TaskList {
      */
     public Task delete(int index) throws LittleRException {
         checkIndex(index);
+        assert index >= 0 && index < tasks.size() : "checkIndex should have already validated this index";
         return tasks.remove(index);
     }
 
@@ -59,6 +60,7 @@ public class TaskList {
      */
     public Task mark(int index) throws LittleRException {
         checkIndex(index);
+        assert index >= 0 && index < tasks.size() : "checkIndex should have already validated this index";
         Task task = tasks.get(index);
         task.mark();
         return task;
@@ -73,6 +75,7 @@ public class TaskList {
      */
     public Task unmark(int index) throws LittleRException {
         checkIndex(index);
+        assert index >= 0 && index < tasks.size() : "checkIndex should have already validated this index";
         Task task = tasks.get(index);
         task.unmark();
         return task;
@@ -87,6 +90,7 @@ public class TaskList {
      */
     public Task get(int index) throws LittleRException {
         checkIndex(index);
+        assert index >= 0 && index < tasks.size() : "checkIndex should have already validated this index";
         return tasks.get(index);
     }
 
@@ -96,6 +100,7 @@ public class TaskList {
      * @return the last task in the task list
      */
     public Task getLast() {
+        assert !tasks.isEmpty() : "getLast() should not be called on an empty task list";
         return tasks.get(tasks.size() - 1);
     }
 

@@ -14,7 +14,9 @@ import littler.LittleR;
  */
 public class Main extends Application {
 
-    private LittleR littleR = new LittleR("./data/littler.txt");
+    private static final String DATA_FILE_PATH = "./data/littler.txt";
+
+    private LittleR littleR = new LittleR(DATA_FILE_PATH);
 
     @Override
     public void start(Stage stage) {

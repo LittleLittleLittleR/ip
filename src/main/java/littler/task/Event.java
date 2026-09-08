@@ -23,6 +23,8 @@ public class Event extends Task implements Schedulable {
      */
     public Event(String name, ParsedDateTime startDateTime, ParsedDateTime endDateTime) {
         super(name);
+        assert startDateTime != null && endDateTime != null
+            : "start/end dates are required and should already be parsed by the time they reach here";
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }

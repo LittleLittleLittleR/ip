@@ -18,6 +18,10 @@ import littler.command.Command;
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
+
+    private static final double REPLY_DELAY_SECONDS = 1.5;
+    private static final double WINDOW_CLOSE_DELAY_SECONDS = 2.5;
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -51,8 +55,7 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         String input = userInput.getText();
         String response = littleR.converse(input);
-        PauseTransition replyDelay = new PauseTransition(Duration.seconds(1.5));
-        PauseTransition closeDelay = new PauseTransition(Duration.seconds(2.5));
+        PauseTransition replyDelay = new PauseTransition(Duration.seconds(REPLY_DELAY_SECONDS));
 
         dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
         replyDelay.setOnFinished(event -> {
@@ -64,6 +67,8 @@ public class MainWindow extends AnchorPane {
         if (Command.fromInput(input) == Command.EXIT) {
             userInput.setDisable(true);
             sendButton.setDisable(true);
+            PauseTransition closeDelay = new PauseTransition(Duration.seconds(WINDOW_CLOSE_DELAY_SECONDS));
+
             closeDelay.setOnFinished(event -> {
                 Stage stage = (Stage) dialogContainer.getScene().getWindow();
                 stage.close();

@@ -1,9 +1,11 @@
 package littler.task;
 
+import java.util.Map;
 import java.util.Objects;
 
 import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.exception.LittleRException;
 
 /**
  * Represents a task with a specific deadline date and optional time.
@@ -39,6 +41,21 @@ public class Deadline extends Task implements Schedulable {
         } else {
             return date.compareDate(due) == 0;
         }
+    }
+
+    @Override
+    public Task withUpdates(Map<String, String> updates) throws LittleRException {
+        if (updates.containsKey(Event.FROM_DELIMITER) || updates.containsKey(Event.TO_DELIMITER)) {
+            throw new LittleRException(
+                "A deadline only supports " + NAME_DELIMITER + " and " + INPUT_DELIMITER + ".");
+        }
+        String newName = updates.getOrDefault(NAME_DELIMITER, super.getName());
+        ParsedDateTime newDue = updates.containsKey(INPUT_DELIMITER)
+            ? StringDateTimeConverter.parse(updates.get(INPUT_DELIMITER))
+            : due;
+        Deadline updated = new Deadline(newName, newDue);
+        copyMarkedStatusTo(updated);
+        return updated;
     }
 
     /**

@@ -1,6 +1,9 @@
 package littler.task;
 
+import java.util.Map;
 import java.util.Objects;
+
+import littler.exception.LittleRException;
 
 /**
  * Represents a basic task without any specific dates or deadlines.
@@ -15,6 +18,19 @@ public class Todo extends Task {
      */
     public Todo(String name) {
         super(name);
+    }
+
+    @Override
+    public Task withUpdates(Map<String, String> updates) throws LittleRException {
+        if (updates.containsKey(Deadline.INPUT_DELIMITER)
+                || updates.containsKey(Event.FROM_DELIMITER)
+                || updates.containsKey(Event.TO_DELIMITER)) {
+            throw new LittleRException("A todo only supports " + NAME_DELIMITER + "; it has no date fields.");
+        }
+        String newName = updates.getOrDefault(NAME_DELIMITER, super.getName());
+        Todo updated = new Todo(newName);
+        copyMarkedStatusTo(updated);
+        return updated;
     }
 
     /**

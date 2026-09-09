@@ -1,9 +1,11 @@
 package littler.task;
 
+import java.util.Map;
 import java.util.Objects;
 
 import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.exception.LittleRException;
 
 /**
  * Represents a task that occurs within a specific time frame,
@@ -50,6 +52,24 @@ public class Event extends Task implements Schedulable {
         boolean isOnOrAfterStartTime = date.compareTime(startDateTime) >= 0;
         boolean isOnOrBeforeEndTime = date.compareTime(endDateTime) <= 0;
         return isOnOrAfterStartDate && isOnOrBeforeEndDate && isOnOrAfterStartTime && isOnOrBeforeEndTime;
+    }
+
+    @Override
+    public Task withUpdates(Map<String, String> updates) throws LittleRException {
+        if (updates.containsKey(Deadline.INPUT_DELIMITER)) {
+            throw new LittleRException(
+                "An event only supports " + NAME_DELIMITER + ", " + FROM_DELIMITER + ", and " + TO_DELIMITER + ".");
+        }
+        String newName = updates.getOrDefault(NAME_DELIMITER, super.getName());
+        ParsedDateTime newStart = updates.containsKey(FROM_DELIMITER)
+            ? StringDateTimeConverter.parse(updates.get(FROM_DELIMITER))
+            : startDateTime;
+        ParsedDateTime newEnd = updates.containsKey(TO_DELIMITER)
+            ? StringDateTimeConverter.parse(updates.get(TO_DELIMITER))
+            : endDateTime;
+        Event updated = new Event(newName, newStart, newEnd);
+        copyMarkedStatusTo(updated);
+        return updated;
     }
 
     /**

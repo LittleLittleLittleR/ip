@@ -48,6 +48,16 @@ public class UI {
     }
 
     /**
+     * Displays a confirmation message indicating that a task has been edited.
+     *
+     * @param task the task that was edited
+     * @return a string on the confirmation of the edited task
+     */
+    public static String taskEdited(Task task) {
+        return "Updated: " + task;
+    }
+
+    /**
      * Displays a confirmation message indicating that a task was deleted, along with the updated task count.
      *
      * @param task the task that was deleted
@@ -155,7 +165,7 @@ public class UI {
      * @return a string of the help menu with available commands and formats
      */
     public static String help() {
-        return "Available commands:\n"
+    return "Available commands:\n"
             + "1. list - List all tasks\n"
             + "2. mark <task number> - Mark a task as completed\n"
             + "3. unmark <task number> - Unmark a task as not completed\n"
@@ -165,8 +175,11 @@ public class UI {
             + "7. on <date> - List tasks due or occurring on a given date\n"
             + "8. sort /by <date|name> /order <a|d> - View tasks sorted by date or name "
             + "(does not change the saved task order)\n"
-            + "9. bye - Exit the program\n\n"
-            + "Date is in the format of d-M-yyyy or yyyy-M-d\n"
+            + "9. edit <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
+            + "- Update one or more fields of an existing task (only provide the fields you want to change)\n"
+            + "10. bye - Exit the program\n\n"
+            + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
+            + "meaning the next such day\n"
             + "Datetime is similar to date, with an optional time in the format of HHmm\n";
     }
 

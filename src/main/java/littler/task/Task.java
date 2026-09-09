@@ -1,10 +1,16 @@
 package littler.task;
 
+import java.util.Map;
+
+import littler.exception.LittleRException;
+
 /**
  * Represents an abstract task containing a description name and a completion status.
  * Serves as the base class for specific task types such as Todo, Deadline, and Event.
  */
 public abstract class Task {
+    public static final String NAME_DELIMITER = "/name";
+
     private String name;
     private boolean marked;
 
@@ -16,6 +22,30 @@ public abstract class Task {
     public Task(String name) {
         this.name = name;
         this.marked = false;
+    }
+
+    /**
+     * Returns a new task of the same concrete type as this one, with any fields present in
+     * the given updates map replaced, and all other fields (including completion status)
+     * carried over unchanged.
+     *
+     * @param updates a map from field delimiter (e.g. "/name") to the new raw value for that field
+     * @return the updated task instance
+     * @throws LittleRException if updates contains a field not applicable to this task type,
+     *     or a date field's value cannot be parsed
+     */
+    public abstract Task withUpdates(Map<String, String> updates) throws LittleRException;
+
+    /**
+     * Copies this task's completion status onto another task instance, so building an
+     * updated or duplicated task never silently resets whether it was marked done.
+     *
+     * @param other the task to copy this task's completion status onto
+     */
+    protected void copyMarkedStatusTo(Task other) {
+        if (this.marked) {
+            other.mark();
+        }
     }
 
     /**

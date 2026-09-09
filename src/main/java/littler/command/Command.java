@@ -15,10 +15,15 @@ public enum Command {
     LIST("list"),
     /** Command to view tasks sorted by a given criteria. */
     SORT("sort"),
+
+    // TASK MODIFICATION COMMANDS
+
     /** Command to mark a task as completed. */
     MARK("mark"),
     /** Command to unmark a completed task. */
     UNMARK("unmark"),
+    /** Command to edit fields of an existing task. */
+    EDIT("edit"),
     /** Command to delete a task from the list. */
     DELETE("delete"),
 

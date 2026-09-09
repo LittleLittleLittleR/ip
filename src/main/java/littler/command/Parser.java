@@ -1,5 +1,8 @@
 package littler.command;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import littler.datetime.StringDateTimeConverter;
@@ -14,11 +17,59 @@ import littler.task.Todo;
  * Utility class that parses raw user input strings into usable application values and tasks.
  */
 public final class Parser {
+    private static final Pattern FIELD_PATTERN = buildFieldPattern();
 
     /**
      * Private constructor to prevent instantiation of utility class.
      */
     private Parser() {}
+
+    /**
+     * Builds a regex pattern to match task field delimiters and their corresponding values.
+     *
+     * @return the compiled regex pattern for matching task fields
+     */
+    private static Pattern buildFieldPattern() {
+        String anyDelimiter = String.join("|",
+            Pattern.quote(Task.NAME_DELIMITER),
+            Pattern.quote(Deadline.INPUT_DELIMITER),
+            Pattern.quote(Event.FROM_DELIMITER),
+            Pattern.quote(Event.TO_DELIMITER));
+        return Pattern.compile("(" + anyDelimiter + ")\\s+(.*?)(?=\\s*(?:" + anyDelimiter + ")|$)");
+    }
+
+    /**
+     * Parses an edit command's target index and field updates from user input.
+     *
+     * @param input the raw user input containing the index and field updates
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed EditRequest
+     * @throws LittleRException if the index is missing/invalid, or no fields were provided
+     */
+    public static EditRequest parseEdit(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        String[] indexAndRest = argsText.split("\\s+", 2);
+
+        int index;
+        try {
+            index = Integer.parseInt(indexAndRest[0]) - 1;
+        } catch (NumberFormatException e) {
+            throw new LittleRException("Please provide a valid task number to edit.");
+        }
+
+        String fieldsText = indexAndRest.length > 1 ? indexAndRest[1] : "";
+        Map<String, String> updates = new LinkedHashMap<>();
+        Matcher matcher = FIELD_PATTERN.matcher(fieldsText);
+        while (matcher.find()) {
+            updates.put(matcher.group(1), matcher.group(2).trim());
+        }
+
+        if (updates.isEmpty()) {
+            throw new LittleRException(
+                "Please provide at least one field to update, e.g. " + Task.NAME_DELIMITER + " <new name>.");
+        }
+        return new EditRequest(index, updates);
+    }
 
     /**
      * Parses a sort command's criteria and order arguments from user input.

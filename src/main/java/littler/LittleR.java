@@ -3,6 +3,7 @@ package littler;
 import java.util.ArrayList;
 
 import littler.command.Command;
+import littler.command.EditRequest;
 import littler.command.Parser;
 import littler.command.SortCriteria;
 import littler.command.SortOrder;
@@ -78,6 +79,10 @@ public class LittleR {
 
                 case UNMARK:
                     output.append(UI.taskUnmarked(tasks.unmark(getIndex(input, command))));
+                    break;
+
+                case EDIT:
+                    output.append(editItem(Parser.parseEdit(input, command)));
                     break;
 
                 // Delete a task
@@ -219,5 +224,19 @@ public class LittleR {
         assert tasks.getLast() == task : "the just-added task should be the last task in the list";
         String confirmation = UI.taskAdded(tasks.getLast(), tasks.size());
         return isDuplicate ? UI.duplicateTaskWarning() + confirmation : confirmation;
+    }
+
+    /**
+     * Edits an existing task in the task list based on the provided edit request.
+     *
+     * @param editRequest the request containing the index and updates for the task
+     * @return a confirmation message indicating the task was updated
+     * @throws LittleRException if the index is invalid or the updates are malformed
+     */
+    private String editItem(EditRequest editRequest) throws LittleRException {
+        Task existing = tasks.get(editRequest.getIndex());
+        Task updated = existing.withUpdates(editRequest.getUpdates());
+        tasks.update(editRequest.getIndex(), updated);
+        return UI.taskEdited(updated);
     }
 }

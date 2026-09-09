@@ -31,6 +31,20 @@ public class TaskList {
     }
 
     /**
+     * Replaces the task at the specified 0-based index with a new task instance.
+     *
+     * @param index the index of the task to replace
+     * @param updatedTask the new task to put at that index
+     * @return the updated task
+     * @throws LittleRException if the index is out of bounds
+     */
+    public Task update(int index, Task updatedTask) throws LittleRException {
+        checkIndex(index);
+        tasks.set(index, updatedTask);
+        return updatedTask;
+    }
+
+    /**
      * Adds a task to the task list.
      *
      * @param task the task to be added

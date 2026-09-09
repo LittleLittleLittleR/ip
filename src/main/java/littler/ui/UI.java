@@ -58,6 +58,17 @@ public class UI {
     }
 
     /**
+     * Displays a confirmation message indicating that a task was duplicated, along with the total task count.
+     *
+     * @param task the newly created duplicate task
+     * @param total the total number of tasks in the list
+     * @return a string on the confirmation of the duplicated task and the updated task count
+     */
+    public static String taskDuplicated(Task task, int total) {
+        return "Duplicated: " + task + "\nNow you have " + total + " tasks in the list.";
+    }
+
+    /**
      * Displays a confirmation message indicating that a task was deleted, along with the updated task count.
      *
      * @param task the task that was deleted
@@ -165,7 +176,7 @@ public class UI {
      * @return a string of the help menu with available commands and formats
      */
     public static String help() {
-    return "Available commands:\n"
+        return "Available commands:\n"
             + "1. list - List all tasks\n"
             + "2. mark <task number> - Mark a task as completed\n"
             + "3. unmark <task number> - Unmark a task as not completed\n"
@@ -177,7 +188,10 @@ public class UI {
             + "(does not change the saved task order)\n"
             + "9. edit <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
             + "- Update one or more fields of an existing task (only provide the fields you want to change)\n"
-            + "10. bye - Exit the program\n\n"
+            + "10. duplicate <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
+            + "- Create a copy of an existing task, optionally overriding some fields "
+            + "(the copy always starts unmarked)\n"
+            + "11. bye - Exit the program\n\n"
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"
             + "Datetime is similar to date, with an optional time in the format of HHmm\n";

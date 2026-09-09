@@ -25,6 +25,73 @@ public final class Parser {
     private Parser() {}
 
     /**
+     * Parses an edit command's target index and field updates from user input.
+     *
+     * @param input the raw user input containing the index and field updates
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed EditRequest
+     * @throws LittleRException if the index is missing/invalid, or no fields were provided
+     */
+    public static EditRequest parseEdit(String input, Command command) throws LittleRException {
+        IndexAndFields parsed = parseIndexAndFields(input, command);
+        if (parsed.updates().isEmpty()) {
+            throw new LittleRException(
+                "Please provide at least one field to update, e.g. " + Task.NAME_DELIMITER + " <new name>.");
+        }
+        return new EditRequest(parsed.index(), parsed.updates());
+    }
+
+    /**
+     * Parses a duplicate command's target index and optional field overrides from user input.
+     * Unlike parseEdit(), no fields are required -- a plain "duplicate 2" is a valid exact clone.
+     *
+     * @param input the raw user input containing the index and optional field overrides
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed EditRequest (reused here to represent "index + field overrides")
+     * @throws LittleRException if the index is missing or invalid
+     */
+    public static EditRequest parseDuplicate(String input, Command command) throws LittleRException {
+        IndexAndFields parsed = parseIndexAndFields(input, command);
+        return new EditRequest(parsed.index(), parsed.updates());
+    }
+
+    /**
+     * Parses the target index and any field-delimiter/value pairs from an edit or duplicate
+     * command's input, shared by both since they take the same "index + optional fields" shape.
+     *
+     * @param input the raw user input containing the index and optional field updates
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed index and field-updates map
+     * @throws LittleRException if the index is missing or not a valid integer
+     */
+    private static IndexAndFields parseIndexAndFields(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        String[] indexAndRest = argsText.split("\\s+", 2);
+
+        int index;
+        try {
+            index = Integer.parseInt(indexAndRest[0]) - 1;
+        } catch (NumberFormatException e) {
+            throw new LittleRException("Please provide a valid task number.");
+        }
+
+        String fieldsText = indexAndRest.length > 1 ? indexAndRest[1] : "";
+        Map<String, String> updates = new LinkedHashMap<>();
+        Matcher matcher = FIELD_PATTERN.matcher(fieldsText);
+        while (matcher.find()) {
+            updates.put(matcher.group(1), matcher.group(2).trim());
+        }
+        return new IndexAndFields(index, updates);
+    }
+
+    /**
+     * Holds the intermediate result of parsing an edit/duplicate command's arguments,
+     * before deciding whether an empty field map is acceptable (parseEdit rejects it,
+     * parseDuplicate allows it).
+     */
+    private record IndexAndFields(int index, Map<String, String> updates) {}
+
+    /**
      * Builds a regex pattern to match task field delimiters and their corresponding values.
      *
      * @return the compiled regex pattern for matching task fields
@@ -36,39 +103,6 @@ public final class Parser {
             Pattern.quote(Event.FROM_DELIMITER),
             Pattern.quote(Event.TO_DELIMITER));
         return Pattern.compile("(" + anyDelimiter + ")\\s+(.*?)(?=\\s*(?:" + anyDelimiter + ")|$)");
-    }
-
-    /**
-     * Parses an edit command's target index and field updates from user input.
-     *
-     * @param input the raw user input containing the index and field updates
-     * @param command the command keyword to be stripped from the front of the input
-     * @return the parsed EditRequest
-     * @throws LittleRException if the index is missing/invalid, or no fields were provided
-     */
-    public static EditRequest parseEdit(String input, Command command) throws LittleRException {
-        String argsText = input.substring(command.getKeyword().length()).trim();
-        String[] indexAndRest = argsText.split("\\s+", 2);
-
-        int index;
-        try {
-            index = Integer.parseInt(indexAndRest[0]) - 1;
-        } catch (NumberFormatException e) {
-            throw new LittleRException("Please provide a valid task number to edit.");
-        }
-
-        String fieldsText = indexAndRest.length > 1 ? indexAndRest[1] : "";
-        Map<String, String> updates = new LinkedHashMap<>();
-        Matcher matcher = FIELD_PATTERN.matcher(fieldsText);
-        while (matcher.find()) {
-            updates.put(matcher.group(1), matcher.group(2).trim());
-        }
-
-        if (updates.isEmpty()) {
-            throw new LittleRException(
-                "Please provide at least one field to update, e.g. " + Task.NAME_DELIMITER + " <new name>.");
-        }
-        return new EditRequest(index, updates);
     }
 
     /**
@@ -196,7 +230,7 @@ public final class Parser {
      */
     private static Task parseEvent(String taskText) throws LittleRException {
         String[] eventParts = taskText.split(
-            Pattern.quote(Event.FROM_DELIMITER) + "|" + java.util.regex.Pattern.quote(Event.TO_DELIMITER));
+            Pattern.quote(Event.FROM_DELIMITER) + "|" + Pattern.quote(Event.TO_DELIMITER));
         if (eventParts.length < 3) {
             throw new LittleRException(
                 "Invalid event format."

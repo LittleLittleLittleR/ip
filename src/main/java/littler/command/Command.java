@@ -24,6 +24,8 @@ public enum Command {
     UNMARK("unmark"),
     /** Command to edit fields of an existing task. */
     EDIT("edit"),
+    /** Command to create a copy of an existing task, with optional field overrides. */
+    DUPLICATE("duplicate"),
     /** Command to delete a task from the list. */
     DELETE("delete"),
 

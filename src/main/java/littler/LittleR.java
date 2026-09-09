@@ -85,6 +85,10 @@ public class LittleR {
                     output.append(editItem(Parser.parseEdit(input, command)));
                     break;
 
+                case DUPLICATE:
+                    output.append(duplicateItem(Parser.parseDuplicate(input, command)));
+                    break;
+
                 // Delete a task
                 case DELETE:
                     Task removed = tasks.delete(getIndex(input, command));
@@ -238,5 +242,23 @@ public class LittleR {
         Task updated = existing.withUpdates(editRequest.getUpdates());
         tasks.update(editRequest.getIndex(), updated);
         return UI.taskEdited(updated);
+    }
+
+    /**
+     * Duplicates an existing task in the task list based on the provided duplicate request,
+     * optionally applying field overrides to the new task.
+     *
+     * @param duplicateRequest the request containing the index of the task to duplicate and any field overrides
+     * @return a confirmation message indicating the task was duplicated and the updated task count
+     * @throws LittleRException if the index is invalid or the overrides are malformed
+     */
+    private String duplicateItem(EditRequest duplicateRequest) throws LittleRException {
+        Task source = tasks.get(duplicateRequest.getIndex());
+        Task duplicate = source.withUpdates(duplicateRequest.getUpdates());
+        duplicate.unmark();
+        boolean isDuplicate = tasks.containsDuplicate(duplicate);
+        tasks.add(duplicate);
+        String confirmation = UI.taskDuplicated(duplicate, tasks.size());
+        return isDuplicate ? UI.duplicateTaskWarning() + confirmation : confirmation;
     }
 }

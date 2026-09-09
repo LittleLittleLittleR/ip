@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import littler.command.Command;
 import littler.command.Parser;
+import littler.command.SortCriteria;
+import littler.command.SortOrder;
+import littler.command.SortRequest;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
 import littler.storage.Storage;
@@ -98,6 +101,10 @@ public class LittleR {
                     output.append(printMatchingTasks(Parser.parseKeyword(input, command)));
                     break;
 
+                case SORT:
+                    output.append(printSortedTasks(Parser.parseSort(input, command)));
+                    break;
+
                 default:
                     throw new LittleRException("Unrecognized command: " + command.getKeyword());
             }
@@ -119,6 +126,20 @@ public class LittleR {
         } catch (LittleRException e) {
             return UI.error("Could not save: " + e.getMessage());
         }
+    }
+
+    /**
+     * Prints all tasks sorted by the specified criteria and order.
+     *
+     * @param sortRequest the sort request containing the criteria and order
+     * @return a formatted string of sorted tasks
+     */
+    private String printSortedTasks(SortRequest sortRequest) {
+        boolean descending = sortRequest.getOrder() == SortOrder.DESCENDING;
+        ArrayList<Task> sorted = sortRequest.getCriteria() == SortCriteria.DATE
+            ? tasks.getSortedByDate(descending)
+            : tasks.getSortedByName(descending);
+        return UI.taskList(sorted);
     }
 
     /**

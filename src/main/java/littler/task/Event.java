@@ -65,6 +65,16 @@ public class Event extends Task implements Schedulable {
     }
 
     /**
+     * Returns the date/time value used to order this task chronologically relative to other schedulable tasks.
+     *
+     * @return the parsed date/time representing this task's position in time
+     */
+    @Override
+    public ParsedDateTime getSortDate() {
+        return startDateTime;
+    }
+
+    /**
      * Checks if this event task is equal to another object.
      * Two events are considered equal if they have the same name, start date/time, and end date/time.
      *

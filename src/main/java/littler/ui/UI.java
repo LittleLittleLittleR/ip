@@ -163,7 +163,9 @@ public class UI {
             + "5. deadline <task description> /by <due datetime> - Add a Deadline task\n"
             + "6. event <task description> /from <start datetime> /to <end datetime> - Add an Event task\n"
             + "7. on <date> - List tasks due or occurring on a given date\n"
-            + "8. bye - Exit the program\n\n"
+            + "8. sort /by <date|name> /order <a|d> - View tasks sorted by date or name "
+            + "(does not change the saved task order)\n"
+            + "9. bye - Exit the program\n\n"
             + "Date is in the format of d-M-yyyy or yyyy-M-d\n"
             + "Datetime is similar to date, with an optional time in the format of HHmm\n";
     }

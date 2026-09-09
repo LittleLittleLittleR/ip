@@ -1,6 +1,7 @@
 package littler.task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
@@ -178,5 +179,60 @@ public class TaskList {
      */
     public boolean containsDuplicate(Task task) {
         return tasks.stream().anyMatch(existing -> existing.equals(task));
+    }
+
+    /**
+     * Returns a new list of all tasks sorted chronologically by their relevant date.
+     * Tasks without a date (Todos) are placed after all dated tasks, sorted alphabetically
+     * among themselves. The underlying task list is left unchanged.
+     *
+     * @param descending if true, sorts dated tasks latest-first; if false, earliest-first
+     * @return a new sorted ArrayList of tasks
+     */
+    public ArrayList<Task> getSortedByDate(boolean descending) {
+        Comparator<Task> comparator = TaskList::compareByDate;
+        if (descending) {
+            comparator = comparator.reversed();
+        }
+        return tasks.stream()
+            .sorted(comparator)
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Returns a new list of all tasks sorted alphabetically by description.
+     * The underlying task list is left unchanged.
+     *
+     * @param descending if true, sorts Z to A; if false, A to Z
+     * @return a new sorted ArrayList of tasks
+     */
+    public ArrayList<Task> getSortedByName(boolean descending) {
+        Comparator<Task> comparator = Comparator.comparing(task -> task.getName().toLowerCase());
+        if (descending) {
+            comparator = comparator.reversed();
+        }
+        return tasks.stream()
+            .sorted(comparator)
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Compares two tasks for date-based ordering: tasks with a date (Deadline, Event) sort
+     * before tasks without one (Todo). Dated tasks are compared by their date; undated tasks
+     * are compared alphabetically among themselves.
+     */
+    private static int compareByDate(Task a, Task b) {
+        boolean aHasDate = a instanceof Schedulable;
+        boolean bHasDate = b instanceof Schedulable;
+
+        if (aHasDate != bHasDate) {
+            return aHasDate ? -1 : 1;
+        }
+        if (aHasDate) {
+            ParsedDateTime aDate = ((Schedulable) a).getSortDate();
+            ParsedDateTime bDate = ((Schedulable) b).getSortDate();
+            return aDate.compareTo(bDate);
+        }
+        return a.getName().compareToIgnoreCase(b.getName());
     }
 }

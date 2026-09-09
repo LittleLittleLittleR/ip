@@ -15,7 +15,7 @@ import littler.LittleR;
  */
 public class Main extends Application {
 
-    private static final String DEFAULT_DATA_FILE_PATH  = "./data/littler.txt";
+    private static final String DEFAULT_DATA_FILE_PATH = "./data/littler.txt";
 
     private LittleR littleR;
 

@@ -21,6 +21,33 @@ public final class Parser {
     private Parser() {}
 
     /**
+     * Parses a sort command's criteria and order arguments from user input.
+     *
+     * @param input the raw user input containing the sort criteria and order
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed SortRequest
+     * @throws LittleRException if the criteria or order is missing or not recognized
+     */
+    public static SortRequest parseSort(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).strip();
+        String[] parts = argsText.split(
+            Pattern.quote(SortRequest.BY_DELIMITER) + "|" + Pattern.quote(SortRequest.ORDER_DELIMITER));
+
+        String usage = "Invalid sort format. \nUse: sort " + SortRequest.BY_DELIMITER + " <date|name> "
+            + SortRequest.ORDER_DELIMITER + " <a|d>";
+        if (parts.length < 3) {
+            throw new LittleRException(usage);
+        }
+
+        SortCriteria criteria = SortCriteria.fromKeyword(parts[1].trim());
+        SortOrder order = SortOrder.fromKeyword(parts[2].trim());
+        if (criteria == null || order == null) {
+            throw new LittleRException(usage);
+        }
+        return new SortRequest(criteria, order);
+    }
+
+    /**
      * Parses the task index argument from user input string and converts it to a 0-based index.
      *
      * @param input the raw user input containing the task index argument

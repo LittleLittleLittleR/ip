@@ -135,7 +135,7 @@ public final class StringDateTimeConverter {
     /**
      * Encapsulates a LocalDate object alongside an optional LocalTime component.
      */
-    public static final class ParsedDateTime {
+    public static final class ParsedDateTime implements Comparable<ParsedDateTime> {
         private final LocalDate date;
         private final LocalTime time; // null means no time was specified
 
@@ -226,6 +226,15 @@ public final class StringDateTimeConverter {
          */
         public boolean hasTime() {
             return time != null;
+        }
+
+        @Override
+        public int compareTo(ParsedDateTime other) {
+            int dateComparison = compareDate(other);
+            if (dateComparison != 0) {
+                return dateComparison;
+            }
+            return compareTime(other);
         }
 
         /**

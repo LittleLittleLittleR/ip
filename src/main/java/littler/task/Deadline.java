@@ -53,6 +53,16 @@ public class Deadline extends Task implements Schedulable {
     }
 
     /**
+     * Returns the date/time value used to order this task chronologically relative to other schedulable tasks.
+     *
+     * @return the parsed date/time representing this task's position in time
+     */
+    @Override
+    public ParsedDateTime getSortDate() {
+        return due;
+    }
+
+    /**
      * Checks if this deadline task is equal to another object.
      * Two deadlines are considered equal if they have the same name and due date/time.
      *

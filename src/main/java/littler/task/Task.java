@@ -1,6 +1,7 @@
 package littler.task;
 
 import java.util.Map;
+import java.util.Set;
 
 import littler.exception.LittleRException;
 
@@ -13,6 +14,7 @@ public abstract class Task {
 
     private String name;
     private boolean marked;
+    private final TagSet tags = new TagSet();
 
     /**
      * Constructs a new Task with the specified name and initializes its completion status to false.
@@ -22,6 +24,60 @@ public abstract class Task {
     public Task(String name) {
         this.name = name;
         this.marked = false;
+    }
+
+    /**
+     * Adds a tag to the task.
+     *
+     * @param tag the tag to add
+     */
+    public void addTag(String tag) {
+        tags.add(tag);
+    }
+
+    /**
+     * Removes a tag from the task.
+     *
+     * @param tag the tag to remove
+     */
+    public void removeTag(String tag) {
+        tags.remove(tag);
+    }
+
+    /**
+     * Returns the set of tags associated with the task.
+     *
+     * @return an unmodifiable set of tags
+     */
+    public Set<String> getTags() {
+        return tags.asUnmodifiableSet();
+    }
+
+    /**
+     * Copies the tags from this task to another task.
+     *
+     * @param other the task to copy tags to
+     */
+    protected void copyTagsTo(Task other) {
+        other.tags.addAll(this.tags);
+    }
+
+    /**
+     * Returns a string representation of the task's tags for storage purposes.
+     *
+     * @return a formatted string of tags, or an empty string if no tags are present
+     */
+    protected String getTagsStorageSuffix() {
+        return tags.toStorageString();
+    }
+
+    /**
+     * Returns a string representation of the task's tags for display purposes.
+     *
+     * @return a formatted string of tags, or an empty string if no tags are present
+     */
+    protected String getTagsDisplaySuffix() {
+        return tags.toDisplayString();
     }
 
     /**

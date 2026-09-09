@@ -69,6 +69,7 @@ public class Event extends Task implements Schedulable {
             : endDateTime;
         Event updated = new Event(newName, newStart, newEnd);
         copyMarkedStatusTo(updated);
+        copyTagsTo(updated);
         return updated;
     }
 
@@ -79,9 +80,11 @@ public class Event extends Task implements Schedulable {
      */
     @Override
     public String toFileString() {
-        return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
+        return TYPE_CODE + " | "
+            + (super.isMarked() ? "1" : "0") + " | "
+            + super.getName() + " | "
             + StringDateTimeConverter.toStorageString(startDateTime) + " | "
-            + StringDateTimeConverter.toStorageString(endDateTime);
+            + StringDateTimeConverter.toStorageString(endDateTime) + getTagsStorageSuffix();
     }
 
     /**
@@ -131,8 +134,9 @@ public class Event extends Task implements Schedulable {
      */
     @Override
     public String toString() {
-        return "[" + TYPE_CODE + "]" + super.toString()
-            + " (" + startDateTime + " to " + endDateTime + ")";
+        return "[E]" + super.toString()
+            + " (" + startDateTime + " to " + endDateTime + ")"
+            + getTagsDisplaySuffix();
     }
 
 }

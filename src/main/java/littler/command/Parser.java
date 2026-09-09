@@ -25,6 +25,31 @@ public final class Parser {
     private Parser() {}
 
     /**
+     * Parses a tag or untag command's target index and tag text from user input.
+     *
+     * @param input the raw user input containing the index and tag
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed TagRequest
+     * @throws LittleRException if the index is missing/invalid, or no tag was provided
+     */
+    public static TagRequest parseTag(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        String[] indexAndTag = argsText.split("\\s+", 2);
+
+        int index;
+        try {
+            index = Integer.parseInt(indexAndTag[0]) - 1;
+        } catch (NumberFormatException e) {
+            throw new LittleRException("Please provide a valid task number.");
+        }
+
+        if (indexAndTag.length < 2 || indexAndTag[1].isBlank()) {
+            throw new LittleRException("Please provide a tag, e.g. " + command.getKeyword() + " 2 fun");
+        }
+        return new TagRequest(index, indexAndTag[1].trim());
+    }
+
+    /**
      * Parses an edit command's target index and field updates from user input.
      *
      * @param input the raw user input containing the index and field updates

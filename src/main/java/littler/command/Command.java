@@ -22,6 +22,11 @@ public enum Command {
     MARK("mark"),
     /** Command to unmark a completed task. */
     UNMARK("unmark"),
+    /** Command to tag an existing task. */
+    TAG("tag"),
+    /** Command to remove a tag from an existing task. */
+    UNTAG("untag"),
+
     /** Command to edit fields of an existing task. */
     EDIT("edit"),
     /** Command to create a copy of an existing task, with optional field overrides. */

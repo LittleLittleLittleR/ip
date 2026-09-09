@@ -1,0 +1,94 @@
+package littler.task;
+
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Represents the set of tags attached to a task, handling tag normalization
+ * and the storage/display formatting of the whole set.
+ */
+public final class TagSet {
+    public static final String TAG_PREFIX = "#";
+    private static final String STORAGE_DELIMITER = ",";
+
+    private final Set<String> tags = new LinkedHashSet<>();
+
+    /**
+     * Adds a tag. A leading "#" is stripped if present, and the tag is stored in
+     * lowercase, so "fun" and "#Fun" are treated as the same tag.
+     *
+     * @param tag the tag to add
+     */
+    public void add(String tag) {
+        tags.add(normalize(tag));
+    }
+
+    /**
+     * Removes a tag, if present.
+     *
+     * @param tag the tag to remove
+     */
+    public void remove(String tag) {
+        tags.remove(normalize(tag));
+    }
+
+    /**
+     * Copies all tags from another TagSet into this one.
+     *
+     * @param other the TagSet to copy tags from
+     */
+    public void addAll(TagSet other) {
+        tags.addAll(other.tags);
+    }
+
+    /**
+     * Returns this set's tags as a read-only view.
+     *
+     * @return an unmodifiable set of tags
+     */
+    public Set<String> asUnmodifiableSet() {
+        return Collections.unmodifiableSet(tags);
+    }
+
+    /**
+     * Builds the storage-format representation of this tag set.
+     *
+     * @return " | tag1,tag2" if any tags are present, or "" if the set is empty
+     */
+    public String toStorageString() {
+        return tags.isEmpty() ? "" : " | " + String.join(STORAGE_DELIMITER, tags);
+    }
+
+    /**
+     * Builds the display-format representation of this tag set.
+     *
+     * @return " #tag1 #tag2" if any tags are present, or "" if the set is empty
+     */
+    public String toDisplayString() {
+        return tags.isEmpty() ? "" : " " + tags.stream()
+            .map(tag -> TAG_PREFIX + tag)
+            .collect(Collectors.joining(" "));
+    }
+
+    /**
+     * Parses a comma-separated storage string into a new TagSet.
+     *
+     * @param stored the comma-separated tags segment read from file storage
+     * @return the reconstructed TagSet
+     */
+    public static TagSet fromStorageString(String stored) {
+        TagSet result = new TagSet();
+        for (String tag : stored.split(STORAGE_DELIMITER)) {
+            result.add(tag);
+        }
+        return result;
+    }
+
+    private static String normalize(String tag) {
+        String trimmed = tag.trim();
+        String withoutPrefix = trimmed.startsWith(TAG_PREFIX) ? trimmed.substring(TAG_PREFIX.length()) : trimmed;
+        return withoutPrefix.toLowerCase();
+    }
+}

@@ -8,6 +8,7 @@ import littler.command.Parser;
 import littler.command.SortCriteria;
 import littler.command.SortOrder;
 import littler.command.SortRequest;
+import littler.command.TagRequest;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
 import littler.storage.Storage;
@@ -79,6 +80,14 @@ public class LittleR {
 
                 case UNMARK:
                     output.append(UI.taskUnmarked(tasks.unmark(getIndex(input, command))));
+                    break;
+
+                case TAG:
+                    output.append(tagItem(Parser.parseTag(input, command)));
+                    break;
+
+                case UNTAG:
+                    output.append(untagItem(Parser.parseTag(input, command)));
                     break;
 
                 case EDIT:
@@ -260,5 +269,17 @@ public class LittleR {
         tasks.add(duplicate);
         String confirmation = UI.taskDuplicated(duplicate, tasks.size());
         return isDuplicate ? UI.duplicateTaskWarning() + confirmation : confirmation;
+    }
+
+    private String tagItem(TagRequest request) throws LittleRException {
+        Task task = tasks.get(request.getIndex());
+        task.addTag(request.getTag());
+        return UI.taskTagged(task);
+    }
+
+    private String untagItem(TagRequest request) throws LittleRException {
+        Task task = tasks.get(request.getIndex());
+        task.removeTag(request.getTag());
+        return UI.taskUntagged(task);
     }
 }

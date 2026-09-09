@@ -55,6 +55,7 @@ public class Deadline extends Task implements Schedulable {
             : due;
         Deadline updated = new Deadline(newName, newDue);
         copyMarkedStatusTo(updated);
+        copyTagsTo(updated);
         return updated;
     }
 
@@ -65,8 +66,10 @@ public class Deadline extends Task implements Schedulable {
      */
     @Override
     public String toFileString() {
-        return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
-            + StringDateTimeConverter.toStorageString(due);
+        return TYPE_CODE + " | "
+            + (super.isMarked() ? "1" : "0") + " | "
+            + super.getName() + " | "
+            + StringDateTimeConverter.toStorageString(due) + getTagsStorageSuffix();
     }
 
     /**
@@ -115,7 +118,6 @@ public class Deadline extends Task implements Schedulable {
      */
     @Override
     public String toString() {
-        return "[" + TYPE_CODE + "]" + super.toString()
-            + " (due: " + due + ")";
+        return "[D]" + super.toString() + " (due: " + due + ")" + getTagsDisplaySuffix();
     }
 }

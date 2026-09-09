@@ -48,6 +48,26 @@ public class UI {
     }
 
     /**
+     * Displays a confirmation message indicating that a task has been tagged.
+     *
+     * @param task the task that was tagged
+     * @return a string on the confirmation of the tagged task
+     */
+    public static String taskTagged(Task task) {
+        return "Tagged: " + task;
+    }
+
+    /**
+     * Displays a confirmation message indicating that a task has been untagged.
+     *
+     * @param task the task that was untagged
+     * @return a string on the confirmation of the untagged task
+     */
+    public static String taskUntagged(Task task) {
+        return "Untagged: " + task;
+    }
+
+    /**
      * Displays a confirmation message indicating that a task has been edited.
      *
      * @param task the task that was edited
@@ -191,7 +211,9 @@ public class UI {
             + "10. duplicate <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
             + "- Create a copy of an existing task, optionally overriding some fields "
             + "(the copy always starts unmarked)\n"
-            + "11. bye - Exit the program\n\n"
+            + "11. tag <task number> <tag> - Add a tag to a task\n"
+            + "12. untag <task number> <tag> - Remove a tag from a task\n"
+            + "13. bye - Exit the program\n\n"
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"
             + "Datetime is similar to date, with an optional time in the format of HHmm\n";

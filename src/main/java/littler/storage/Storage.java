@@ -18,6 +18,10 @@ import littler.task.Todo;
  * Handles reading tasks from disk and persisting tasks back to disk storage.
  */
 public class Storage {
+    private static final int TODO_BASE_FIELDS = 3;
+    private static final int DEADLINE_BASE_FIELDS = 4;
+    private static final int EVENT_BASE_FIELDS = 5;
+
     private final Path filePath;
 
     /**
@@ -100,20 +104,23 @@ public class Storage {
         switch (type) {
             case Todo.TYPE_CODE:
                 task = new Todo(name);
+                applyStoredTags(task, parts, TODO_BASE_FIELDS);
                 break;
             case Deadline.TYPE_CODE:
-                if (parts.length < 4) {
+                if (parts.length < DEADLINE_BASE_FIELDS) {
                     throw new LittleRException("Missing due date in line: " + line);
                 }
                 task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
+                applyStoredTags(task, parts, DEADLINE_BASE_FIELDS);
                 break;
             case Event.TYPE_CODE:
-                if (parts.length < 5) {
+                if (parts.length < EVENT_BASE_FIELDS) {
                     throw new LittleRException("Missing from/to date in line: " + line);
                 }
                 task = new Event(name,
                     StringDateTimeConverter.fromStorageString(parts[3]),
                     StringDateTimeConverter.fromStorageString(parts[4]));
+                applyStoredTags(task, parts, EVENT_BASE_FIELDS);
                 break;
             default:
                 throw new LittleRException("Unknown task type: " + type);
@@ -123,5 +130,23 @@ public class Storage {
             task.mark();
         }
         return task;
+    }
+
+    /**
+     * Applies any tags found in the trailing storage field to a reconstructed task, if present.
+     * Older save files without a tags field are unaffected, since baseFieldCount reflects the
+     * exact number of fields that type has without tags.
+     *
+     * @param task the task to apply tags to
+     * @param parts the split storage line fields
+     * @param baseFieldCount the number of fields that type has when untagged
+     */
+    private void applyStoredTags(Task task, String[] parts, int baseFieldCount) {
+        if (parts.length <= baseFieldCount) {
+            return;
+        }
+        for (String tag : parts[baseFieldCount].split(",")) {
+            task.addTag(tag);
+        }
     }
 }

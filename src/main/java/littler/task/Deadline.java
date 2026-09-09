@@ -1,5 +1,7 @@
 package littler.task;
 
+import java.util.Objects;
+
 import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
@@ -48,6 +50,34 @@ public class Deadline extends Task implements Schedulable {
     public String toFileString() {
         return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
             + StringDateTimeConverter.toStorageString(due);
+    }
+
+    /**
+     * Checks if this deadline task is equal to another object.
+     * Two deadlines are considered equal if they have the same name and due date/time.
+     *
+     * @param obj the object to compare with
+     * @return true if the other object is a Deadline with the same name and due date/time, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Deadline other)) {
+            return false;
+        }
+        return super.getName().equalsIgnoreCase(other.getName()) && due.equals(other.due);
+    }
+
+    /**
+     * Computes the hash code for this deadline task based on its class, name, and due date/time.
+     *
+     * @return the hash code of this task
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(Deadline.class, super.getName().toLowerCase(), due);
     }
 
     /**

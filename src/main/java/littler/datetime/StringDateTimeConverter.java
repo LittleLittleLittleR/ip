@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import littler.exception.LittleRException;
@@ -172,6 +173,34 @@ public final class StringDateTimeConverter {
                 return 0; // Assume equal if either has no time
             }
             return Integer.signum(this.time.compareTo(other.time));
+        }
+
+        /**
+         * Checks for equality between this ParsedDateTime and another object.
+         * Two ParsedDateTime instances are considered equal if both their date and time components match.
+         *
+         * @param obj the object to compare against
+         * @return true if equal; false otherwise
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof ParsedDateTime other)) {
+                return false;
+            }
+            return date.equals(other.date) && Objects.equals(time, other.time);
+        }
+
+        /**
+         * Generates a hash code based on the date and time components.
+         *
+         * @return the computed hash code
+         */
+        @Override
+        public int hashCode() {
+            return Objects.hash(date, time);
         }
 
         /**

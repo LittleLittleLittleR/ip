@@ -168,4 +168,15 @@ public class TaskList {
             throw new LittleRException("That task number doesn't exist.");
         }
     }
+
+    /**
+     * Checks whether a task with the same type, description, and date(s) (if any)
+     * already exists in the list.
+     *
+     * @param task the task to check for duplicates against
+     * @return true if an equivalent task already exists; false otherwise
+     */
+    public boolean containsDuplicate(Task task) {
+        return tasks.stream().anyMatch(existing -> existing.equals(task));
+    }
 }

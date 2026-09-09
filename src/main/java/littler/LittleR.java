@@ -193,8 +193,10 @@ public class LittleR {
      */
     private String addItem(String input, Command type) throws LittleRException {
         Task task = Parser.parseTask(input, type);
+        boolean isDuplicate = tasks.containsDuplicate(task);
         tasks.add(task);
         assert tasks.getLast() == task : "the just-added task should be the last task in the list";
-        return UI.taskAdded(tasks.getLast(), tasks.size());
+        String confirmation = UI.taskAdded(tasks.getLast(), tasks.size());
+        return isDuplicate ? UI.duplicateTaskWarning() + confirmation : confirmation;
     }
 }

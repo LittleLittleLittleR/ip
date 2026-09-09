@@ -1,5 +1,7 @@
 package littler.task;
 
+import java.util.Objects;
+
 import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 
@@ -60,6 +62,36 @@ public class Event extends Task implements Schedulable {
         return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
             + StringDateTimeConverter.toStorageString(startDateTime) + " | "
             + StringDateTimeConverter.toStorageString(endDateTime);
+    }
+
+    /**
+     * Checks if this event task is equal to another object.
+     * Two events are considered equal if they have the same name, start date/time, and end date/time.
+     *
+     * @param obj the object to compare with
+     * @return true if the other object is an Event with the same name and date/time range, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Event other)) {
+            return false;
+        }
+        return super.getName().equalsIgnoreCase(other.getName())
+            && startDateTime.equals(other.startDateTime)
+            && endDateTime.equals(other.endDateTime);
+    }
+
+    /**
+     * Computes the hash code for this event task based on its class, name, and date/time range.
+     *
+     * @return the hash code of this task
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(Event.class, super.getName().toLowerCase(), startDateTime, endDateTime);
     }
 
     /**

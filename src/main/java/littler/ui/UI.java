@@ -117,6 +117,15 @@ public class UI {
         return "No matching tasks found.";
     }
 
+    /**
+     * Displays a warning that the just-added task appears to duplicate an existing one.
+     *
+     * @return a string warning the user about a likely duplicate task
+     */
+    public static String duplicateTaskWarning() {
+        return "Note: This looks like a duplicate of an existing task.\n";
+    }
+
     // ERROR PRINTING METHODS
 
     /**

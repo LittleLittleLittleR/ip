@@ -68,6 +68,16 @@ public class UI {
     }
 
     /**
+     * Displays a confirmation message indicating that a task's priority has been updated.
+     *
+     * @param task the task whose priority was updated
+     * @return a string on the confirmation of the updated priority
+     */
+    public static String taskPriorityUpdated(Task task) {
+        return "Priority updated: " + task;
+    }
+
+    /**
      * Displays a confirmation message indicating that a task has been edited.
      *
      * @param task the task that was edited
@@ -213,7 +223,8 @@ public class UI {
             + "(the copy always starts unmarked)\n"
             + "11. tag <task number> <tag> - Add a tag to a task\n"
             + "12. untag <task number> <tag> - Remove a tag from a task\n"
-            + "13. bye - Exit the program\n\n"
+            + "13. priority <task number> <priority> - Set the priority of a task\n"
+            + "14. bye - Exit the program\n\n"
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"
             + "Datetime is similar to date, with an optional time in the format of HHmm\n";

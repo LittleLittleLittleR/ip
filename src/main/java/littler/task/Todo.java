@@ -30,6 +30,7 @@ public class Todo extends Task {
         String newName = updates.getOrDefault(NAME_DELIMITER, super.getName());
         Todo updated = new Todo(newName);
         copyMarkedStatusTo(updated);
+        copyPriorityTo(updated);
         copyTagsTo(updated);
         return updated;
     }
@@ -43,7 +44,9 @@ public class Todo extends Task {
     public String toFileString() {
         return TYPE_CODE + " | "
             + (super.isMarked() ? "1" : "0") + " | "
-            + super.getName() + getTagsStorageSuffix();
+            + super.getName()
+            + getPriorityStorageSuffix()
+            + getTagsStorageSuffix();
     }
 
     /**
@@ -81,6 +84,6 @@ public class Todo extends Task {
      */
     @Override
     public String toString() {
-        return "[T]" + super.toString() + getTagsDisplaySuffix();
+        return "[T]" + super.toString() + getPriorityDisplaySuffix() + getTagsDisplaySuffix();
     }
 }

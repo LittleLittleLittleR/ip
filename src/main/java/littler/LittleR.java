@@ -12,6 +12,7 @@ import littler.command.TagRequest;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
 import littler.storage.Storage;
+import littler.task.PriorityLevel;
 import littler.task.Task;
 import littler.task.TaskList;
 import littler.ui.UI;
@@ -88,6 +89,10 @@ public class LittleR {
 
                 case UNTAG:
                     output.append(untagItem(Parser.parseTag(input, command)));
+                    break;
+
+                case PRIORITY:
+                    output.append(setPriorityItem(Parser.parsePriority(input, command)));
                     break;
 
                 case EDIT:
@@ -281,5 +286,15 @@ public class LittleR {
         Task task = tasks.get(request.getIndex());
         task.removeTag(request.getTag());
         return UI.taskUntagged(task);
+    }
+
+    private String setPriorityItem(TagRequest request) throws LittleRException {
+        Task task = tasks.get(request.getIndex());
+        PriorityLevel level = PriorityLevel.fromInput(request.getTag());
+        if (level == null) {
+            throw new LittleRException("Priority must be one of: high/1, medium/2, low/3.");
+        }
+        task.setPriority(level);
+        return UI.taskPriorityUpdated(task);
     }
 }

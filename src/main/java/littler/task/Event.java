@@ -69,6 +69,7 @@ public class Event extends Task implements Schedulable {
             : endDateTime;
         Event updated = new Event(newName, newStart, newEnd);
         copyMarkedStatusTo(updated);
+        copyPriorityTo(updated);
         copyTagsTo(updated);
         return updated;
     }
@@ -84,7 +85,9 @@ public class Event extends Task implements Schedulable {
             + (super.isMarked() ? "1" : "0") + " | "
             + super.getName() + " | "
             + StringDateTimeConverter.toStorageString(startDateTime) + " | "
-            + StringDateTimeConverter.toStorageString(endDateTime) + getTagsStorageSuffix();
+            + StringDateTimeConverter.toStorageString(endDateTime)
+            + getPriorityStorageSuffix()
+            + getTagsStorageSuffix();
     }
 
     /**
@@ -136,6 +139,7 @@ public class Event extends Task implements Schedulable {
     public String toString() {
         return "[E]" + super.toString()
             + " (" + startDateTime + " to " + endDateTime + ")"
+            + getPriorityDisplaySuffix()
             + getTagsDisplaySuffix();
     }
 

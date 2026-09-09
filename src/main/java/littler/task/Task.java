@@ -15,6 +15,7 @@ public abstract class Task {
     private String name;
     private boolean marked;
     private final TagSet tags = new TagSet();
+    private PriorityLevel priority;
 
     /**
      * Constructs a new Task with the specified name and initializes its completion status to false.
@@ -24,6 +25,30 @@ public abstract class Task {
     public Task(String name) {
         this.name = name;
         this.marked = false;
+    }
+
+    public void setPriority(PriorityLevel priority) {
+        this.priority = priority;
+    }
+
+    public void clearPriority() {
+        this.priority = null;
+    }
+
+    public PriorityLevel getPriority() {
+        return priority;
+    }
+
+    protected void copyPriorityTo(Task other) {
+        other.priority = this.priority;
+    }
+
+    protected String getPriorityStorageSuffix() {
+        return priority == null ? "" : " | " + PriorityLevel.toStorageField(priority);
+    }
+
+    protected String getPriorityDisplaySuffix() {
+        return priority == null ? "" : " [" + priority.getKeyword() + "]";
     }
 
     /**

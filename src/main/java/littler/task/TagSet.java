@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public final class TagSet {
     public static final String TAG_PREFIX = "#";
     private static final String STORAGE_DELIMITER = ",";
+    private static final String STORAGE_PREFIX = "TAGS:";
 
     private final Set<String> tags = new LinkedHashSet<>();
 
@@ -44,6 +45,16 @@ public final class TagSet {
     }
 
     /**
+     * Returns true if the given string is a storage-format tag field.
+     *
+     * @param field the string to check
+     * @return true if the string starts with "TAGS:", false otherwise
+     */
+    public static boolean isTagField(String field) {
+        return field.startsWith(STORAGE_PREFIX);
+    }
+
+    /**
      * Returns this set's tags as a read-only view.
      *
      * @return an unmodifiable set of tags
@@ -58,7 +69,7 @@ public final class TagSet {
      * @return " | tag1,tag2" if any tags are present, or "" if the set is empty
      */
     public String toStorageString() {
-        return tags.isEmpty() ? "" : " | " + String.join(STORAGE_DELIMITER, tags);
+        return tags.isEmpty() ? "" : " | " + STORAGE_PREFIX + String.join(STORAGE_DELIMITER, tags);
     }
 
     /**
@@ -75,12 +86,12 @@ public final class TagSet {
     /**
      * Parses a comma-separated storage string into a new TagSet.
      *
-     * @param stored the comma-separated tags segment read from file storage
+     * @param field the storage-format string to parse
      * @return the reconstructed TagSet
      */
-    public static TagSet fromStorageString(String stored) {
+    public static TagSet fromStorageString(String field) {
         TagSet result = new TagSet();
-        for (String tag : stored.split(STORAGE_DELIMITER)) {
+        for (String tag : field.substring(STORAGE_PREFIX.length()).split(STORAGE_DELIMITER)) {
             result.add(tag);
         }
         return result;

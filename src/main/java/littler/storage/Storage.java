@@ -11,6 +11,8 @@ import littler.datetime.StringDateTimeConverter;
 import littler.exception.LittleRException;
 import littler.task.Deadline;
 import littler.task.Event;
+import littler.task.PriorityLevel;
+import littler.task.TagSet;
 import littler.task.Task;
 import littler.task.Todo;
 
@@ -104,14 +106,14 @@ public class Storage {
         switch (type) {
             case Todo.TYPE_CODE:
                 task = new Todo(name);
-                applyStoredTags(task, parts, TODO_BASE_FIELDS);
+                applyMetadataField(task, parts);
                 break;
             case Deadline.TYPE_CODE:
                 if (parts.length < DEADLINE_BASE_FIELDS) {
                     throw new LittleRException("Missing due date in line: " + line);
                 }
                 task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
-                applyStoredTags(task, parts, DEADLINE_BASE_FIELDS);
+                applyMetadataField(task, parts);
                 break;
             case Event.TYPE_CODE:
                 if (parts.length < EVENT_BASE_FIELDS) {
@@ -120,7 +122,7 @@ public class Storage {
                 task = new Event(name,
                     StringDateTimeConverter.fromStorageString(parts[3]),
                     StringDateTimeConverter.fromStorageString(parts[4]));
-                applyStoredTags(task, parts, EVENT_BASE_FIELDS);
+                applyMetadataField(task, parts);
                 break;
             default:
                 throw new LittleRException("Unknown task type: " + type);
@@ -132,21 +134,20 @@ public class Storage {
         return task;
     }
 
-    /**
-     * Applies any tags found in the trailing storage field to a reconstructed task, if present.
-     * Older save files without a tags field are unaffected, since baseFieldCount reflects the
-     * exact number of fields that type has without tags.
-     *
-     * @param task the task to apply tags to
-     * @param parts the split storage line fields
-     * @param baseFieldCount the number of fields that type has when untagged
-     */
-    private void applyStoredTags(Task task, String[] parts, int baseFieldCount) {
-        if (parts.length <= baseFieldCount) {
-            return;
+    private void applyMetadataField(Task task, String[] fields) {
+        int baseFields = task instanceof Todo ? TODO_BASE_FIELDS
+            : task instanceof Deadline ? DEADLINE_BASE_FIELDS : EVENT_BASE_FIELDS;
+        for (int i = baseFields; i < fields.length; i++) {
+            String field = fields[i];
+            if (TagSet.isTagField(field)) {
+                for (String tag : field.substring("TAGS:".length()).split(",")) {
+                    task.addTag(tag);
+                }
+            } else if (PriorityLevel.isPriorityField(field)) {
+                task.setPriority(PriorityLevel.fromStorageField(field));
+            }
         }
-        for (String tag : parts[baseFieldCount].split(",")) {
-            task.addTag(tag);
-        }
+        // unrecognized prefixes are ignored, so a future save-file format change doesn't
+        // break loading of files written by this version
     }
 }

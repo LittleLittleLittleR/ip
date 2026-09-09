@@ -26,6 +26,8 @@ public enum Command {
     TAG("tag"),
     /** Command to remove a tag from an existing task. */
     UNTAG("untag"),
+    /** Command to set an existing task's priority level. */
+    PRIORITY("priority"),
 
     /** Command to edit fields of an existing task. */
     EDIT("edit"),

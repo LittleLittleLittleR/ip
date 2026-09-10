@@ -3,6 +3,7 @@ package littler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import littler.command.Command;
 import littler.command.EditRequest;
@@ -23,6 +24,10 @@ import littler.ui.UI;
  * Manages the interaction loop between user input, task storage, and user interface display.
  */
 public class LittleR {
+
+    private static final Set<Command> MUTATING_COMMANDS = Set.of(
+        Command.MARK, Command.UNMARK, Command.DELETE, Command.TODO, Command.DEADLINE, Command.EVENT,
+        Command.EDIT, Command.DUPLICATE, Command.TAG, Command.UNTAG, Command.PRIORITY, Command.ARCHIVE);
 
     private final Storage storage;
     private final TaskList tasks;
@@ -64,8 +69,16 @@ public class LittleR {
                 return output.toString();
             }
 
+            ArrayList<Task> preCommandSnapshot = MUTATING_COMMANDS.contains(command)
+                ? tasks.snapshotTasks() : null;
+
             // Exit
             switch (command) {
+                case UNDO:
+                    tasks.undo();
+                    output.append(UI.undoSuccessful());
+                    break;
+
                 case EXIT:
                     output.append(UI.goodbye());
                     break;
@@ -140,6 +153,9 @@ public class LittleR {
 
                 default:
                     throw new LittleRException("Unrecognized command: " + command.getKeyword());
+            }
+            if (preCommandSnapshot != null) {
+                tasks.setUndoSnapshot(preCommandSnapshot);
             }
         } catch (LittleRException e) {
             output.append(UI.error(e.getMessage()));

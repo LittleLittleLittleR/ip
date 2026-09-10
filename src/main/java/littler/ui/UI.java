@@ -130,6 +130,10 @@ public class UI {
         return "Deleted: " + task + "\nNow you have " + remaining + " tasks in the list.";
     }
 
+    public static String undoSuccessful() {
+        return "Undone. Your task list has been restored to its previous state.";
+    }
+
     /**
      * Displays a confirmation message indicating that a task was added, along with the total task count.
      *
@@ -280,6 +284,9 @@ public class UI {
             + "17. archive - Archive all current tasks to a backup file and start with a clean slate\n"
 
             + "18. stats - View statistics about your current task list\n"
+
+            + "19. undo - Undo the most recent change to your task list "
+            + "(only applies to commands that modify it, e.g. not list/find/sort/stats)\n"
 
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"

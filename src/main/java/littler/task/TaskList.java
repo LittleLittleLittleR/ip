@@ -1,6 +1,7 @@
 package littler.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import littler.exception.LittleRException;
  */
 public class TaskList {
     private final ArrayList<Task> tasks;
+    private ArrayList<Task> undoSnapshot; // null means nothing to undo
 
     /**
      * Constructs an empty TaskList.
@@ -29,6 +31,45 @@ public class TaskList {
      */
     public TaskList(ArrayList<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    /**
+     * Captures an independent snapshot of the current task list, suitable for restoring later.
+     * Since tasks can be mutated in place (mark, tag, priority), this clones each task rather
+     * than just copying the list itself.
+     *
+     * @return a new ArrayList of cloned tasks representing the current state
+     */
+    public ArrayList<Task> snapshotTasks() {
+        ArrayList<Task> snapshot = new ArrayList<>();
+        for (Task task : tasks) {
+            snapshot.add(cloneTask(task));
+        }
+        return snapshot;
+    }
+
+    /**
+     * Restores the task list to the most recently stored undo snapshot, then clears it,
+     * so undo only ever reverts a single step.
+     *
+     * @throws LittleRException if there is no snapshot to restore
+     */
+    public void undo() throws LittleRException {
+        if (undoSnapshot == null) {
+            throw new LittleRException("There is nothing to undo.");
+        }
+        tasks.clear();
+        tasks.addAll(undoSnapshot);
+        undoSnapshot = null;
+    }
+
+    /**
+     * Sets the given snapshot as the current undo point, replacing whatever was there before.
+     *
+     * @param snapshot the snapshot to store as the new undo point
+     */
+    public void setUndoSnapshot(ArrayList<Task> snapshot) {
+        this.undoSnapshot = snapshot;
     }
 
     /**
@@ -327,5 +368,23 @@ public class TaskList {
             return aDate.compareTo(bDate);
         }
         return a.getName().compareToIgnoreCase(b.getName());
+    }
+
+    /**
+     * Creates a deep copy of the given task. This is necessary because tasks can be mutated
+     * in place (e.g., marking, tagging, changing priority), and we want to ensure that
+     * snapshots for undo functionality are independent of the current state.
+     *
+     * @param task the task to clone
+     * @return a new Task instance that is a copy of the original
+     */
+    private static Task cloneTask(Task task) {
+        try {
+            // withUpdates() with no field overrides still produces a fully independent
+            // copy, since marked status, priority, and tags are always carried over
+            return task.withUpdates(Collections.emptyMap());
+        } catch (LittleRException e) {
+            throw new AssertionError("Cloning a task with no field overrides should never fail", e);
+        }
     }
 }

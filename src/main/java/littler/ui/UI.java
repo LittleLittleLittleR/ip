@@ -3,6 +3,7 @@ package littler.ui;
 import java.util.ArrayList;
 
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.task.Statistics;
 import littler.task.Task;
 
 /**
@@ -25,6 +26,26 @@ public class UI {
             output += taskWithIndex(i + 1, tasks.get(i)) + "\n";
         }
         return output;
+    }
+
+    /**
+     * Displays a summary of statistics about the current task list.
+     *
+     * @param stats the computed Statistics to display
+     * @return a formatted statistics summary, or a message if the list is empty
+     */
+    public static String statistics(Statistics stats) {
+        if (stats.total() == 0) {
+            return "There are no tasks yet.";
+        }
+        return "Task statistics:\n"
+            + "Total: " + stats.total() + "\n"
+            + "Completed: " + stats.completed() + ", Pending: " + stats.pending() + "\n"
+            + "By type - Todo: " + stats.todoCount() + ", Deadline: " + stats.deadlineCount()
+            + ", Event: " + stats.eventCount() + "\n"
+            + "By priority - High: " + stats.highPriorityCount() + ", Medium: " + stats.mediumPriorityCount()
+            + ", Low: " + stats.lowPriorityCount() + ", None: " + stats.noPriorityCount() + "\n"
+            + "Tagged: " + stats.taggedCount() + ", Untagged: " + stats.untaggedCount() + "\n";
     }
 
     /**
@@ -257,6 +278,8 @@ public class UI {
             + "16. bye - Exit the program\n"
 
             + "17. archive - Archive all current tasks to a backup file and start with a clean slate\n"
+
+            + "18. stats - View statistics about your current task list\n"
 
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"

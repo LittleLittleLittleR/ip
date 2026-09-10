@@ -75,6 +75,11 @@ public class LittleR {
                     output.append(UI.taskList(tasks.getTasks()));
                     break;
 
+                // View statistics
+                case STATS:
+                    output.append(UI.statistics(tasks.getStatistics()));
+                    break;
+
                 // Mark or unmark a task
                 case MARK:
                     output.append(markItems(getIndices(input, command)));

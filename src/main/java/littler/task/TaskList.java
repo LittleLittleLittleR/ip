@@ -32,6 +32,32 @@ public class TaskList {
     }
 
     /**
+     * Computes a snapshot of statistics across the current task list.
+     *
+     * @return the computed Statistics
+     */
+    public Statistics getStatistics() {
+        int total = tasks.size();
+        int completed = (int) tasks.stream().filter(Task::isMarked).count();
+        int pending = total - completed;
+
+        int todoCount = (int) tasks.stream().filter(t -> t instanceof Todo).count();
+        int deadlineCount = (int) tasks.stream().filter(t -> t instanceof Deadline).count();
+        int eventCount = (int) tasks.stream().filter(t -> t instanceof Event).count();
+
+        int highCount = (int) tasks.stream().filter(t -> t.getPriority() == PriorityLevel.HIGH).count();
+        int mediumCount = (int) tasks.stream().filter(t -> t.getPriority() == PriorityLevel.MEDIUM).count();
+        int lowCount = (int) tasks.stream().filter(t -> t.getPriority() == PriorityLevel.LOW).count();
+        int noPriorityCount = total - highCount - mediumCount - lowCount;
+
+        int taggedCount = (int) tasks.stream().filter(t -> !t.getTags().isEmpty()).count();
+        int untaggedCount = total - taggedCount;
+
+        return new Statistics(total, completed, pending, todoCount, deadlineCount, eventCount,
+            highCount, mediumCount, lowCount, noPriorityCount, taggedCount, untaggedCount);
+    }
+
+    /**
      * Replaces the task at the specified 0-based index with a new task instance.
      *
      * @param index the index of the task to replace

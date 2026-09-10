@@ -13,6 +13,8 @@ public enum Command {
     EXIT("bye"),
     /** Command to list all tasks. */
     LIST("list"),
+    /** Command to view statistics about the current task list. */
+    STATS("stats"),
     /** Command to view tasks sorted by a given criteria. */
     SORT("sort"),
 

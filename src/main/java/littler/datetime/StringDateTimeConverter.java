@@ -1,11 +1,16 @@
 package littler.datetime;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import littler.exception.LittleRException;
@@ -34,6 +39,15 @@ public final class StringDateTimeConverter {
         DateTimeFormatter.ofPattern("d-M-yyyy"),
         DateTimeFormatter.ofPattern("yyyy-M-d")
     );
+
+    // Time-only format; used for parsing user input like "1800" (24-hour)
+    private static final DateTimeFormatter TIME_ONLY_FORMAT = DateTimeFormatter.ofPattern("HHmm");
+
+    // Weekday format; used for parsing user input like "Mon", "Tue", etc. (case-insensitive)
+    private static final DateTimeFormatter WEEKDAY_FORMAT = new DateTimeFormatterBuilder()
+        .parseCaseInsensitive()
+        .appendPattern("EEE")
+        .toFormatter(Locale.ENGLISH);
 
     private StringDateTimeConverter() {}
 
@@ -101,10 +115,17 @@ public final class StringDateTimeConverter {
             }
         }
 
+        ParsedDateTime weekdayResult = parseNextWeekday(trimmed);
+        if (weekdayResult != null) {
+            return weekdayResult;
+        }
+
         throw new LittleRException(
             "Invalid date format: '" + input + "'. Accepted formats: "
             + "d-M-yyyy, or yyyy-M-d, each optionally followed by a time as HHmm "
-            + "(e.g. 2-12-2019 1800). Time is omitted from output if not provided.");
+            + "(e.g. 2-12-2019 1800). A weekday abbreviation (e.g. Tue) is also accepted, "
+            + "meaning the next such day, optionally followed by a time as HHmm "
+            + "(e.g. Tue 1800). Time is omitted from output if not provided.");
     }
 
     /**
@@ -132,9 +153,42 @@ public final class StringDateTimeConverter {
     }
 
     /**
+     * Attempts to interpret the input as a weekday abbreviation (e.g. "Tue"), optionally
+     * followed by a time in HHmm format (e.g. "Tue 1800"). Resolves to the date of the next
+     * upcoming occurrence of that weekday, strictly after today.
+     *
+     * @param trimmed the trimmed user input to attempt to parse
+     * @return the resolved ParsedDateTime, or null if the input isn't a recognized weekday
+     * @throws LittleRException if a weekday is recognized but the trailing time portion is invalid
+     */
+    private static ParsedDateTime parseNextWeekday(String trimmed) throws LittleRException {
+        String[] tokens = trimmed.split("\\s+", 2);
+        DayOfWeek dayOfWeek;
+        try {
+            dayOfWeek = DayOfWeek.from(WEEKDAY_FORMAT.parse(tokens[0]));
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+
+        LocalDate date = LocalDate.now().with(TemporalAdjusters.next(dayOfWeek));
+
+        if (tokens.length < 2) {
+            return new ParsedDateTime(date, null);
+        }
+        try {
+            LocalTime time = LocalTime.parse(tokens[1].trim(), TIME_ONLY_FORMAT);
+            return new ParsedDateTime(date, time);
+        } catch (DateTimeParseException e) {
+            throw new LittleRException(
+                "Invalid time '" + tokens[1].trim() + "' after weekday '" + tokens[0] + "'. "
+                + "Use a time in HHmm format, e.g. Tue 1800.");
+        }
+    }
+
+    /**
      * Encapsulates a LocalDate object alongside an optional LocalTime component.
      */
-    public static final class ParsedDateTime {
+    public static final class ParsedDateTime implements Comparable<ParsedDateTime> {
         private final LocalDate date;
         private final LocalTime time; // null means no time was specified
 
@@ -175,6 +229,34 @@ public final class StringDateTimeConverter {
         }
 
         /**
+         * Checks for equality between this ParsedDateTime and another object.
+         * Two ParsedDateTime instances are considered equal if both their date and time components match.
+         *
+         * @param obj the object to compare against
+         * @return true if equal; false otherwise
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof ParsedDateTime other)) {
+                return false;
+            }
+            return date.equals(other.date) && Objects.equals(time, other.time);
+        }
+
+        /**
+         * Generates a hash code based on the date and time components.
+         *
+         * @return the computed hash code
+         */
+        @Override
+        public int hashCode() {
+            return Objects.hash(date, time);
+        }
+
+        /**
          * Returns the date component of this object.
          *
          * @return the LocalDate instance
@@ -197,6 +279,15 @@ public final class StringDateTimeConverter {
          */
         public boolean hasTime() {
             return time != null;
+        }
+
+        @Override
+        public int compareTo(ParsedDateTime other) {
+            int dateComparison = compareDate(other);
+            if (dateComparison != 0) {
+                return dateComparison;
+            }
+            return compareTime(other);
         }
 
         /**

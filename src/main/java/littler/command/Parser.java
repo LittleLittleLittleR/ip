@@ -1,5 +1,12 @@
 package littler.command;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import littler.datetime.StringDateTimeConverter;
@@ -14,11 +21,227 @@ import littler.task.Todo;
  * Utility class that parses raw user input strings into usable application values and tasks.
  */
 public final class Parser {
+    private static final Pattern FIELD_PATTERN = buildFieldPattern();
 
     /**
      * Private constructor to prevent instantiation of utility class.
      */
     private Parser() {}
+
+    /**
+     * Parses a priority command's target index and priority level from user input.
+     *
+     * @param input the raw user input containing the index and priority level
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed TagRequest containing the index and priority level
+     * @throws LittleRException if the index is missing/invalid, or no priority level was provided
+     */
+    public static TagRequest parsePriority(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        String[] indexAndPriority = argsText.split("\\s+", 2);
+
+        int index;
+        try {
+            index = Integer.parseInt(indexAndPriority[0]) - 1;
+        } catch (NumberFormatException e) {
+            throw new LittleRException("Please provide a valid task number.");
+        }
+
+        if (indexAndPriority.length < 2 || indexAndPriority[1].isBlank()) {
+            throw new LittleRException("Please provide a priority level, e.g. " + command.getKeyword() + " 2 high");
+        }
+        return new TagRequest(index, indexAndPriority[1].trim());
+    }
+
+    /**
+     * Parses a tag or untag command's target index and tag text from user input.
+     *
+     * @param input the raw user input containing the index and tag
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed TagRequest
+     * @throws LittleRException if the index is missing/invalid, or no tag was provided
+     */
+    public static TagRequest parseTag(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        String[] indexAndTag = argsText.split("\\s+", 2);
+
+        int index;
+        try {
+            index = Integer.parseInt(indexAndTag[0]) - 1;
+        } catch (NumberFormatException e) {
+            throw new LittleRException("Please provide a valid task number.");
+        }
+
+        if (indexAndTag.length < 2 || indexAndTag[1].isBlank()) {
+            throw new LittleRException("Please provide a tag, e.g. " + command.getKeyword() + " 2 fun");
+        }
+        return new TagRequest(index, indexAndTag[1].trim());
+    }
+
+    /**
+     * Parses an edit command's target index and field updates from user input.
+     *
+     * @param input the raw user input containing the index and field updates
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed EditRequest
+     * @throws LittleRException if the index is missing/invalid, or no fields were provided
+     */
+    public static EditRequest parseEdit(String input, Command command) throws LittleRException {
+        IndexAndFields parsed = parseIndexAndFields(input, command);
+        if (parsed.updates().isEmpty()) {
+            throw new LittleRException(
+                "Please provide at least one field to update, e.g. " + Task.NAME_DELIMITER + " <new name>.");
+        }
+        return new EditRequest(parsed.index(), parsed.updates());
+    }
+
+    /**
+     * Parses a duplicate command's target index and optional field overrides from user input.
+     * Unlike parseEdit(), no fields are required -- a plain "duplicate 2" is a valid exact clone.
+     *
+     * @param input the raw user input containing the index and optional field overrides
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed EditRequest (reused here to represent "index + field overrides")
+     * @throws LittleRException if the index is missing or invalid
+     */
+    public static EditRequest parseDuplicate(String input, Command command) throws LittleRException {
+        IndexAndFields parsed = parseIndexAndFields(input, command);
+        return new EditRequest(parsed.index(), parsed.updates());
+    }
+
+    /**
+     * Parses the target index and any field-delimiter/value pairs from an edit or duplicate
+     * command's input, shared by both since they take the same "index + optional fields" shape.
+     *
+     * @param input the raw user input containing the index and optional field updates
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed index and field-updates map
+     * @throws LittleRException if the index is missing or not a valid integer
+     */
+    private static IndexAndFields parseIndexAndFields(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        String[] indexAndRest = argsText.split("\\s+", 2);
+
+        int index;
+        try {
+            index = Integer.parseInt(indexAndRest[0]) - 1;
+        } catch (NumberFormatException e) {
+            throw new LittleRException("Please provide a valid task number.");
+        }
+
+        String fieldsText = indexAndRest.length > 1 ? indexAndRest[1] : "";
+        Map<String, String> updates = new LinkedHashMap<>();
+        Matcher matcher = FIELD_PATTERN.matcher(fieldsText);
+        while (matcher.find()) {
+            updates.put(matcher.group(1), matcher.group(2).trim());
+        }
+        return new IndexAndFields(index, updates);
+    }
+
+    /**
+     * Holds the intermediate result of parsing an edit/duplicate command's arguments,
+     * before deciding whether an empty field map is acceptable (parseEdit rejects it,
+     * parseDuplicate allows it).
+     */
+    private record IndexAndFields(int index, Map<String, String> updates) {}
+
+    /**
+     * Builds a regex pattern to match task field delimiters and their corresponding values.
+     *
+     * @return the compiled regex pattern for matching task fields
+     */
+    private static Pattern buildFieldPattern() {
+        String anyDelimiter = String.join("|",
+            Pattern.quote(Task.NAME_DELIMITER),
+            Pattern.quote(Deadline.INPUT_DELIMITER),
+            Pattern.quote(Event.FROM_DELIMITER),
+            Pattern.quote(Event.TO_DELIMITER));
+        return Pattern.compile("(" + anyDelimiter + ")\\s+(.*?)(?=\\s*(?:" + anyDelimiter + ")|$)");
+    }
+
+    /**
+     * Parses a sort command's criteria and order arguments from user input.
+     *
+     * @param input the raw user input containing the sort criteria and order
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed SortRequest
+     * @throws LittleRException if the criteria or order is missing or not recognized
+     */
+    public static SortRequest parseSort(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).strip();
+        String[] parts = argsText.split(
+            Pattern.quote(SortRequest.BY_DELIMITER) + "|" + Pattern.quote(SortRequest.ORDER_DELIMITER));
+
+        String usage = "Invalid sort format. \nUse: sort " + SortRequest.BY_DELIMITER + " <date|name> "
+            + SortRequest.ORDER_DELIMITER + " <a|d>";
+        if (parts.length < 3) {
+            throw new LittleRException(usage);
+        }
+
+        SortCriteria criteria = SortCriteria.fromKeyword(parts[1].trim());
+        SortOrder order = SortOrder.fromKeyword(parts[2].trim());
+        if (criteria == null || order == null) {
+            throw new LittleRException(usage);
+        }
+        return new SortRequest(criteria, order);
+    }
+
+    /**
+     * Parses one or more leading task indices, followed by a single trailing value
+     * (e.g. a tag or priority level) that applies to all of them.
+     *
+     * @param input the raw user input containing the indices and trailing value
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed indices and trailing value
+     * @throws LittleRException if no indices are given, any index token is invalid,
+     *     or no trailing value follows the indices
+     */
+    public static IndicesAndValue parseIndicesAndValue(String input, Command command) throws LittleRException {
+        String[] tokens = input.substring(command.getKeyword().length()).trim().split("\\s+");
+        Set<Integer> indices = new LinkedHashSet<>();
+        int i = 0;
+        while (i < tokens.length) {
+            try {
+                indices.add(Integer.parseInt(tokens[i]) - 1);
+                i++;
+            } catch (NumberFormatException e) {
+                break;
+            }
+        }
+        if (indices.isEmpty()) {
+            throw new LittleRException("Please provide at least one task number.");
+        }
+        if (i >= tokens.length) {
+            throw new LittleRException("Please provide a value, e.g. " + command.getKeyword() + " 2 3 fun");
+        }
+        String value = String.join(" ", java.util.Arrays.copyOfRange(tokens, i, tokens.length));
+        return new IndicesAndValue(new ArrayList<>(indices), value);
+    }
+
+    /**
+     * Parses one or more whitespace-separated task indices from user input, converting each
+     * to a 0-based index. Duplicate indices are removed, preserving the order first seen.
+     *
+     * @param input the raw user input containing the index arguments
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed list of 0-based indices
+     * @throws LittleRException if no indices are given, or any token is not a valid integer
+     */
+    public static List<Integer> parseIndices(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        if (argsText.isEmpty()) {
+            throw new LittleRException("Please provide at least one task number.");
+        }
+        Set<Integer> indices = new LinkedHashSet<>();
+        for (String token : argsText.split("\\s+")) {
+            try {
+                indices.add(Integer.parseInt(token) - 1);
+            } catch (NumberFormatException e) {
+                throw new LittleRException("'" + token + "' is not a valid task number.");
+            }
+        }
+        return new ArrayList<>(indices);
+    }
 
     /**
      * Parses the task index argument from user input string and converts it to a 0-based index.
@@ -118,7 +341,7 @@ public final class Parser {
      */
     private static Task parseEvent(String taskText) throws LittleRException {
         String[] eventParts = taskText.split(
-            Pattern.quote(Event.FROM_DELIMITER) + "|" + java.util.regex.Pattern.quote(Event.TO_DELIMITER));
+            Pattern.quote(Event.FROM_DELIMITER) + "|" + Pattern.quote(Event.TO_DELIMITER));
         if (eventParts.length < 3) {
             throw new LittleRException(
                 "Invalid event format."

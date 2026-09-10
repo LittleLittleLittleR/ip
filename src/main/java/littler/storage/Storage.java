@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,8 @@ import littler.datetime.StringDateTimeConverter;
 import littler.exception.LittleRException;
 import littler.task.Deadline;
 import littler.task.Event;
+import littler.task.PriorityLevel;
+import littler.task.TagSet;
 import littler.task.Task;
 import littler.task.Todo;
 
@@ -18,7 +21,12 @@ import littler.task.Todo;
  * Handles reading tasks from disk and persisting tasks back to disk storage.
  */
 public class Storage {
+    private static final int TODO_BASE_FIELDS = 3;
+    private static final int DEADLINE_BASE_FIELDS = 4;
+    private static final int EVENT_BASE_FIELDS = 5;
+
     private final Path filePath;
+    private final Path archiveFilePath;
 
     /**
      * Constructs a new Storage instance initialized with the target file path.
@@ -27,6 +35,7 @@ public class Storage {
      */
     public Storage(String filePath) {
         this.filePath = Paths.get(filePath);
+        this.archiveFilePath = this.filePath.resolveSibling(this.filePath.getFileName() + ".archive");
     }
 
     /**
@@ -100,20 +109,23 @@ public class Storage {
         switch (type) {
             case Todo.TYPE_CODE:
                 task = new Todo(name);
+                applyMetadataField(task, parts);
                 break;
             case Deadline.TYPE_CODE:
-                if (parts.length < 4) {
+                if (parts.length < DEADLINE_BASE_FIELDS) {
                     throw new LittleRException("Missing due date in line: " + line);
                 }
                 task = new Deadline(name, StringDateTimeConverter.fromStorageString(parts[3]));
+                applyMetadataField(task, parts);
                 break;
             case Event.TYPE_CODE:
-                if (parts.length < 5) {
+                if (parts.length < EVENT_BASE_FIELDS) {
                     throw new LittleRException("Missing from/to date in line: " + line);
                 }
                 task = new Event(name,
                     StringDateTimeConverter.fromStorageString(parts[3]),
                     StringDateTimeConverter.fromStorageString(parts[4]));
+                applyMetadataField(task, parts);
                 break;
             default:
                 throw new LittleRException("Unknown task type: " + type);
@@ -123,5 +135,44 @@ public class Storage {
             task.mark();
         }
         return task;
+    }
+
+    private void applyMetadataField(Task task, String[] fields) {
+        int baseFields = task instanceof Todo ? TODO_BASE_FIELDS
+            : task instanceof Deadline ? DEADLINE_BASE_FIELDS : EVENT_BASE_FIELDS;
+        for (int i = baseFields; i < fields.length; i++) {
+            String field = fields[i];
+            if (TagSet.isTagField(field)) {
+                for (String tag : field.substring("TAGS:".length()).split(",")) {
+                    task.addTag(tag);
+                }
+            } else if (PriorityLevel.isPriorityField(field)) {
+                task.setPriority(PriorityLevel.fromStorageField(field));
+            }
+        }
+        // unrecognized prefixes are ignored, so a future save-file format change doesn't
+        // break loading of files written by this version
+    }
+
+    /**
+     * Appends the given tasks to the archive file, creating it if it doesn't exist yet.
+     * Does nothing if the given list is empty.
+     *
+     * @param tasksToArchive the tasks to append to the archive file
+     * @throws LittleRException if the archive file cannot be written to
+     */
+    public void archive(ArrayList<Task> tasksToArchive) throws LittleRException {
+        if (tasksToArchive.isEmpty()) {
+            return;
+        }
+        try {
+            if (archiveFilePath.getParent() != null) {
+                Files.createDirectories(archiveFilePath.getParent());
+            }
+            List<String> lines = tasksToArchive.stream().map(Task::toFileString).toList();
+            Files.write(archiveFilePath, lines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new LittleRException("Could not write to archive file: " + e.getMessage());
+        }
     }
 }

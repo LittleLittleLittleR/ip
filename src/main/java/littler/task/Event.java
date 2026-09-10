@@ -1,7 +1,11 @@
 package littler.task;
 
+import java.util.Map;
+import java.util.Objects;
+
 import littler.datetime.StringDateTimeConverter;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
+import littler.exception.LittleRException;
 
 /**
  * Represents a task that occurs within a specific time frame,
@@ -50,6 +54,26 @@ public class Event extends Task implements Schedulable {
         return isOnOrAfterStartDate && isOnOrBeforeEndDate && isOnOrAfterStartTime && isOnOrBeforeEndTime;
     }
 
+    @Override
+    public Task withUpdates(Map<String, String> updates) throws LittleRException {
+        if (updates.containsKey(Deadline.INPUT_DELIMITER)) {
+            throw new LittleRException(
+                "An event only supports " + NAME_DELIMITER + ", " + FROM_DELIMITER + ", and " + TO_DELIMITER + ".");
+        }
+        String newName = updates.getOrDefault(NAME_DELIMITER, super.getName());
+        ParsedDateTime newStart = updates.containsKey(FROM_DELIMITER)
+            ? StringDateTimeConverter.parse(updates.get(FROM_DELIMITER))
+            : startDateTime;
+        ParsedDateTime newEnd = updates.containsKey(TO_DELIMITER)
+            ? StringDateTimeConverter.parse(updates.get(TO_DELIMITER))
+            : endDateTime;
+        Event updated = new Event(newName, newStart, newEnd);
+        copyMarkedStatusTo(updated);
+        copyPriorityTo(updated);
+        copyTagsTo(updated);
+        return updated;
+    }
+
     /**
      * Encodes this event as a single-line string for saving to file storage.
      *
@@ -57,9 +81,53 @@ public class Event extends Task implements Schedulable {
      */
     @Override
     public String toFileString() {
-        return TYPE_CODE + " | " + (super.isMarked() ? "1" : "0") + " | " + super.getName() + " | "
+        return TYPE_CODE + " | "
+            + (super.isMarked() ? "1" : "0") + " | "
+            + super.getName() + " | "
             + StringDateTimeConverter.toStorageString(startDateTime) + " | "
-            + StringDateTimeConverter.toStorageString(endDateTime);
+            + StringDateTimeConverter.toStorageString(endDateTime)
+            + getPriorityStorageSuffix()
+            + getTagsStorageSuffix();
+    }
+
+    /**
+     * Returns the date/time value used to order this task chronologically relative to other schedulable tasks.
+     *
+     * @return the parsed date/time representing this task's position in time
+     */
+    @Override
+    public ParsedDateTime getSortDate() {
+        return startDateTime;
+    }
+
+    /**
+     * Checks if this event task is equal to another object.
+     * Two events are considered equal if they have the same name, start date/time, and end date/time.
+     *
+     * @param obj the object to compare with
+     * @return true if the other object is an Event with the same name and date/time range, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Event other)) {
+            return false;
+        }
+        return super.getName().equalsIgnoreCase(other.getName())
+            && startDateTime.equals(other.startDateTime)
+            && endDateTime.equals(other.endDateTime);
+    }
+
+    /**
+     * Computes the hash code for this event task based on its class, name, and date/time range.
+     *
+     * @return the hash code of this task
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(Event.class, super.getName().toLowerCase(), startDateTime, endDateTime);
     }
 
     /**
@@ -69,8 +137,10 @@ public class Event extends Task implements Schedulable {
      */
     @Override
     public String toString() {
-        return "[" + TYPE_CODE + "]" + super.toString()
-            + " (" + startDateTime + " to " + endDateTime + ")";
+        return "[E]" + super.toString()
+            + " (" + startDateTime + " to " + endDateTime + ")"
+            + getPriorityDisplaySuffix()
+            + getTagsDisplaySuffix();
     }
 
 }

@@ -13,4 +13,11 @@ public interface Schedulable {
      * @return true if the task occurs on or matches the given date; false otherwise
      */
     boolean isOccurringOn(ParsedDateTime date);
+
+    /**
+     * Returns the date/time value used to order this task chronologically relative to other schedulable tasks.
+     *
+     * @return the parsed date/time representing this task's position in time
+     */
+    ParsedDateTime getSortDate();
 }

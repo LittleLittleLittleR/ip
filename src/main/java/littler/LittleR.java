@@ -1,12 +1,20 @@
 package littler;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import littler.command.Command;
+import littler.command.EditRequest;
+import littler.command.IndicesAndValue;
 import littler.command.Parser;
+import littler.command.SortOrder;
+import littler.command.SortRequest;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
 import littler.storage.Storage;
+import littler.task.PriorityLevel;
 import littler.task.Task;
 import littler.task.TaskList;
 import littler.ui.UI;
@@ -16,6 +24,10 @@ import littler.ui.UI;
  * Manages the interaction loop between user input, task storage, and user interface display.
  */
 public class LittleR {
+
+    private static final Set<Command> MUTATING_COMMANDS = Set.of(
+        Command.MARK, Command.UNMARK, Command.DELETE, Command.TODO, Command.DEADLINE, Command.EVENT,
+        Command.EDIT, Command.DUPLICATE, Command.TAG, Command.UNTAG, Command.PRIORITY, Command.ARCHIVE);
 
     private final Storage storage;
     private final TaskList tasks;
@@ -43,11 +55,12 @@ public class LittleR {
      * Handles the interactive conversation loop by reading user input, parsing commands,
      * executing the corresponding actions, and persisting data changes.
      *
-     * @param input the raw user input string to process
+     * @param rawInput the raw user input string to process
      * @return the formatted output string to display to the user
      */
-    public String converse(String input) {
+    public String converse(String rawInput) {
         StringBuilder output = new StringBuilder();
+        String input = Command.normalizeAlias(rawInput);
 
         try {
             Command command = Command.fromInput(input);
@@ -57,10 +70,24 @@ public class LittleR {
                 return output.toString();
             }
 
-            // Exit
+            ArrayList<Task> preCommandSnapshot = MUTATING_COMMANDS.contains(command)
+                ? tasks.snapshotTasks() : null;
+
             switch (command) {
+                // Undo Previous Command
+                case UNDO:
+                    tasks.undo();
+                    output.append(UI.undoSuccessful());
+                    break;
+
+                // Exit application
                 case EXIT:
                     output.append(UI.goodbye());
+                    break;
+
+                // Display help
+                case HELP:
+                    output.append(UI.help());
                     break;
 
                 // List tasks
@@ -68,19 +95,48 @@ public class LittleR {
                     output.append(UI.taskList(tasks.getTasks()));
                     break;
 
+                // View statistics
+                case STATS:
+                    output.append(UI.statistics(tasks.getStatistics()));
+                    break;
+
                 // Mark or unmark a task
                 case MARK:
-                    output.append(UI.taskMarked(tasks.mark(getIndex(input, command))));
+                    output.append(markItems(getIndices(input, command)));
                     break;
 
                 case UNMARK:
-                    output.append(UI.taskUnmarked(tasks.unmark(getIndex(input, command))));
+                    output.append(unmarkItems(getIndices(input, command)));
+                    break;
+
+                case TAG:
+                    output.append(tagItems(Parser.parseIndicesAndValue(input, command)));
+                    break;
+
+                case UNTAG:
+                    output.append(untagItems(Parser.parseIndicesAndValue(input, command)));
+                    break;
+
+                case PRIORITY:
+                    output.append(priorityItems(Parser.parseIndicesAndValue(input, command)));
+                    break;
+
+                case EDIT:
+                    output.append(editItem(Parser.parseEdit(input, command)));
+                    break;
+
+                case DUPLICATE:
+                    output.append(duplicateItem(Parser.parseDuplicate(input, command)));
                     break;
 
                 // Delete a task
                 case DELETE:
-                    Task removed = tasks.delete(getIndex(input, command));
-                    output.append(UI.taskDeleted(removed, tasks.size()));
+                    output.append(deleteItems(getIndices(input, command)));
+                    break;
+
+                // Archive all tasks
+                case ARCHIVE:
+                    output.append(archiveTasks());
                     break;
 
                 // Add a new specified task (Todo, Deadline, or Event)
@@ -98,8 +154,15 @@ public class LittleR {
                     output.append(printMatchingTasks(Parser.parseKeyword(input, command)));
                     break;
 
+                case SORT:
+                    output.append(printSortedTasks(Parser.parseSort(input, command)));
+                    break;
+
                 default:
                     throw new LittleRException("Unrecognized command: " + command.getKeyword());
+            }
+            if (preCommandSnapshot != null) {
+                tasks.setUndoSnapshot(preCommandSnapshot);
             }
         } catch (LittleRException e) {
             output.append(UI.error(e.getMessage()));
@@ -119,6 +182,33 @@ public class LittleR {
         } catch (LittleRException e) {
             return UI.error("Could not save: " + e.getMessage());
         }
+    }
+
+    /**
+     * Prints all tasks sorted by the specified criteria and order.
+     *
+     * @param sortRequest the sort request containing the criteria and order
+     * @return a formatted string of sorted tasks
+     */
+    private String printSortedTasks(SortRequest sortRequest) {
+        boolean descending = sortRequest.getOrder() == SortOrder.DESCENDING;
+        ArrayList<Task> sorted;
+        switch (sortRequest.getCriteria()) {
+            case DATE:
+                sorted = tasks.getSortedByDate(descending);
+                break;
+            case PRIORITY:
+                sorted = tasks.getSortedByPriority(descending);
+                break;
+            case TAG:
+                sorted = tasks.getSortedByTag(descending);
+                break;
+            case NAME:
+            default:
+                sorted = tasks.getSortedByName(descending);
+                break;
+        }
+        return UI.taskList(sorted);
     }
 
     /**
@@ -169,21 +259,6 @@ public class LittleR {
     }
 
     /**
-     * Extracts and validates the target task index from the user input string.
-     *
-     * @param input the user input string containing the target index
-     * @param command the command keyword to strip from the input
-     * @return the parsed task index
-     * @throws LittleRException if the task list is empty, the index is invalid, or out of bounds
-     */
-    private int getIndex(String input, Command command) throws LittleRException {
-        if (tasks.isEmpty()) {
-            throw new LittleRException("There are no tasks yet.");
-        }
-        return Parser.parseIndex(input, command);
-    }
-
-    /**
      * Creates and adds a new task to the task list based on the input string and task command type.
      *
      * @param input the full raw user input string
@@ -193,8 +268,184 @@ public class LittleR {
      */
     private String addItem(String input, Command type) throws LittleRException {
         Task task = Parser.parseTask(input, type);
+        boolean isDuplicate = tasks.containsDuplicate(task);
         tasks.add(task);
         assert tasks.getLast() == task : "the just-added task should be the last task in the list";
-        return UI.taskAdded(tasks.getLast(), tasks.size());
+        String confirmation = UI.taskAdded(tasks.getLast(), tasks.size());
+        return isDuplicate ? UI.duplicateTaskWarning() + confirmation : confirmation;
+    }
+
+    private String archiveTasks() throws LittleRException {
+        int archivedCount = tasks.size();
+        storage.archive(tasks.getTasks());
+        tasks.clear();
+        return UI.tasksArchived(archivedCount);
+    }
+
+    /**
+     * Edits an existing task in the task list based on the provided edit request.
+     *
+     * @param editRequest the request containing the index and updates for the task
+     * @return a confirmation message indicating the task was updated
+     * @throws LittleRException if the index is invalid or the updates are malformed
+     */
+    private String editItem(EditRequest editRequest) throws LittleRException {
+        Task existing = tasks.get(editRequest.getIndex());
+        Task updated = existing.withUpdates(editRequest.getUpdates());
+        tasks.update(editRequest.getIndex(), updated);
+        return UI.taskEdited(updated);
+    }
+
+    /**
+     * Duplicates an existing task in the task list based on the provided duplicate request,
+     * optionally applying field overrides to the new task.
+     *
+     * @param duplicateRequest the request containing the index of the task to duplicate and any field overrides
+     * @return a confirmation message indicating the task was duplicated and the updated task count
+     * @throws LittleRException if the index is invalid or the overrides are malformed
+     */
+    private String duplicateItem(EditRequest duplicateRequest) throws LittleRException {
+        Task source = tasks.get(duplicateRequest.getIndex());
+        Task duplicate = source.withUpdates(duplicateRequest.getUpdates());
+        duplicate.unmark();
+        boolean isDuplicate = tasks.containsDuplicate(duplicate);
+        tasks.add(duplicate);
+        String confirmation = UI.taskDuplicated(duplicate, tasks.size());
+        return isDuplicate ? UI.duplicateTaskWarning() + confirmation : confirmation;
+    }
+
+    /**
+     * Extracts and validates the list of target task indices from the user input string.
+     *
+     * @param input the user input string containing the target indices
+     * @param command the command keyword to strip from the input
+     * @return a list of parsed task indices
+     * @throws LittleRException if the task list is empty, any index is invalid, or out of bounds
+     */
+    private List<Integer> getIndices(String input, Command command) throws LittleRException {
+        if (tasks.isEmpty()) {
+            throw new LittleRException("There are no tasks yet.");
+        }
+        return Parser.parseIndices(input, command);
+    }
+
+    /**
+     * Marks the specified tasks as completed and returns a confirmation message.
+     *
+     * @param indices the list of task indices to mark
+     * @return a formatted string confirming the tasks have been marked
+     * @throws LittleRException if any index is invalid or out of bounds
+     */
+    private String markItems(List<Integer> indices) throws LittleRException {
+        for (int index : indices) {
+            tasks.get(index); // validate all indices before mutating any
+        }
+        StringBuilder output = new StringBuilder();
+        for (int index : indices) {
+            output.append(UI.taskMarked(tasks.mark(index))).append("\n");
+        }
+        return output.toString();
+    }
+
+    /**
+     * Unmarks the specified tasks as not completed and returns a confirmation message.
+     *
+     * @param indices the list of task indices to unmark
+     * @return a formatted string confirming the tasks have been unmarked
+     * @throws LittleRException if any index is invalid or out of bounds
+     */
+    private String unmarkItems(List<Integer> indices) throws LittleRException {
+        for (int index : indices) {
+            tasks.get(index);
+        }
+        StringBuilder output = new StringBuilder();
+        for (int index : indices) {
+            output.append(UI.taskUnmarked(tasks.unmark(index))).append("\n");
+        }
+        return output.toString();
+    }
+
+    /**
+     * Deletes the specified tasks from the task list and returns a confirmation message.
+     *
+     * @param indices the list of task indices to delete
+     * @return a formatted string confirming the tasks have been deleted
+     * @throws LittleRException if any index is invalid or out of bounds
+     */
+    private String deleteItems(List<Integer> indices) throws LittleRException {
+        for (int index : indices) {
+            tasks.get(index);
+        }
+        List<Integer> highestFirst = new ArrayList<>(indices);
+        highestFirst.sort(Collections.reverseOrder());
+        StringBuilder output = new StringBuilder();
+        for (int index : highestFirst) {
+            output.append(UI.taskDeleted(tasks.delete(index), tasks.size())).append("\n");
+        }
+        return output.toString();
+    }
+
+    /**
+     * Tags the specified tasks with the provided tag value and returns a confirmation message.
+     *
+     * @param request the request containing the list of task indices and the tag value
+     * @return a formatted string confirming the tasks have been tagged
+     * @throws LittleRException if any index is invalid or out of bounds
+     */
+    private String tagItems(IndicesAndValue request) throws LittleRException {
+        for (int index : request.getIndices()) {
+            tasks.get(index);
+        }
+        StringBuilder output = new StringBuilder();
+        for (int index : request.getIndices()) {
+            Task task = tasks.get(index);
+            task.addTag(request.getValue());
+            output.append(UI.taskTagged(task)).append("\n");
+        }
+        return output.toString();
+    }
+
+    /**
+     * Untags the specified tasks by removing the provided tag value and returns a confirmation message.
+     *
+     * @param request the request containing the list of task indices and the tag value
+     * @return a formatted string confirming the tasks have been untagged
+     * @throws LittleRException if any index is invalid or out of bounds
+     */
+    private String untagItems(IndicesAndValue request) throws LittleRException {
+        for (int index : request.getIndices()) {
+            tasks.get(index);
+        }
+        StringBuilder output = new StringBuilder();
+        for (int index : request.getIndices()) {
+            Task task = tasks.get(index);
+            task.removeTag(request.getValue());
+            output.append(UI.taskUntagged(task)).append("\n");
+        }
+        return output.toString();
+    }
+
+    /**
+     * Sets the priority level of the specified tasks and returns a confirmation message.
+     *
+     * @param request the request containing the list of task indices and the priority value
+     * @return a formatted string confirming the tasks' priority levels have been updated
+     * @throws LittleRException if any index is invalid, out of bounds, or the priority value is invalid
+     */
+    private String priorityItems(IndicesAndValue request) throws LittleRException {
+        PriorityLevel level = PriorityLevel.fromInput(request.getValue());
+        if (level == null) {
+            throw new LittleRException("Priority must be one of: high/1, medium/2, low/3.");
+        }
+        for (int index : request.getIndices()) {
+            tasks.get(index);
+        }
+        StringBuilder output = new StringBuilder();
+        for (int index : request.getIndices()) {
+            Task task = tasks.get(index);
+            task.setPriority(level);
+            output.append(UI.taskPriorityUpdated(task)).append("\n");
+        }
+        return output.toString();
     }
 }

@@ -11,6 +11,8 @@ public enum Command {
 
     /** Command to exit the application. */
     EXIT("bye"),
+    /** Command to display the help menu. */
+    HELP("help"),
     /** Command to list all tasks. */
     LIST("list"),
     /** Command to view statistics about the current task list. */

@@ -279,14 +279,16 @@ public class UI {
             + "15. priority <task number(s)> <level >"
             + "- Set priority on one or more tasks, e.g. priority 1 3 high\n"
 
-            + "16. bye - Exit the program\n"
+            + "16. archive - Archive all current tasks to a backup file and start with a clean slate\n"
 
-            + "17. archive - Archive all current tasks to a backup file and start with a clean slate\n"
+            + "17. stats - View statistics about your current task list\n"
 
-            + "18. stats - View statistics about your current task list\n"
-
-            + "19. undo - Undo the most recent change to your task list "
+            + "18. undo - Undo the most recent change to your task list "
             + "(only applies to commands that modify it, e.g. not list/find/sort/stats)\n"
+
+            + "19. help - Show this list of commands\n"
+
+            + "20. bye - Exit the program\n"
 
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"

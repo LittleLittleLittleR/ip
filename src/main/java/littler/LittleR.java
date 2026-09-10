@@ -72,15 +72,21 @@ public class LittleR {
             ArrayList<Task> preCommandSnapshot = MUTATING_COMMANDS.contains(command)
                 ? tasks.snapshotTasks() : null;
 
-            // Exit
             switch (command) {
+                // Undo Previous Command
                 case UNDO:
                     tasks.undo();
                     output.append(UI.undoSuccessful());
                     break;
 
+                // Exit application
                 case EXIT:
                     output.append(UI.goodbye());
+                    break;
+
+                // Display help
+                case HELP:
+                    output.append(UI.help());
                     break;
 
                 // List tasks

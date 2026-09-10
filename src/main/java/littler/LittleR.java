@@ -55,11 +55,12 @@ public class LittleR {
      * Handles the interactive conversation loop by reading user input, parsing commands,
      * executing the corresponding actions, and persisting data changes.
      *
-     * @param input the raw user input string to process
+     * @param rawInput the raw user input string to process
      * @return the formatted output string to display to the user
      */
-    public String converse(String input) {
+    public String converse(String rawInput) {
         StringBuilder output = new StringBuilder();
+        String input = Command.normalizeAlias(rawInput);
 
         try {
             Command command = Command.fromInput(input);

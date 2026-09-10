@@ -244,51 +244,51 @@ public class UI {
      */
     public static String help() {
         return "Available commands:\n"
-            + "1. list - List all tasks\n"
+            + "1. list [l] - List all tasks\n"
 
-            + "2. mark <task number(s)> - Mark one or more tasks as completed, e.g. mark 1 3\n"
+            + "2. mark <task number(s)> [m] - Mark one or more tasks as completed, e.g. mark 1 3\n"
 
-            + "3. unmark <task number(s)> - Unmark one or more tasks\n"
+            + "3. unmark <task number(s)> [um] - Unmark one or more tasks\n"
 
-            + "4. todo <task description> - Add a Todo task\n"
+            + "4. todo <task description> [t] - Add a Todo task\n"
 
-            + "5. deadline <task description> /by <due datetime> - Add a Deadline task\n"
+            + "5. deadline <task description> /by <due datetime> [dl] - Add a Deadline task\n"
 
-            + "6. event <task description> /from <start datetime> /to <end datetime> - Add an Event task\n"
+            + "6. event <task description> /from <start datetime> /to <end datetime> [ev] - Add an Event task\n"
 
-            + "7. delete <task number(s)> - Delete one or more tasks, e.g. delete 1 2 3\n"
+            + "7. delete <task number(s)> [d] - Delete one or more tasks, e.g. delete 1 2 3\n"
 
-            + "8. on <date> - List tasks due or occurring on a given date\n"
+            + "8. on <date> [o] - List tasks due or occurring on a given date\n"
 
-            + "9. find <keyword> - Search for tasks containing a specific keyword\n"
+            + "9. find <keyword> [f] - Search for tasks containing a specific keyword\n"
 
-            + "10. sort /by <date|name|priority|tag> /order <a|d> - View tasks sorted by date, name, "
+            + "10. sort /by <date|name|priority|tag> /order <a|d> [so] - View tasks sorted by date, name, "
             + "priority, or first tag (does not change the saved task order)\n"
 
-            + "11. edit <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
+            + "11. edit <task number> /name <new name> /by <new due> /from <new start> /to <new end> [ed] "
             + "- Update one or more fields of an existing task (only provide the fields you want to change)\n"
 
-            + "12. duplicate <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
+            + "12. duplicate <task number> /name <new name> /by <new due> /from <new start> /to <new end> [dp] "
             + "- Create a copy of an existing task, optionally overriding some fields "
             + "(the copy always starts unmarked)\n"
 
-            + "13. tag <task number(s)> <tag> - Add a tag to one or more tasks, e.g. tag 1 2 fun\n"
+            + "13. tag <task number(s)> <tag> [tg] - Add a tag to one or more tasks, e.g. tag 1 2 fun\n"
 
-            + "14. untag <task number> <tag> - Remove a tag from a task\n"
+            + "14. untag <task number> <tag> [ut] - Remove a tag from a task\n"
 
-            + "15. priority <task number(s)> <level >"
+            + "15. priority <task number(s)> <level> [p]"
             + "- Set priority on one or more tasks, e.g. priority 1 3 high\n"
 
-            + "16. archive - Archive all current tasks to a backup file and start with a clean slate\n"
+            + "16. archive [a] - Archive all current tasks to a backup file and start with a clean slate\n"
 
-            + "17. stats - View statistics about your current task list\n"
+            + "17. stats [st] - View statistics about your current task list\n"
 
-            + "18. undo - Undo the most recent change to your task list "
+            + "18. undo [un] - Undo the most recent change to your task list "
             + "(only applies to commands that modify it, e.g. not list/find/sort/stats)\n"
 
-            + "19. help - Show this list of commands\n"
+            + "19. help [h] - Show this list of commands\n"
 
-            + "20. bye - Exit the program\n"
+            + "20. bye [b] - Exit the program\n"
 
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"

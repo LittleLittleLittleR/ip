@@ -108,6 +108,11 @@ public class LittleR {
                     output.append(UI.taskDeleted(removed, tasks.size()));
                     break;
 
+                // Archive all tasks
+                case ARCHIVE:
+                    output.append(archiveTasks());
+                    break;
+
                 // Add a new specified task (Todo, Deadline, or Event)
                 case TODO:
                 case DEADLINE:
@@ -254,6 +259,13 @@ public class LittleR {
         assert tasks.getLast() == task : "the just-added task should be the last task in the list";
         String confirmation = UI.taskAdded(tasks.getLast(), tasks.size());
         return isDuplicate ? UI.duplicateTaskWarning() + confirmation : confirmation;
+    }
+
+    private String archiveTasks() throws LittleRException {
+        int archivedCount = tasks.size();
+        storage.archive(tasks.getTasks());
+        tasks.clear();
+        return UI.tasksArchived(archivedCount);
     }
 
     /**

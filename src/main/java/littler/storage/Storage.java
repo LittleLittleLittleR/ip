@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class Storage {
     private static final int EVENT_BASE_FIELDS = 5;
 
     private final Path filePath;
+    private final Path archiveFilePath;
 
     /**
      * Constructs a new Storage instance initialized with the target file path.
@@ -33,6 +35,7 @@ public class Storage {
      */
     public Storage(String filePath) {
         this.filePath = Paths.get(filePath);
+        this.archiveFilePath = this.filePath.resolveSibling(this.filePath.getFileName() + ".archive");
     }
 
     /**
@@ -149,5 +152,27 @@ public class Storage {
         }
         // unrecognized prefixes are ignored, so a future save-file format change doesn't
         // break loading of files written by this version
+    }
+
+    /**
+     * Appends the given tasks to the archive file, creating it if it doesn't exist yet.
+     * Does nothing if the given list is empty.
+     *
+     * @param tasksToArchive the tasks to append to the archive file
+     * @throws LittleRException if the archive file cannot be written to
+     */
+    public void archive(ArrayList<Task> tasksToArchive) throws LittleRException {
+        if (tasksToArchive.isEmpty()) {
+            return;
+        }
+        try {
+            if (archiveFilePath.getParent() != null) {
+                Files.createDirectories(archiveFilePath.getParent());
+            }
+            List<String> lines = tasksToArchive.stream().map(Task::toFileString).toList();
+            Files.write(archiveFilePath, lines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new LittleRException("Could not write to archive file: " + e.getMessage());
+        }
     }
 }

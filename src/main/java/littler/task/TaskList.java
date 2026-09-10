@@ -55,6 +55,13 @@ public class TaskList {
     }
 
     /**
+     * Removes all tasks from the list.
+     */
+    public void clear() {
+        tasks.clear();
+    }
+
+    /**
      * Removes and returns the task at the specified 0-based index.
      *
      * @param index the index of the task to be removed

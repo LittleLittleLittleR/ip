@@ -121,6 +121,18 @@ public class UI {
     }
 
     /**
+     * Displays a confirmation message indicating that all tasks have been archived and the list is now empty.
+     *
+     * @param count the number of tasks that were archived
+     * @return a string on the confirmation of the archived tasks and the empty list
+     */
+    public static String tasksArchived(int count) {
+        return count == 0
+            ? "There are no tasks to archive."
+            : "Archived " + count + " task(s). Your list is now empty.";
+    }
+
+    /**
      * Displays a header message preceding a list of tasks scheduled for a specific date.
      *
      * @param date the target parsed date
@@ -214,17 +226,19 @@ public class UI {
             + "5. deadline <task description> /by <due datetime> - Add a Deadline task\n"
             + "6. event <task description> /from <start datetime> /to <end datetime> - Add an Event task\n"
             + "7. on <date> - List tasks due or occurring on a given date\n"
-            + "8. sort /by <date|name|priority|tag> /order <a|d> - View tasks sorted by date, name, "
+            + "8. find <keyword> - Search for tasks containing a specific keyword\n"
+            + "9. sort /by <date|name|priority|tag> /order <a|d> - View tasks sorted by date, name, "
             + "priority, or first tag (does not change the saved task order)\n"
-            + "9. edit <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
+            + "10. edit <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
             + "- Update one or more fields of an existing task (only provide the fields you want to change)\n"
-            + "10. duplicate <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
+            + "11. duplicate <task number> /name <new name> /by <new due> /from <new start> /to <new end> "
             + "- Create a copy of an existing task, optionally overriding some fields "
             + "(the copy always starts unmarked)\n"
-            + "11. tag <task number> <tag> - Add a tag to a task\n"
-            + "12. untag <task number> <tag> - Remove a tag from a task\n"
-            + "13. priority <task number> <priority> - Set the priority of a task\n"
-            + "14. bye - Exit the program\n\n"
+            + "12. tag <task number> <tag> - Add a tag to a task\n"
+            + "13. untag <task number> <tag> - Remove a tag from a task\n"
+            + "14. priority <task number> <priority> - Set the priority of a task\n"
+            + "15. bye - Exit the program\n"
+            + "16. archive - Archive all current tasks to a backup file and start with a clean slate\n"
             + "Date is in the format of d-M-yyyy or yyyy-M-d, or a weekday abbreviation (e.g. Tue) "
             + "meaning the next such day\n"
             + "Datetime is similar to date, with an optional time in the format of HHmm\n";

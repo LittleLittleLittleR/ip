@@ -35,6 +35,8 @@ public enum Command {
     DUPLICATE("duplicate"),
     /** Command to delete a task from the list. */
     DELETE("delete"),
+    /** Command to archive all current tasks and clear the list. */
+    ARCHIVE("archive"),
 
     // TASK CREATION COMMANDS
 

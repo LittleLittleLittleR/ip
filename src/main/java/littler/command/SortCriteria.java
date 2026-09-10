@@ -5,7 +5,9 @@ package littler.command;
  */
 public enum SortCriteria {
     DATE("date"),
-    NAME("name");
+    NAME("name"),
+    PRIORITY("priority"),
+    TAG("tag");
 
     private final String keyword;
 

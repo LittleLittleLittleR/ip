@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import littler.command.Command;
 import littler.command.EditRequest;
 import littler.command.Parser;
-import littler.command.SortCriteria;
 import littler.command.SortOrder;
 import littler.command.SortRequest;
 import littler.command.TagRequest;
@@ -159,9 +158,22 @@ public class LittleR {
      */
     private String printSortedTasks(SortRequest sortRequest) {
         boolean descending = sortRequest.getOrder() == SortOrder.DESCENDING;
-        ArrayList<Task> sorted = sortRequest.getCriteria() == SortCriteria.DATE
-            ? tasks.getSortedByDate(descending)
-            : tasks.getSortedByName(descending);
+        ArrayList<Task> sorted;
+        switch (sortRequest.getCriteria()) {
+            case DATE:
+                sorted = tasks.getSortedByDate(descending);
+                break;
+            case PRIORITY:
+                sorted = tasks.getSortedByPriority(descending);
+                break;
+            case TAG:
+                sorted = tasks.getSortedByTag(descending);
+                break;
+            case NAME:
+            default:
+                sorted = tasks.getSortedByName(descending);
+                break;
+        }
         return UI.taskList(sorted);
     }
 

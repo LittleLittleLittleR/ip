@@ -1,6 +1,7 @@
 package littler.task;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import littler.exception.LittleRException;
@@ -27,28 +28,65 @@ public abstract class Task {
         this.marked = false;
     }
 
+    /**
+     * Sets the priority level of this task.
+     *
+     * @param priority the new priority level to set
+     */
     public void setPriority(PriorityLevel priority) {
         this.priority = priority;
     }
 
+    /**
+     * Clears the priority level of this task, setting it to null.
+     */
     public void clearPriority() {
         this.priority = null;
     }
 
+    /**
+     * Returns the priority level of this task.
+     *
+     * @return the current priority level, or null if no priority is set
+     */
     public PriorityLevel getPriority() {
         return priority;
     }
 
+    /**
+     * Copies the priority level from this task to another task.
+     *
+     * @param other the task to copy the priority level to
+     */
     protected void copyPriorityTo(Task other) {
         other.priority = this.priority;
     }
 
+    /**
+     * Returns a string representation of the task's priority for storage purposes.
+     *
+     * @return a formatted string of the priority, or an empty string if no priority is set
+     */
     protected String getPriorityStorageSuffix() {
         return priority == null ? "" : " | " + PriorityLevel.toStorageField(priority);
     }
 
+    /**
+     * Returns a string representation of the task's priority for display purposes.
+     *
+     * @return a formatted string of the priority, or an empty string if no priority is set
+     */
     protected String getPriorityDisplaySuffix() {
         return priority == null ? "" : " [" + priority.getKeyword() + "]";
+    }
+
+    /**
+     * Returns the first tag associated with this task, if any.
+     *
+     * @return an Optional containing the first tag, or empty if no tags are present
+     */
+    public Optional<String> getFirstTag() {
+        return tags.getFirstTag();
     }
 
     /**

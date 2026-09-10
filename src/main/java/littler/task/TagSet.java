@@ -2,6 +2,7 @@ package littler.task;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,15 @@ public final class TagSet {
     private static final String STORAGE_PREFIX = "TAGS:";
 
     private final Set<String> tags = new LinkedHashSet<>();
+
+    /**
+     * Gets the first tag in this set, if any. The order of tags is preserved from insertion order.
+     *
+     * @return an Optional containing the first tag, or empty if the set is empty
+     */
+    public Optional<String> getFirstTag() {
+        return tags.stream().findFirst();
+    }
 
     /**
      * Adds a tag. A leading "#" is stripped if present, and the tag is stored in

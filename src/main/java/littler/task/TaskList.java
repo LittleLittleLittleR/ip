@@ -2,6 +2,7 @@ package littler.task;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
@@ -193,6 +194,51 @@ public class TaskList {
      */
     public boolean containsDuplicate(Task task) {
         return tasks.stream().anyMatch(existing -> existing.equals(task));
+    }
+
+    /**
+     * Returns a new list of all tasks sorted alphabetically by their first (earliest-added) tag.
+     * Untagged tasks are placed after all tagged tasks in ascending order (this flips, along with
+     * everything else, when descending is true). The underlying task list is left unchanged.
+     *
+     * @param descending if true, reverses the sort order
+     * @return a new sorted ArrayList of tasks
+     */
+    public ArrayList<Task> getSortedByTag(boolean descending) {
+        Comparator<Task> comparator = TaskList::compareByTag;
+        if (descending) {
+            comparator = comparator.reversed();
+        }
+        return tasks.stream().sorted(comparator).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private static int compareByTag(Task a, Task b) {
+        Optional<String> aTag = a.getFirstTag();
+        Optional<String> bTag = b.getFirstTag();
+        if (aTag.isPresent() != bTag.isPresent()) {
+            return aTag.isPresent() ? -1 : 1;
+        }
+        if (aTag.isEmpty()) {
+            return 0;
+        }
+        return aTag.get().compareToIgnoreCase(bTag.get());
+    }
+
+    /**
+     * Returns a new list of all tasks sorted by their priority levels.
+     * Tasks without a priority are considered lowest and are placed after all prioritized tasks.
+     * The underlying task list is left unchanged.
+     *
+     * @param descending if true, sorts from highest to lowest priority; if false, lowest to highest
+     * @return a new sorted ArrayList of tasks
+     */
+    public ArrayList<Task> getSortedByPriority(boolean descending) {
+        Comparator<Task> comparator = Comparator.comparing(
+            task -> task.getPriority() == null ? Integer.MAX_VALUE : task.getPriority().ordinal());
+        if (descending) {
+            comparator = comparator.reversed();
+        }
+        return tasks.stream().sorted(comparator).collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**

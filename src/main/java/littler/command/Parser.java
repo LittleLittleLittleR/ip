@@ -1,7 +1,11 @@
 package littler.command;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -180,6 +184,63 @@ public final class Parser {
             throw new LittleRException(usage);
         }
         return new SortRequest(criteria, order);
+    }
+
+    /**
+     * Parses one or more leading task indices, followed by a single trailing value
+     * (e.g. a tag or priority level) that applies to all of them.
+     *
+     * @param input the raw user input containing the indices and trailing value
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed indices and trailing value
+     * @throws LittleRException if no indices are given, any index token is invalid,
+     *     or no trailing value follows the indices
+     */
+    public static IndicesAndValue parseIndicesAndValue(String input, Command command) throws LittleRException {
+        String[] tokens = input.substring(command.getKeyword().length()).trim().split("\\s+");
+        Set<Integer> indices = new LinkedHashSet<>();
+        int i = 0;
+        while (i < tokens.length) {
+            try {
+                indices.add(Integer.parseInt(tokens[i]) - 1);
+                i++;
+            } catch (NumberFormatException e) {
+                break;
+            }
+        }
+        if (indices.isEmpty()) {
+            throw new LittleRException("Please provide at least one task number.");
+        }
+        if (i >= tokens.length) {
+            throw new LittleRException("Please provide a value, e.g. " + command.getKeyword() + " 2 3 fun");
+        }
+        String value = String.join(" ", java.util.Arrays.copyOfRange(tokens, i, tokens.length));
+        return new IndicesAndValue(new ArrayList<>(indices), value);
+    }
+
+    /**
+     * Parses one or more whitespace-separated task indices from user input, converting each
+     * to a 0-based index. Duplicate indices are removed, preserving the order first seen.
+     *
+     * @param input the raw user input containing the index arguments
+     * @param command the command keyword to be stripped from the front of the input
+     * @return the parsed list of 0-based indices
+     * @throws LittleRException if no indices are given, or any token is not a valid integer
+     */
+    public static List<Integer> parseIndices(String input, Command command) throws LittleRException {
+        String argsText = input.substring(command.getKeyword().length()).trim();
+        if (argsText.isEmpty()) {
+            throw new LittleRException("Please provide at least one task number.");
+        }
+        Set<Integer> indices = new LinkedHashSet<>();
+        for (String token : argsText.split("\\s+")) {
+            try {
+                indices.add(Integer.parseInt(token) - 1);
+            } catch (NumberFormatException e) {
+                throw new LittleRException("'" + token + "' is not a valid task number.");
+            }
+        }
+        return new ArrayList<>(indices);
     }
 
     /**

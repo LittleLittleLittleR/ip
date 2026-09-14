@@ -14,7 +14,7 @@ public abstract class Task {
     public static final String NAME_DELIMITER = "/name";
 
     private String name;
-    private boolean marked;
+    private boolean isTaskMarked;
     private final TagSet tags = new TagSet();
     private PriorityLevel priority;
 
@@ -25,7 +25,7 @@ public abstract class Task {
      */
     public Task(String name) {
         this.name = name;
-        this.marked = false;
+        this.isTaskMarked = false;
     }
 
     /**
@@ -162,7 +162,7 @@ public abstract class Task {
      * @param other the task to copy this task's completion status onto
      */
     protected void copyMarkedStatusTo(Task other) {
-        if (this.marked) {
+        if (this.isTaskMarked) {
             other.mark();
         }
     }
@@ -178,14 +178,14 @@ public abstract class Task {
      * Marks the task as completed.
      */
     public void mark() {
-        marked = true;
+        this.isTaskMarked = true;
     }
 
     /**
      * Unmarks the task, setting its state to incomplete.
      */
     public void unmark() {
-        marked = false;
+        this.isTaskMarked = false;
     }
 
     /**
@@ -203,7 +203,7 @@ public abstract class Task {
      * @return true if the task is marked as completed; false otherwise
      */
     protected boolean isMarked() {
-        return marked;
+        return isTaskMarked;
     }
 
     /**
@@ -213,6 +213,6 @@ public abstract class Task {
      */
     @Override
     public String toString() {
-        return (marked ? "[X] " : "[ ] ") + name;
+        return (isMarked() ? "[X] " : "[ ] ") + name;
     }
 }

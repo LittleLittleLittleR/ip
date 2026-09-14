@@ -356,13 +356,13 @@ public class TaskList {
      * are compared alphabetically among themselves.
      */
     private static int compareByDate(Task a, Task b) {
-        boolean aHasDate = a instanceof Schedulable;
-        boolean bHasDate = b instanceof Schedulable;
+        boolean isDateOfTaskA = a instanceof Schedulable;
+        boolean isDateOfTaskB = b instanceof Schedulable;
 
-        if (aHasDate != bHasDate) {
-            return aHasDate ? -1 : 1;
+        if (isDateOfTaskA != isDateOfTaskB) {
+            return isDateOfTaskA ? -1 : 1;
         }
-        if (aHasDate) {
+        if (isDateOfTaskA) {
             ParsedDateTime aDate = ((Schedulable) a).getSortDate();
             ParsedDateTime bDate = ((Schedulable) b).getSortDate();
             return aDate.compareTo(bDate);

@@ -212,7 +212,7 @@ public class LittleR {
     }
 
     /**
-     * Print all tasks whose description contains the given keyword.
+     * Prints all tasks whose description contains the given keyword.
      *
      * @param keyword the search term to match against task descriptions
      * @return a formatted string of matching tasks or a message if none are found

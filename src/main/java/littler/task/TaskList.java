@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
+import littler.task.attribute.PriorityLevel;
 
 /**
  * Manages an encapsulated list of tasks and handles internal task operations,

@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import littler.exception.LittleRException;
+import littler.task.attribute.PriorityLevel;
+import littler.task.attribute.TagSet;
 
 /**
  * Represents an abstract task containing a description name and a completion status.

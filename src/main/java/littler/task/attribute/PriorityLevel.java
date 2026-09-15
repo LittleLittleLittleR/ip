@@ -1,4 +1,4 @@
-package littler.task;
+package littler.task.attribute;
 
 /**
  * Represents a task's priority level, along with the input keywords used to select it.

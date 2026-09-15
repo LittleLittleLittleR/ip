@@ -1,4 +1,4 @@
-package littler.command;
+package littler.command.sort;
 
 /**
  * Represents ascending or descending sort order, along with the input keyword used to select it.

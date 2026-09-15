@@ -1,4 +1,4 @@
-package littler.command;
+package littler.command.request;
 
 /**
  * Encapsulates a fully parsed tag/untag request: which task to affect, and the tag text.

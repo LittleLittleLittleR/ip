@@ -12,10 +12,10 @@ import littler.datetime.StringDateTimeConverter;
 import littler.exception.LittleRException;
 import littler.task.Deadline;
 import littler.task.Event;
-import littler.task.PriorityLevel;
-import littler.task.TagSet;
 import littler.task.Task;
 import littler.task.Todo;
+import littler.task.attribute.PriorityLevel;
+import littler.task.attribute.TagSet;
 
 /**
  * Handles reading tasks from disk and persisting tasks back to disk storage.

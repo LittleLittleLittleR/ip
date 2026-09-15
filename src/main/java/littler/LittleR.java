@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Set;
 
 import littler.command.Command;
-import littler.command.EditRequest;
-import littler.command.IndicesAndValue;
 import littler.command.Parser;
-import littler.command.SortOrder;
-import littler.command.SortRequest;
+import littler.command.request.EditRequest;
+import littler.command.request.IndicesAndValue;
+import littler.command.sort.SortOrder;
+import littler.command.sort.SortRequest;
 import littler.datetime.StringDateTimeConverter.ParsedDateTime;
 import littler.exception.LittleRException;
 import littler.storage.Storage;
-import littler.task.PriorityLevel;
 import littler.task.Task;
 import littler.task.TaskList;
+import littler.task.attribute.PriorityLevel;
 import littler.ui.UI;
 
 /**

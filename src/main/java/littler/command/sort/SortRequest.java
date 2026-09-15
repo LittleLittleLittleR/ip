@@ -1,4 +1,4 @@
-package littler.command;
+package littler.command.sort;
 
 /**
  * Encapsulates a fully parsed sort request: which criteria to sort by, and in which order.

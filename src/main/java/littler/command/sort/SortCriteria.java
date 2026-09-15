@@ -1,4 +1,4 @@
-package littler.command;
+package littler.command.sort;
 
 /**
  * Represents the criteria by which tasks can be sorted, along with the input keyword used to select it.

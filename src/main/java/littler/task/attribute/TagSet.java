@@ -1,4 +1,4 @@
-package littler.task;
+package littler.task.attribute;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;

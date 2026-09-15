@@ -1,4 +1,4 @@
-package littler.command;
+package littler.command.request;
 
 import java.util.Map;
 

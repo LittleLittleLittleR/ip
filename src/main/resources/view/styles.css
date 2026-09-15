@@ -68,7 +68,6 @@
     -fx-border-radius: 4 16 16 16;
     -fx-border-width: 1;
     -fx-padding: 10 14 10 14;
-    -fx-text-fill: -color-text;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 4, 0, 0, 1);
 }
 
@@ -79,8 +78,90 @@
     -fx-border-radius: 16 4 16 16;
     -fx-border-width: 1;
     -fx-padding: 10 14 10 14;
-    -fx-text-fill: -color-text-inverse;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 1);
+}
+
+/* ---------- Message text runs ----------
+ * Every Text run inside a bubble gets exactly one of the two base classes below,
+ * which sets its default colour to match the bubble it's in. Highlight classes
+ * (declared further down) are layered on top for specific tokens; because they
+ * are declared *after* the base classes here, they win the CSS cascade at equal
+ * selector specificity. */
+
+.bubble-text {
+    -fx-fill: -color-text;
+}
+
+.bubble-text-inverse {
+    -fx-fill: -color-text-inverse;
+}
+
+/* Overrides .bubble-text's default colour specifically inside an error bubble
+ * (higher specificity than .bubble-text alone, so it wins regardless of order). */
+.error-bubble .bubble-text {
+    -fx-fill: -color-error-text;
+}
+
+/* User input: the recognized command word and any "/delimiter" tokens. */
+.command-token {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-fill: #FFE08A;
+}
+
+.delimiter-token {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-style: italic;
+    -fx-fill: #A8D8FF;
+}
+
+/* Bot replies: list indices, task type/status/alias brackets, priorities, tags, headers. */
+.list-index {
+    -fx-font-weight: bold;
+    -fx-fill: -color-primary;
+}
+
+.bracket-tag {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-fill: -color-text;
+}
+
+.status-done {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-fill: #1E8E5A;
+}
+
+.status-pending {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-fill: derive(-color-text, 60%);
+}
+
+.priority-high {
+    -fx-font-weight: bold;
+    -fx-fill: #D64545;
+}
+
+.priority-medium {
+    -fx-font-weight: bold;
+    -fx-fill: #C98A1E;
+}
+
+.priority-low {
+    -fx-font-weight: bold;
+    -fx-fill: #4A6FD6;
+}
+
+.hash-tag {
+    -fx-font-style: italic;
+    -fx-fill: #0E8C8C;
+}
+
+.section-header {
+    -fx-font-weight: bold;
+    -fx-fill: -color-primary-dark;
 }
 
 /* Applied on top of .bot-bubble when LittleR's reply is an error, so

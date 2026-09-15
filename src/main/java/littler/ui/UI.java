@@ -225,7 +225,7 @@ public class UI {
      * @return a string of an invalid command error message
      */
     public static String commandNotFoundError() {
-        return error("Invalid command. Please use one of the commands shown below.") + "\n" + help();
+        return error("Invalid command. Please use the \"help\" command to see available options.");
     }
 
     /**

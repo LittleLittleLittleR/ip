@@ -12,6 +12,9 @@ import littler.task.Task;
  */
 public class UI {
 
+    /** Prefix that every error message returned by this class starts with. */
+    public static final String ERROR_PREFIX = "Error: ";
+
     // TASK PRINTING METHODS
 
     /**
@@ -222,7 +225,7 @@ public class UI {
      * @return a string of an invalid command error message
      */
     public static String commandNotFoundError() {
-        return "Invalid command. Please use one of the commands shown below. \n" + help();
+        return error("Invalid command. Please use one of the commands shown below.") + "\n" + help();
     }
 
     /**
@@ -232,7 +235,7 @@ public class UI {
      * @return a string of the formatted error message
      */
     public static String error(String message) {
-        return "Error: " + message;
+        return ERROR_PREFIX + message;
     }
 
     // GENERAL PRINTING METHODS

@@ -27,6 +27,7 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
+            stage.setTitle("LittleR");
             fxmlLoader.<MainWindow>getController().setLittleR(littleR); // inject the LittleR instance
             stage.show();
         } catch (IOException e) {

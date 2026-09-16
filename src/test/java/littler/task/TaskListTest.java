@@ -226,7 +226,7 @@ public class TaskListTest {
     // ---- getSortedByPriority ----
 
     @Test
-    public void getSortedByPriority_descending_putsHighFirst() throws LittleRException {
+    public void getSortedByPriority_descending_putsHighFirstnullPriorityLast() throws LittleRException {
         TaskList tasks = new TaskList();
         Todo low = new Todo("low task");
         low.setPriority(PriorityLevel.LOW);
@@ -246,20 +246,26 @@ public class TaskListTest {
     }
 
     @Test
-    public void getSortedByPriority_noPriorityTasksAlwaysLast() throws LittleRException {
+    public void getSortedByPriority_ascending_putsLowFirstnullPriorityLast() throws LittleRException {
         TaskList tasks = new TaskList();
         Todo noPriority = new Todo("no priority");
         Todo low = new Todo("low task");
         low.setPriority(PriorityLevel.LOW);
+        Todo high = new Todo("high task");
+        high.setPriority(PriorityLevel.HIGH);
+        Todo medium = new Todo("medium task");
+        medium.setPriority(PriorityLevel.MEDIUM);
 
         tasks.add(noPriority);
         tasks.add(low);
+        tasks.add(high);
+        tasks.add(medium);
 
         // Even ascending (low-first), null-priority still trails behind
         ArrayList<Task> sorted = tasks.getSortedByPriority(false);
 
         assertEquals("low task", sorted.get(0).getName());
-        assertEquals("no priority", sorted.get(1).getName());
+        assertEquals("no priority", sorted.get(3).getName());
     }
 
     // ---- getSortedByDate ----

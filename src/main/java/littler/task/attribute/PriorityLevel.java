@@ -4,9 +4,9 @@ package littler.task.attribute;
  * Represents a task's priority level, along with the input keywords used to select it.
  */
 public enum PriorityLevel {
-    HIGH("high", "1"),
+    HIGH("high", "3"),
     MEDIUM("medium", "2"),
-    LOW("low", "3");
+    LOW("low", "1");
 
     private static final String STORAGE_PREFIX = "PRIORITY:";
 

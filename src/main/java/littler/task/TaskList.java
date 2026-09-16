@@ -304,16 +304,18 @@ public class TaskList {
      * Tasks without a priority are considered lowest and are placed after all prioritized tasks.
      * The underlying task list is left unchanged.
      *
-     * @param descending if true, sorts from highest to lowest priority; if false, lowest to highest
+     * @param isDescending if true, sorts from highest to lowest priority; if false, lowest to highest
      * @return a new sorted ArrayList of tasks
      */
-    public ArrayList<Task> getSortedByPriority(boolean descending) {
-        Comparator<Task> comparator = Comparator.comparing(
-            task -> task.getPriority() == null ? Integer.MAX_VALUE : task.getPriority().ordinal());
-        if (descending) {
-            comparator = comparator.reversed();
+    public ArrayList<Task> getSortedByPriority(boolean isDescending) {
+        Comparator<Task> byOrdinal = Comparator.comparingInt(task -> task.getPriority().ordinal());
+        if (!isDescending) {
+            byOrdinal = byOrdinal.reversed();
         }
-        return tasks.stream().sorted(comparator).collect(Collectors.toCollection(ArrayList::new));
+        Comparator<Task> nullsLast = Comparator.comparing(task -> task.getPriority() == null);
+        return tasks.stream()
+            .sorted(nullsLast.thenComparing(byOrdinal))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**

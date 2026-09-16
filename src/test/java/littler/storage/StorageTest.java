@@ -17,6 +17,7 @@ import littler.task.Deadline;
 import littler.task.Event;
 import littler.task.Task;
 import littler.task.Todo;
+import littler.task.attribute.PriorityLevel;
 
 public class StorageTest {
 
@@ -106,6 +107,38 @@ public class StorageTest {
         for (int i = 0; i < original.size(); i++) {
             assertEquals(original.get(i).toString(), loaded.get(i).toString());
         }
+    }
+
+    @Test
+    public void saveThenLoad_taskWithPriority_preservesPriority() throws LittleRException {
+        // Priority is a Category C extension — verify it survives a storage round-trip.
+        Storage storage = new Storage(tempDir.resolve("data.txt").toString());
+        Todo task = new Todo("important task");
+        task.setPriority(PriorityLevel.HIGH);
+        ArrayList<Task> original = new ArrayList<>();
+        original.add(task);
+
+        storage.save(original);
+        ArrayList<Task> loaded = storage.load();
+
+        assertEquals(PriorityLevel.HIGH, loaded.get(0).getPriority());
+    }
+
+    @Test
+    public void saveThenLoad_taskWithTags_preservesTags() throws LittleRException {
+        // Tags are a Category C extension — verify they survive a storage round-trip.
+        Storage storage = new Storage(tempDir.resolve("data.txt").toString());
+        Todo task = new Todo("tagged task");
+        task.addTag("work");
+        task.addTag("urgent");
+        ArrayList<Task> original = new ArrayList<>();
+        original.add(task);
+
+        storage.save(original);
+        ArrayList<Task> loaded = storage.load();
+
+        assertTrue(loaded.get(0).getTags().contains("work"));
+        assertTrue(loaded.get(0).getTags().contains("urgent"));
     }
 
     // ---- load: corrupted lines ----

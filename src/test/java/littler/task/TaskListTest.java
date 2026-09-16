@@ -117,7 +117,7 @@ public class TaskListTest {
     // ---- getTasksOn ----
 
     @Test
-    public void getTasksOn_mixedTaskTypes_returnsOnlyMatchingSchedulableTasks() {
+    public void getTasksOn_mixedTaskTypes_returnsOnlyMatchingSchedulableTasks() throws LittleRException {
         TaskList tasks = new TaskList();
 
         ParsedDateTime targetDate = new ParsedDateTime(LocalDate.of(2026, 8, 6), null);

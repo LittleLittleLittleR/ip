@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Locale;
@@ -30,14 +31,14 @@ public final class StringDateTimeConverter {
 
     // Formats that include a time component (HHmm, 24-hour)
     private static final List<DateTimeFormatter> DATE_TIME_FORMATS = List.of(
-        DateTimeFormatter.ofPattern("d-M-yyyy HHmm"),
-        DateTimeFormatter.ofPattern("yyyy-M-d HHmm")
+        DateTimeFormatter.ofPattern("d-M-uuuu HHmm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("uuuu-M-d HHmm").withResolverStyle(ResolverStyle.STRICT)
     );
 
     // Date-only formats; result will have no time component
     private static final List<DateTimeFormatter> DATE_ONLY_FORMATS = List.of(
-        DateTimeFormatter.ofPattern("d-M-yyyy"),
-        DateTimeFormatter.ofPattern("yyyy-M-d")
+        DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("uuuu-M-d").withResolverStyle(ResolverStyle.STRICT)
     );
 
     // Time-only format; used for parsing user input like "1800" (24-hour)

@@ -24,11 +24,15 @@ public class Event extends Task implements Schedulable {
      * @param name the description of the event
      * @param from the starting date and optional time of the event
      * @param to the ending date and optional time of the event
+     * @throws LittleRException if the start or end date/time is invalid
      */
-    public Event(String name, ParsedDateTime startDateTime, ParsedDateTime endDateTime) {
+    public Event(String name, ParsedDateTime startDateTime, ParsedDateTime endDateTime) throws LittleRException {
         super(name);
         assert startDateTime != null && endDateTime != null
             : "start/end dates are required and should already be parsed by the time they reach here";
+        if (startDateTime.compareTo(endDateTime) >= 0) {
+            throw new LittleRException("The start date/time must be before the end date/time.");
+        }
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }

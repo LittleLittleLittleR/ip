@@ -276,6 +276,9 @@ public final class Parser {
      */
     public static ParsedDateTime parseDate(String input, Command command) throws LittleRException {
         String dateString = input.substring(command.getKeyword().length()).trim();
+        if (dateString.isEmpty()) {
+            throw new LittleRException("Please provide a date, e.g. on 2-12-2019");
+        }
         return StringDateTimeConverter.parse(dateString);
     }
 
@@ -335,6 +338,14 @@ public final class Parser {
                 "Invalid deadline format. \nUse: deadline <task description> "
                 + Deadline.INPUT_DELIMITER + " <due date>");
         }
+        if (deadlineParts[0].trim().isEmpty()) {
+            throw new LittleRException("Please provide a task description before "
+                + Deadline.INPUT_DELIMITER + ".");
+        }
+        if (deadlineParts[1].trim().isEmpty()) {
+            throw new LittleRException("Please provide a due date after "
+            + Deadline.INPUT_DELIMITER + ", e.g. /by 2-12-2019.");
+        }
         return new Deadline(deadlineParts[0].trim(), StringDateTimeConverter.parse(deadlineParts[1]));
     }
 
@@ -346,9 +357,25 @@ public final class Parser {
      * @throws LittleRException if the task text is malformed or missing required delimiters
      */
     private static Task parseEvent(String taskText) throws LittleRException {
+        int fromIdx = taskText.indexOf(Event.FROM_DELIMITER);
+        int toIdx = taskText.indexOf(Event.TO_DELIMITER);
+        boolean hasFrom = fromIdx != -1;
+        boolean hasTo = toIdx != -1;
+
+        if (!hasFrom || !hasTo) {
+            throw new LittleRException(
+                "Invalid event format."
+                + "\nUse: event <task description> "
+                + Event.FROM_DELIMITER + " <start datetime> " + Event.TO_DELIMITER + " <end datetime>");
+        }
+        if (toIdx < fromIdx) {
+            throw new LittleRException(
+                Event.FROM_DELIMITER + " must come before " + Event.TO_DELIMITER + " in an event.");
+        }
+
         String[] eventParts = taskText.split(
             Pattern.quote(Event.FROM_DELIMITER) + "|" + Pattern.quote(Event.TO_DELIMITER));
-        if (eventParts.length < 3) {
+        if (eventParts.length != 3) {
             throw new LittleRException(
                 "Invalid event format."
                 + "\nUse: event <task description> "

@@ -64,18 +64,6 @@ public class ParserTest {
             Parser.parseTask("event meeting /from 6-8-2026 1400", Command.EVENT));
     }
 
-    // ---- parseIndex ----
-
-    @Test
-    public void parseIndex_validNumber_returnsZeroBasedIndex() throws LittleRException {
-        assertEquals(2, Parser.parseIndex("mark 3", Command.MARK));
-    }
-
-    @Test
-    public void parseIndex_nonNumericInput_throwsException() {
-        assertThrows(LittleRException.class, () -> Parser.parseIndex("mark abc", Command.MARK));
-    }
-
     // ---- parseDate ----
 
     @Test

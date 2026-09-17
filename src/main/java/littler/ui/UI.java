@@ -279,8 +279,8 @@ public class UI {
 
             + "14. untag <task number> <tag> [ut] - Remove a tag from a task\n"
 
-            + "15. priority <task number(s)> <level> [p]"
-            + "- Set priority on one or more tasks, e.g. priority 1 3 high\n"
+            + "15. priority <task number(s)> <level> [p] "
+            + "- Set priority (low/medium/high) on one or more tasks, e.g. priority 1 3 high\n"
 
             + "16. archive [a] - Archive all current tasks to a backup file and start with a clean slate\n"
 

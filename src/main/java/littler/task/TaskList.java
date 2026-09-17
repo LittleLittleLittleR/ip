@@ -309,7 +309,7 @@ public class TaskList {
      */
     public ArrayList<Task> getSortedByPriority(boolean isDescending) {
         Comparator<Task> byOrdinal = Comparator.comparingInt(task -> task.getPriority().ordinal());
-        if (!isDescending) {
+        if (isDescending) {
             byOrdinal = byOrdinal.reversed();
         }
         Comparator<Task> nullsLast = Comparator.comparing(task -> task.getPriority() == null);

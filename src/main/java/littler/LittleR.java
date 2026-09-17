@@ -435,7 +435,7 @@ public class LittleR {
     private String priorityItems(IndicesAndValue request) throws LittleRException {
         PriorityLevel level = PriorityLevel.fromInput(request.getValue());
         if (level == null) {
-            throw new LittleRException("Priority must be one of: high/1, medium/2, low/3.");
+            throw new LittleRException("Priority must be one of: high, medium, low.");
         }
         for (int index : request.getIndices()) {
             tasks.get(index);

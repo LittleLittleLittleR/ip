@@ -12,7 +12,7 @@
     xmlns="http://javafx.com/javafx/17"
     xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <TextFlow fx:id="dialog" maxWidth="260.0" />
+        <TextFlow fx:id="dialog" />
         <ImageView fx:id="displayPicture" fitHeight="36.0" fitWidth="36.0"
             pickOnBounds="true" preserveRatio="true" styleClass="avatar" />
     </children>

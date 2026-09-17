@@ -28,6 +28,7 @@ public class Main extends Application {
             Scene scene = new Scene(ap);
             stage.setScene(scene);
             stage.setTitle("LittleR");
+            stage.setMaximized(true);
             fxmlLoader.<MainWindow>getController().setLittleR(littleR); // inject the LittleR instance
             stage.show();
         } catch (IOException e) {

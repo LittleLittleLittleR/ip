@@ -38,6 +38,10 @@ public class DialogBox extends HBox {
 
         displayPicture.setImage(img);
         clipToCircle(displayPicture);
+
+        // Cap bubble at 75% of the HBox's actual width so it uses the available
+        // space rather than being pinned to a fixed pixel count.
+        dialog.maxWidthProperty().bind(widthProperty().multiply(0.75));
     }
 
     /**

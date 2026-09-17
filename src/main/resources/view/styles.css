@@ -176,6 +176,15 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 2, 0, 0, 1);
 }
 
+/* ---------- Welcome banner ---------- */
+.welcome-banner {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-primary;
+    -fx-padding: 16 12 8 12;
+    -fx-alignment: CENTER;
+}
+
 /* ---------- Input bar ---------- */
 
 .input-bar {

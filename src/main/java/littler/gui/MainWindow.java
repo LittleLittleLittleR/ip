@@ -4,6 +4,7 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import littler.LittleR;
 import littler.command.Command;
+import littler.ui.UI;
 
 /**
  * Controller for the main GUI.
@@ -44,6 +46,21 @@ public class MainWindow extends AnchorPane {
     /** Injects the LittleR instance */
     public void setLittleR(LittleR lr) {
         littleR = lr;
+        showWelcome();
+    }
+
+    /**
+     * Displays the ASCII art banner and welcome message when the app first opens.
+     * The banner uses a monospace Label so its spacing is preserved exactly,
+     * while the welcome text is shown as a normal bot bubble for visual consistency.
+     */
+    private void showWelcome() {
+        Label banner = new Label(UI.banner());
+        banner.getStyleClass().add("welcome-banner");
+        banner.setMaxWidth(Double.MAX_VALUE);
+        banner.setWrapText(false);
+        dialogContainer.getChildren().add(banner);
+        dialogContainer.getChildren().add(DialogBox.getLittleRDialog(UI.welcome(), littleRImage));
     }
 
     /**

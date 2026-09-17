@@ -66,9 +66,9 @@ Most commands have a **short form** shown in `[brackets]`. Both forms work ident
 
 Shows all tasks with their index numbers, type, status, priority, and tags.
 
-![`list` command](image/README/list.png)
+![list</code> command](image/README/list.png)
 
-![`list` short form](image/README/list_shortform.png)
+![list</code> short form](image/README/list_shortform.png)
 
 Task type: `[T]` To-do · `[D]` Deadline · `[E]` Event
 Status: `[X]` Done · `[ ]` Pending
@@ -79,24 +79,23 @@ Status: `[X]` Done · `[ ]` Pending
 
 #### To-do — `todo`
 
-![`todo` command](image/README/todo.png)
+![todo</code> command](image/README/todo.png)
 
-![`todo` short form](image/README/todo_shortform.png)
+![todo</code> short form](image/README/todo_shortform.png)
 
 #### Deadline — `deadline`
 
-![`deadline` command](image/README/deadline.png)
+![deadline</code> command](image/README/deadline.png)
 
-![`deadline` short form](image/README/deadline_shortform.png)
+![deadline</code> short form](image/README/deadline_shortform.png)
 
 #### Event — `event`
 
 The start date/time must be strictly before the end date/time.
 
-![`event` command](image/README/event.png)
+![event</code> command](image/README/event.png)
 
-![`event` short form](image/README/event_shortform.png)
-
+![event</code> short form](image/README/event_shortform.png)
 
 > LittleR will warn you if the task you are adding looks identical to one that already exists.
 
@@ -106,9 +105,9 @@ The start date/time must be strictly before the end date/time.
 
 Accepts one or more task numbers at once.
 
-![`mark` command](image/README/mark.png)
+![mark</code> command](image/README/mark.png)
 
-![`unmark` short form](image/README/unmark_shortform.png)
+![unmark</code> short form](image/README/unmark_shortform.png)
 
 ---
 
@@ -116,9 +115,9 @@ Accepts one or more task numbers at once.
 
 Accepts one or more task numbers. All indices are validated before any deletion occurs.
 
-![`delete` command](image/README/delete.png)
+![delete</code> command](image/README/delete.png)
 
-![`delete` short form](image/README/delete_shortform.png)
+![delete</code> short form](image/README/delete_shortform.png)
 
 ---
 
@@ -126,9 +125,9 @@ Accepts one or more task numbers. All indices are validated before any deletion 
 
 Case-insensitive keyword search across all task descriptions, includes partial search.
 
-![`find` command](image/README/find.png)
+![find</code> command](image/README/find.png)
 
-![`find` short form - partial search](image/README/find_shortform_partial.png)
+![find</code> short form - partial search](image/README/find_shortform_partial.png)
 
 ---
 
@@ -136,7 +135,7 @@ Case-insensitive keyword search across all task descriptions, includes partial s
 
 Shows deadlines due on that date and events occurring on that date.
 
-![`on` command](image/README/on.png)
+![on</code> command](image/README/on.png)
 
 ---
 
@@ -144,13 +143,9 @@ Shows deadlines due on that date and events occurring on that date.
 
 Sets the priority level on one or more tasks at once.
 
-| Level      | Shorthand |
-| ---------- | --------- |
-| `high`   | `1`     |
-| `medium` | `2`     |
-| `low`    | `3`     |
+Accepted levels: `low`, `medium`, `high`
 
-![`priority` command](image/README/priority.png)
+![priority</code> command](image/README/priority.png)
 
 ---
 
@@ -158,9 +153,9 @@ Sets the priority level on one or more tasks at once.
 
 Adds or removes a tag from one or more tasks. Tags are stored in lowercase and display with a `#` prefix.
 
-![`tag` command](image/README/tag.png)
+![tag</code> command](image/README/tag.png)
 
-![`untag` short form](image/README/untag_shortform.png)
+![untag</code> short form](image/README/untag_shortform.png)
 
 ---
 
@@ -177,9 +172,9 @@ Displays tasks in sorted order **without** changing the saved list.
 
 `/order a` = ascending · `/order d` = descending
 
-![`sort` command](image/README/sort.png)
+![sort</code> command](image/README/sort.png)
 
-![`sort` short form](image/README/sort_shortform.png)
+![sort</code> short form](image/README/sort_shortform.png)
 
 ---
 
@@ -194,9 +189,9 @@ Updates one or more fields of an existing task. Only include the fields you want
 | `/from <new datetime>`    | Events only    |
 | `/to <new datetime>`      | Events only    |
 
-![`edit` command](image/README/edit.png)
+![edit</code> command](image/README/edit.png)
 
-![`edit` short form](image/README/edit_shortform.png)
+![edit</code> short form](image/README/edit_shortform.png)
 
 ---
 
@@ -204,9 +199,9 @@ Updates one or more fields of an existing task. Only include the fields you want
 
 Creates a copy of an existing task (always starts unmarked), optionally overriding fields using the same flags as `edit`.
 
-![`duplicate` command](image/README/duplicate.png)
+![duplicate</code> command](image/README/duplicate.png)
 
-![`duplicate` short form](image/README/duplicate_shortform.png)
+![duplicate</code> short form](image/README/duplicate_shortform.png)
 
 ---
 
@@ -215,7 +210,7 @@ Creates a copy of an existing task (always starts unmarked), optionally overridi
 Reverts the most recent command that modified the task list (e.g. add, delete, mark, edit).
 View-only commands (`list`, `find`, `sort`, `stats`) are not counted. Only one level of undo is supported.
 
-![`undo` command](image/README/undo.png)
+![undo</code> command](image/README/undo.png)
 
 ---
 
@@ -223,7 +218,7 @@ View-only commands (`list`, `find`, `sort`, `stats`) are not counted. Only one l
 
 Shows a breakdown of your task list by type, status, priority, and tags.
 
-![`stats` command](image/README/stats.png)
+![stats</code> command](image/README/stats.png)
 
 ---
 
@@ -231,7 +226,7 @@ Shows a breakdown of your task list by type, status, priority, and tags.
 
 Saves all current tasks to a backup file and clears the list so you can start fresh. The backup is stored alongside your data file.
 
-![`archive` command](image/README/archive.png)
+![archive</code> command](image/README/archive.png)
 
 ---
 
@@ -239,7 +234,7 @@ Saves all current tasks to a backup file and clears the list so you can start fr
 
 Shows the full list of available commands and accepted date/time formats directly in the chat.
 
-![`help` command](image/README/help.png)
+![help</code> command](image/README/help.png)
 
 ---
 
@@ -247,7 +242,7 @@ Shows the full list of available commands and accepted date/time formats directl
 
 Closes LittleR after a short delay.
 
-![`bye` command](image/README/bye.png)
+![bye</code> command](image/README/bye.png)
 
 ---
 

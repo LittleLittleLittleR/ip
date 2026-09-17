@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import littler.command.request.EditRequest;
 import littler.command.request.IndicesAndValue;
-import littler.command.request.TagRequest;
 import littler.command.sort.SortCriteria;
 import littler.command.sort.SortOrder;
 import littler.command.sort.SortRequest;
@@ -33,56 +32,6 @@ public final class Parser {
      * Private constructor to prevent instantiation of utility class.
      */
     private Parser() {}
-
-    /**
-     * Parses a priority command's target index and priority level from user input.
-     *
-     * @param input the raw user input containing the index and priority level
-     * @param command the command keyword to be stripped from the front of the input
-     * @return the parsed TagRequest containing the index and priority level
-     * @throws LittleRException if the index is missing/invalid, or no priority level was provided
-     */
-    public static TagRequest parsePriority(String input, Command command) throws LittleRException {
-        String argsText = input.substring(command.getKeyword().length()).trim();
-        String[] indexAndPriority = argsText.split("\\s+", 2);
-
-        int index;
-        try {
-            index = Integer.parseInt(indexAndPriority[0]) - 1;
-        } catch (NumberFormatException e) {
-            throw new LittleRException("Please provide a valid task number.");
-        }
-
-        if (indexAndPriority.length < 2 || indexAndPriority[1].isBlank()) {
-            throw new LittleRException("Please provide a priority level, e.g. " + command.getKeyword() + " 2 high");
-        }
-        return new TagRequest(index, indexAndPriority[1].trim());
-    }
-
-    /**
-     * Parses a tag or untag command's target index and tag text from user input.
-     *
-     * @param input the raw user input containing the index and tag
-     * @param command the command keyword to be stripped from the front of the input
-     * @return the parsed TagRequest
-     * @throws LittleRException if the index is missing/invalid, or no tag was provided
-     */
-    public static TagRequest parseTag(String input, Command command) throws LittleRException {
-        String argsText = input.substring(command.getKeyword().length()).trim();
-        String[] indexAndTag = argsText.split("\\s+", 2);
-
-        int index;
-        try {
-            index = Integer.parseInt(indexAndTag[0]) - 1;
-        } catch (NumberFormatException e) {
-            throw new LittleRException("Please provide a valid task number.");
-        }
-
-        if (indexAndTag.length < 2 || indexAndTag[1].isBlank()) {
-            throw new LittleRException("Please provide a tag, e.g. " + command.getKeyword() + " 2 fun");
-        }
-        return new TagRequest(index, indexAndTag[1].trim());
-    }
 
     /**
      * Parses an edit command's target index and field updates from user input.
@@ -178,7 +127,7 @@ public final class Parser {
         String[] parts = argsText.split(
             Pattern.quote(SortRequest.BY_DELIMITER) + "|" + Pattern.quote(SortRequest.ORDER_DELIMITER));
 
-        String usage = "Invalid sort format. \nUse: sort " + SortRequest.BY_DELIMITER + " <date|name> "
+        String usage = "Invalid sort format. \nUse: sort " + SortRequest.BY_DELIMITER + " <date|name|tag|priority> "
             + SortRequest.ORDER_DELIMITER + " <a|d>";
         if (parts.length < 3) {
             throw new LittleRException(usage);
@@ -218,7 +167,7 @@ public final class Parser {
             throw new LittleRException("Please provide at least one task number.");
         }
         if (i >= tokens.length) {
-            throw new LittleRException("Please provide a value, e.g. " + command.getKeyword() + " 2 3 fun");
+            throw new LittleRException(command.getErrorMessage());
         }
         String value = String.join(" ", java.util.Arrays.copyOfRange(tokens, i, tokens.length));
         return new IndicesAndValue(new ArrayList<>(indices), value);
@@ -247,23 +196,6 @@ public final class Parser {
             }
         }
         return new ArrayList<>(indices);
-    }
-
-    /**
-     * Parses the task index argument from user input string and converts it to a 0-based index.
-     *
-     * @param input the raw user input containing the task index argument
-     * @param command the command keyword to be stripped from the front of the input
-     * @return the zero-based task index integer
-     * @throws LittleRException if the index argument is missing or not a valid integer
-     */
-    public static int parseIndex(String input, Command command) throws LittleRException {
-        String indexString = input.substring(command.getKeyword().length()).trim();
-        try {
-            return Integer.parseInt(indexString) - 1;
-        } catch (NumberFormatException e) {
-            throw new LittleRException("Please provide a valid task number.");
-        }
     }
 
     /**
